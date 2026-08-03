@@ -25,6 +25,7 @@ jobs:
         with:
           python-version: "3.12"
           cache: pip
+          cache-dependency-path: requirements-dev.lock
       - name: Capture immutable environment evidence
         run: |
           mkdir -p artifacts/arm64-deterministic
@@ -36,7 +37,8 @@ jobs:
           git rev-parse HEAD | tee artifacts/arm64-deterministic/commit.txt
       - name: Install and validate
         run: |
-          python -m pip install -e '.[dev]'
+          python -m pip install --require-hashes -r requirements-dev.lock
+          python -m pip install --no-build-isolation --no-deps -e .
           ruff check .
           ruff format --check .
           pytest --cov=proofedge --cov-report=term-missing --cov-fail-under=75
@@ -48,11 +50,10 @@ jobs:
           --runs 30
           --output artifacts/arm64-deterministic/raw-results.json
       - name: Hash evidence bundle
-        run: >-
-          find artifacts/arm64-deterministic -type f -print0
-          | sort -z
-          | xargs -0 sha256sum
-          | tee artifacts/arm64-deterministic/SHA256SUMS
+        working-directory: artifacts/arm64-deterministic
+        run: |
+          find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS
+          sha256sum --check SHA256SUMS
       - name: Publish raw evidence
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
