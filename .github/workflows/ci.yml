@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install
+        run: python -m pip install -e '.[dev]'
+      - name: Lint
+        run: |
+          ruff check .
+          ruff format --check .
+      - name: Test and enforce coverage
+        run: pytest --cov=proofedge --cov-report=term-missing --cov-fail-under=75
+      - name: Frozen golden evaluation
+        run: proofedge evaluate --cases evaluation/cases --output evaluation/results/ci.json
+
