@@ -1,0 +1,222 @@
+name: Native Arm64 llama.cpp tuning exploration
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  tune-neoverse-n2:
+    name: Frozen KleidiAI parameter sweep
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 60
+    env:
+      CONFIG: benchmarks/config/arm64-tuning-v1.json
+      MODEL_CONFIG: benchmarks/config/llama-cpp-qwen15b-q4_0.json
+      EVIDENCE: artifacts/arm64-llama-tuning
+      MODEL_DIR: models
+      LLAMA_DIR: third_party/llama.cpp
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Read frozen sweep configuration
+        run: |
+          echo "LLAMA_SHA=$(jq -r .llama_cpp_commit "$CONFIG")" >> "$GITHUB_ENV"
+          echo "MODEL_REVISION=$(jq -r .model.revision "$MODEL_CONFIG")" >> "$GITHUB_ENV"
+          echo "MODEL_FILE=$(jq -r .model.filename "$MODEL_CONFIG")" >> "$GITHUB_ENV"
+          echo "MODEL_SHA256=$(jq -r .model.sha256 "$MODEL_CONFIG")" >> "$GITHUB_ENV"
+          echo "BATCH_SIZE=$(jq -r .stage_1.batch_size "$CONFIG")" >> "$GITHUB_ENV"
+          echo "UBATCH_SIZE=$(jq -r .stage_1.ubatch_size "$CONFIG")" >> "$GITHUB_ENV"
+          echo "PROMPT_TOKENS=$(jq -r .stage_1.prompt_tokens "$CONFIG")" >> "$GITHUB_ENV"
+          echo "GENERATION_TOKENS=$(jq -r .stage_1.generation_tokens "$CONFIG")" >> "$GITHUB_ENV"
+          echo "REPETITIONS=$(jq -r .stage_1.repetitions "$CONFIG")" >> "$GITHUB_ENV"
+          echo "PREFILL_FLOOR=$(jq -r .stage_1.prefill_floor_relative_to_best "$CONFIG")" >> "$GITHUB_ENV"
+          echo "GPU_LAYERS=$(jq -r .fixed.gpu_layers "$CONFIG")" >> "$GITHUB_ENV"
+          echo "DEVICE=$(jq -r .fixed.device "$CONFIG")" >> "$GITHUB_ENV"
+      - name: Capture native environment
+        run: |
+          mkdir -p "$EVIDENCE/environment" "$EVIDENCE/build" "$EVIDENCE/stage1" "$EVIDENCE/stage2" "$EVIDENCE/depth"
+          uname -a | tee "$EVIDENCE/environment/uname.txt"
+          uname -m | tee "$EVIDENCE/environment/architecture.txt"
+          lscpu --json | tee "$EVIDENCE/environment/lscpu.json"
+          cat /etc/os-release | tee "$EVIDENCE/environment/os-release.txt"
+          env | grep '^Image\|^RUNNER_' | sort | tee "$EVIDENCE/environment/runner-env.txt"
+          cp "$CONFIG" "$EVIDENCE/config.json"
+          cp "$MODEL_CONFIG" "$EVIDENCE/model-config.json"
+          git rev-parse HEAD | tee "$EVIDENCE/project-commit.txt"
+      - name: Install native build tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends cmake ninja-build
+          cmake --version | tee "$EVIDENCE/environment/cmake-version.txt"
+          c++ --version | tee "$EVIDENCE/environment/compiler-version.txt"
+      - name: Fetch pinned llama.cpp
+        run: |
+          git clone --filter=blob:none https://github.com/ggml-org/llama.cpp.git "$LLAMA_DIR"
+          git -C "$LLAMA_DIR" checkout --detach "$LLAMA_SHA"
+          git -C "$LLAMA_DIR" rev-parse HEAD | tee "$EVIDENCE/llama-cpp-commit.txt"
+      - name: Cache pinned public model
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: models
+          key: qwen15b-q4-0-${{ env.MODEL_SHA256 }}
+      - name: Download and verify model
+        run: |
+          mkdir -p "$MODEL_DIR"
+          if [ ! -f "$MODEL_DIR/$MODEL_FILE" ]; then
+            curl --fail --location --retry 5 --retry-delay 5 \
+              "https://huggingface.co/Qwen/Qwen2.5-Coder-1.5B-Instruct-GGUF/resolve/$MODEL_REVISION/$MODEL_FILE?download=true" \
+              --output "$MODEL_DIR/$MODEL_FILE"
+          fi
+          echo "$MODEL_SHA256  $MODEL_DIR/$MODEL_FILE" | sha256sum --check
+          stat --format='%n %s bytes' "$MODEL_DIR/$MODEL_FILE" | tee "$EVIDENCE/model-size.txt"
+      - name: Build KleidiAI llama-bench
+        run: |
+          cmake -S "$LLAMA_DIR" -B build/kleidiai -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DGGML_CPU_KLEIDIAI=ON \
+            -DGGML_NATIVE=ON \
+            -DLLAMA_CURL=OFF \
+            -DLLAMA_BUILD_UI=OFF \
+            -DLLAMA_BUILD_TESTS=OFF \
+            -DLLAMA_BUILD_EXAMPLES=OFF \
+            -DLLAMA_BUILD_APP=OFF \
+            2>&1 | tee "$EVIDENCE/build/configure.log"
+          cmake --build build/kleidiai --target llama-bench -j 4 \
+            2>&1 | tee "$EVIDENCE/build/build.log"
+          cmake -LA -N build/kleidiai | sort > "$EVIDENCE/build/cmake-cache.txt"
+          sha256sum build/kleidiai/bin/llama-bench build/kleidiai/bin/libggml-cpu.so \
+            | tee "$EVIDENCE/binary-SHA256SUMS"
+          file build/kleidiai/bin/llama-bench build/kleidiai/bin/libggml-cpu.so \
+            | tee "$EVIDENCE/environment/binary-file-types.txt"
+      - name: Sweep threads and KleidiAI chunk multiplier
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t threads < <(jq -r '.stage_1.threads[]' "$CONFIG")
+          mapfile -t chunks < <(jq -r '.stage_1.kleidiai_chunk_multipliers[]' "$CONFIG")
+          for thread_count in "${threads[@]}"; do
+            for chunk in "${chunks[@]}"; do
+              label="t${thread_count}-c${chunk}"
+              GGML_TOTAL_THREADS="$thread_count" \
+              GGML_KLEIDIAI_CHUNK_MULTIPLIER="$chunk" \
+              /usr/bin/time -v -o "$EVIDENCE/stage1/${label}.time.txt" \
+                build/kleidiai/bin/llama-bench \
+                  -m "$MODEL_DIR/$MODEL_FILE" \
+                  -t "$thread_count" \
+                  -b "$BATCH_SIZE" \
+                  -ub "$UBATCH_SIZE" \
+                  -ngl "$GPU_LAYERS" \
+                  -dev "$DEVICE" \
+                  -p "$PROMPT_TOKENS" \
+                  -n "$GENERATION_TOKENS" \
+                  -r "$REPETITIONS" \
+                  --delay 1 \
+                  -v \
+                  -o json \
+                  > "$EVIDENCE/stage1/${label}.json" \
+                  2> "$EVIDENCE/stage1/${label}.stderr.log"
+              python -m json.tool "$EVIDENCE/stage1/${label}.json" > /dev/null
+            done
+          done
+      - name: Select stage-one candidate with frozen rule
+        run: |
+          python scripts/select_llama_tuning.py \
+            --stage stage1 \
+            --raw-dir "$EVIDENCE/stage1" \
+            --prefill-floor "$PREFILL_FLOOR" \
+            --output "$EVIDENCE/stage1-selection.json"
+          echo "SELECTED_THREADS=$(jq -r .selected.threads "$EVIDENCE/stage1-selection.json")" >> "$GITHUB_ENV"
+          echo "SELECTED_CHUNK=$(jq -r .selected.chunk_multiplier "$EVIDENCE/stage1-selection.json")" >> "$GITHUB_ENV"
+      - name: Sweep batch and micro-batch pairs
+        shell: bash
+        run: |
+          set -euo pipefail
+          while IFS=$'\t' read -r batch ubatch; do
+            label="b${batch}-u${ubatch}"
+            GGML_TOTAL_THREADS="$SELECTED_THREADS" \
+            GGML_KLEIDIAI_CHUNK_MULTIPLIER="$SELECTED_CHUNK" \
+            /usr/bin/time -v -o "$EVIDENCE/stage2/${label}.time.txt" \
+              build/kleidiai/bin/llama-bench \
+                -m "$MODEL_DIR/$MODEL_FILE" \
+                -t "$SELECTED_THREADS" \
+                -b "$batch" \
+                -ub "$ubatch" \
+                -ngl "$GPU_LAYERS" \
+                -dev "$DEVICE" \
+                -p "$(jq -r .stage_2.prompt_tokens "$CONFIG")" \
+                -n "$(jq -r .stage_2.generation_tokens "$CONFIG")" \
+                -r "$(jq -r .stage_2.repetitions "$CONFIG")" \
+                --delay 1 \
+                -v \
+                -o json \
+                > "$EVIDENCE/stage2/${label}.json" \
+                2> "$EVIDENCE/stage2/${label}.stderr.log"
+            python -m json.tool "$EVIDENCE/stage2/${label}.json" > /dev/null
+          done < <(jq -r '.stage_2.batch_ubatch_pairs[] | @tsv' "$CONFIG")
+      - name: Select final exploratory profile
+        run: |
+          python scripts/select_llama_tuning.py \
+            --stage stage2 \
+            --raw-dir "$EVIDENCE/stage2" \
+            --fixed-threads "$SELECTED_THREADS" \
+            --fixed-chunk "$SELECTED_CHUNK" \
+            --output "$EVIDENCE/final-profile.json"
+          echo "SELECTED_BATCH=$(jq -r .selected.batch_size "$EVIDENCE/final-profile.json")" >> "$GITHUB_ENV"
+          echo "SELECTED_UBATCH=$(jq -r .selected.ubatch_size "$EVIDENCE/final-profile.json")" >> "$GITHUB_ENV"
+      - name: Check decode at realistic context depths
+        run: |
+          GGML_TOTAL_THREADS="$SELECTED_THREADS" \
+          GGML_KLEIDIAI_CHUNK_MULTIPLIER="$SELECTED_CHUNK" \
+          /usr/bin/time -v -o "$EVIDENCE/depth/decode.time.txt" \
+            build/kleidiai/bin/llama-bench \
+              -m "$MODEL_DIR/$MODEL_FILE" \
+              -t "$SELECTED_THREADS" \
+              -b "$SELECTED_BATCH" \
+              -ub "$SELECTED_UBATCH" \
+              -ngl "$GPU_LAYERS" \
+              -dev "$DEVICE" \
+              -p 0 \
+              -n "$(jq -r .depth_check.generation_tokens "$CONFIG")" \
+              -d "$(jq -r '.depth_check.depths | join(",")' "$CONFIG")" \
+              -r "$(jq -r .depth_check.repetitions "$CONFIG")" \
+              --delay 1 \
+              -v \
+              -o json \
+              > "$EVIDENCE/depth/decode.json" \
+              2> "$EVIDENCE/depth/decode.stderr.log"
+          python -m json.tool "$EVIDENCE/depth/decode.json" > /dev/null
+      - name: Verify runtime kernel selection
+        run: |
+          grep -hE 'kleidiai: primary q4 kernel feature (SVE|I8MM|DOTPROD)' \
+            "$EVIDENCE"/stage1/*.stderr.log \
+            "$EVIDENCE"/stage2/*.stderr.log \
+            "$EVIDENCE"/depth/*.stderr.log \
+            | sort -u \
+            | tee "$EVIDENCE/runtime-kernel-selection.txt"
+          test -s "$EVIDENCE/runtime-kernel-selection.txt"
+          ! grep -hEq 'kleidiai: no compatible q4 kernels|primary q4 kernel feature NONE' \
+            "$EVIDENCE"/stage1/*.stderr.log \
+            "$EVIDENCE"/stage2/*.stderr.log \
+            "$EVIDENCE"/depth/*.stderr.log
+      - name: Hash complete exploration evidence
+        if: always()
+        run: |
+          find "$EVIDENCE" -type f ! -name SHA256SUMS -print0 \
+            | sort -z \
+            | xargs -0 sha256sum \
+            | tee "$EVIDENCE/SHA256SUMS"
+      - name: Upload raw tuning evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: native-arm64-llama-tuning-${{ github.sha }}
+          path: artifacts/arm64-llama-tuning
+          if-no-files-found: error
+          retention-days: 90
