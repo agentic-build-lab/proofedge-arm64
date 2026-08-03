@@ -1,0 +1,61 @@
+name: Native Arm64 evidence
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: native-arm64-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deterministic-baseline:
+    name: Genuine Arm64 baseline (no emulation)
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Capture immutable environment evidence
+        run: |
+          mkdir -p artifacts/arm64-deterministic
+          uname -a | tee artifacts/arm64-deterministic/uname.txt
+          uname -m | tee artifacts/arm64-deterministic/architecture.txt
+          lscpu --json | tee artifacts/arm64-deterministic/lscpu.json
+          cat /etc/os-release | tee artifacts/arm64-deterministic/os-release.txt
+          python --version | tee artifacts/arm64-deterministic/python-version.txt
+          git rev-parse HEAD | tee artifacts/arm64-deterministic/commit.txt
+      - name: Install and validate
+        run: |
+          python -m pip install -e '.[dev]'
+          ruff check .
+          ruff format --check .
+          pytest --cov=proofedge --cov-report=term-missing --cov-fail-under=75
+          proofedge evaluate --cases evaluation/cases --output artifacts/arm64-deterministic/evaluation.json
+      - name: Run repeated deterministic baseline
+        run: >-
+          python scripts/benchmark_deterministic.py
+          --cases evaluation/cases
+          --runs 30
+          --output artifacts/arm64-deterministic/raw-results.json
+      - name: Hash evidence bundle
+        run: >-
+          find artifacts/arm64-deterministic -type f -print0
+          | sort -z
+          | xargs -0 sha256sum
+          | tee artifacts/arm64-deterministic/SHA256SUMS
+      - name: Publish raw evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: native-arm64-deterministic-${{ github.sha }}
+          path: artifacts/arm64-deterministic
+          if-no-files-found: error
+          retention-days: 90
+
