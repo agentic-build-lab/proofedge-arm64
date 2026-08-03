@@ -12,8 +12,10 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-python@v6
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
         with:
           python-version: "3.12"
           cache: pip
@@ -28,3 +30,25 @@ jobs:
       - name: Frozen golden evaluation
         run: proofedge evaluate --cases evaluation/cases --output evaluation/results/ci.json
 
+  public-demo:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: demo
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: "22.13.0"
+          cache: npm
+          cache-dependency-path: demo/package-lock.json
+      - name: Install exact demo dependencies
+        run: npm ci
+      - name: Validate public demo
+        run: |
+          npm run lint
+          npm test
+          npm audit --omit=dev
