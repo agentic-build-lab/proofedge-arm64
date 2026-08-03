@@ -17,7 +17,9 @@ jobs:
       MODEL_DIR: models
       LLAMA_DIR: third_party/llama.cpp
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
       - name: Read pinned configuration
         run: |
           echo "LLAMA_SHA=$(jq -r .llama_cpp_commit "$CONFIG")" >> "$GITHUB_ENV"
@@ -51,7 +53,7 @@ jobs:
           git -C "$LLAMA_DIR" rev-parse HEAD | tee "$EVIDENCE/llama-cpp-commit.txt"
       - name: Cache pinned public model
         id: model-cache
-        uses: actions/cache@v4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
           path: models
           key: qwen15b-q4-0-${{ env.MODEL_SHA256 }}
@@ -120,10 +122,9 @@ jobs:
             | tee "$EVIDENCE/SHA256SUMS"
       - name: Upload complete raw evidence
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: native-arm64-llama-abba-${{ github.sha }}
           path: artifacts/arm64-llama-bench
           if-no-files-found: error
           retention-days: 90
-
