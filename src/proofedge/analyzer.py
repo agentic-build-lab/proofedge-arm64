@@ -4,11 +4,13 @@ from __future__ import annotations
 
 import hashlib
 import json
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any
 
+from proofedge.context import build_baseline_context, build_optimized_context
 from proofedge.contracts import extract_contracts, find_prompt_injections
+from proofedge.engines import LlamaCppClient
 from proofedge.models import (
     AssuranceReport,
     EvidenceRef,
@@ -264,4 +266,94 @@ def analyze_migration(config: AnalysisConfig) -> AssuranceReport:
             "Repository code was not executed; runtime evidence must be attached separately.",
         ),
         metadata={"manifest": str(config.manifest) if config.manifest else None},
+    )
+
+
+def augment_with_local_model(
+    report: AssuranceReport,
+    config: AnalysisConfig,
+    client: LlamaCppClient,
+    profile: str,
+) -> AssuranceReport:
+    source = scan_repository(config.source)
+    target = scan_repository(config.target)
+    context = (
+        build_baseline_context(source, target)
+        if profile == "baseline"
+        else build_optimized_context(source, target)
+    )
+    response = client.generate_plan(context.text)
+    repositories = {"source": source.by_path, "target": target.by_path}
+    accepted: list[str] = []
+    rejected: list[Finding] = []
+    for index, proposal in enumerate(response.document.get("tests", [])):
+        if not isinstance(proposal, dict):
+            continue
+        repository = str(proposal.get("repository", ""))
+        path = str(proposal.get("path", ""))
+        line = proposal.get("line")
+        record = repositories.get(repository, {}).get(path)
+        valid_line = (
+            isinstance(line, int) and record is not None and line <= len(record.text.splitlines())
+        )
+        if not valid_line:
+            rejected.append(
+                Finding(
+                    id=_finding_id(
+                        "unsupported-model-proposal", f"{index}:{repository}:{path}:{line}"
+                    ),
+                    category="unsupported_claim",
+                    severity="high",
+                    title="Local-model test proposal rejected by evidence validation",
+                    detail=(
+                        "The model cited an absent repository path or line. The proposal was "
+                        "excluded from the differential test plan."
+                    ),
+                    confidence=1.0,
+                    evidence=(EvidenceRef("manifest", "local-model-output"),),
+                    recommended_test="Regenerate with visible, numbered evidence only.",
+                )
+            )
+            continue
+        name = str(proposal.get("name", "Unnamed test"))
+        purpose = str(proposal.get("purpose", ""))
+        relation = str(proposal.get("expected_relation", "investigate"))
+        accepted.append(
+            f"[{proposal.get('priority', 'medium')}] {name}: {purpose} "
+            f"({repository}:{path}:{line}; relation={relation})"
+        )
+    findings = tuple(
+        sorted(
+            (*report.findings, *rejected),
+            key=lambda finding: (
+                {"critical": 0, "high": 1, "medium": 2, "low": 3, "info": 4}[finding.severity],
+                finding.id,
+            ),
+        )
+    )
+    summary = replace(
+        report.summary,
+        unsupported_claims=report.summary.unsupported_claims + len(rejected),
+        high_or_critical=report.summary.high_or_critical + len(rejected),
+    )
+    metadata = {
+        **report.metadata,
+        "local_model": {
+            "profile": profile,
+            "context_characters": context.characters,
+            "context_sha256": context.sha256,
+            "files_included": context.files_included,
+            "accepted_tests": len(accepted),
+            "rejected_tests": len(rejected),
+            "timings": response.timings,
+            "usage": response.usage,
+        },
+    }
+    return replace(
+        report,
+        engine="llama.cpp",
+        summary=summary,
+        findings=findings,
+        differential_test_plan=tuple(accepted) or report.differential_test_plan,
+        metadata=metadata,
     )

@@ -7,7 +7,8 @@ from collections.abc import Sequence
 from pathlib import Path
 
 from proofedge import __version__
-from proofedge.analyzer import AnalysisConfig, analyze_migration
+from proofedge.analyzer import AnalysisConfig, analyze_migration, augment_with_local_model
+from proofedge.engines import LlamaCppClient
 from proofedge.evaluation import evaluate_cases, write_evaluation
 from proofedge.report import write_report
 
@@ -30,6 +31,8 @@ def build_parser() -> argparse.ArgumentParser:
         choices=("deterministic", "llama.cpp"),
         default="deterministic",
     )
+    analyze.add_argument("--endpoint", default="http://127.0.0.1:8080")
+    analyze.add_argument("--profile", choices=("baseline", "optimized"), default="optimized")
     evaluate = subparsers.add_parser("evaluate", help="Run the frozen golden evaluation set.")
     evaluate.add_argument("--cases", type=Path, default=Path("evaluation/cases"))
     evaluate.add_argument("--output", type=Path, default=Path("evaluation/results/latest.json"))
@@ -40,15 +43,19 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
     if args.command == "analyze":
-        if args.engine != "deterministic":
-            parser.error("The llama.cpp adapter is not enabled yet; use deterministic mode.")
-        report = analyze_migration(
-            AnalysisConfig(
-                source=Path(args.source),
-                target=Path(args.target),
-                manifest=args.manifest,
-            )
+        config = AnalysisConfig(
+            source=Path(args.source),
+            target=Path(args.target),
+            manifest=args.manifest,
         )
+        report = analyze_migration(config)
+        if args.engine == "llama.cpp":
+            report = augment_with_local_model(
+                report,
+                config,
+                client=LlamaCppClient(args.endpoint),
+                profile=args.profile,
+            )
         output = Path(args.output)
         paths = write_report(report, output)
         print(f"ProofEdge report: {paths.markdown}")
