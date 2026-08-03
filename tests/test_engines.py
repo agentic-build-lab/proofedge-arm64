@@ -67,6 +67,7 @@ def test_parses_structured_local_response(monkeypatch: pytest.MonkeyPatch) -> No
         assert timeout == 120.0
         request_payload = json.loads(_request.data)
         assert request_payload["cache_prompt"] is False
+        assert request_payload["response_format"]["schema"]["properties"]["tests"]["maxItems"] == 2
         return _Response(json.dumps(envelope).encode())
 
     monkeypatch.setattr("proofedge.engines._LOCAL_OPENER.open", fake_open)
@@ -118,3 +119,18 @@ def test_rejects_empty_or_extra_plan_envelopes() -> None:
         validate_plan_document({"tests": [], "limitations": []})
     with pytest.raises(LlamaCppError, match="plan object"):
         validate_plan_document({"tests": [], "limitations": [], "extra": True})
+
+
+def test_rejects_more_than_two_model_tests() -> None:
+    proposal = {
+        "name": "Boundary",
+        "purpose": "Compare empty input",
+        "repository": "source",
+        "path": "api.py",
+        "line": 1,
+        "inputs": [""],
+        "expected_relation": "equal",
+        "priority": "high",
+    }
+    with pytest.raises(LlamaCppError, match="tests array"):
+        validate_plan_document({"tests": [proposal, proposal, proposal], "limitations": []})

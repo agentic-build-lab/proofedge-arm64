@@ -25,6 +25,7 @@ jobs:
         with:
           python-version: "3.12"
           cache: pip
+          cache-dependency-path: requirements-dev.lock
       - name: Read frozen sweep configuration
         run: |
           echo "LLAMA_SHA=$(jq -r .llama_cpp_commit "$CONFIG")" >> "$GITHUB_ENV"
@@ -56,6 +57,8 @@ jobs:
           sudo apt-get install -y --no-install-recommends cmake ninja-build
           cmake --version | tee "$EVIDENCE/environment/cmake-version.txt"
           c++ --version | tee "$EVIDENCE/environment/compiler-version.txt"
+          python -m pip install --require-hashes -r requirements-dev.lock
+          python -m pip install --no-build-isolation --no-deps -e .
       - name: Fetch pinned llama.cpp
         run: |
           git clone --filter=blob:none https://github.com/ggml-org/llama.cpp.git "$LLAMA_DIR"
@@ -208,10 +211,10 @@ jobs:
       - name: Hash complete exploration evidence
         if: always()
         run: |
-          find "$EVIDENCE" -type f ! -name SHA256SUMS -print0 \
-            | sort -z \
-            | xargs -0 sha256sum \
-            | tee "$EVIDENCE/SHA256SUMS"
+          set -euo pipefail
+          cd "$EVIDENCE"
+          find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS
+          sha256sum --check SHA256SUMS
       - name: Upload raw tuning evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
