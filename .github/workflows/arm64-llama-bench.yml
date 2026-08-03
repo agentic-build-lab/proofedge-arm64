@@ -1,0 +1,129 @@
+name: Native Arm64 llama.cpp A-B benchmark
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  same-host-abba:
+    name: Same-model KleidiAI off/on ABBA
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 60
+    env:
+      CONFIG: benchmarks/config/llama-cpp-qwen15b-q4_0.json
+      EVIDENCE: artifacts/arm64-llama-bench
+      MODEL_DIR: models
+      LLAMA_DIR: third_party/llama.cpp
+    steps:
+      - uses: actions/checkout@v5
+      - name: Read pinned configuration
+        run: |
+          echo "LLAMA_SHA=$(jq -r .llama_cpp_commit "$CONFIG")" >> "$GITHUB_ENV"
+          echo "MODEL_REVISION=$(jq -r .model.revision "$CONFIG")" >> "$GITHUB_ENV"
+          echo "MODEL_FILE=$(jq -r .model.filename "$CONFIG")" >> "$GITHUB_ENV"
+          echo "MODEL_SHA256=$(jq -r .model.sha256 "$CONFIG")" >> "$GITHUB_ENV"
+          echo "THREADS=$(jq -r .benchmark.threads "$CONFIG")" >> "$GITHUB_ENV"
+          echo "PROMPT_TOKENS=$(jq -r .benchmark.prompt_tokens "$CONFIG")" >> "$GITHUB_ENV"
+          echo "GENERATION_TOKENS=$(jq -r .benchmark.generation_tokens "$CONFIG")" >> "$GITHUB_ENV"
+          echo "REPETITIONS=$(jq -r .benchmark.repetitions_per_block "$CONFIG")" >> "$GITHUB_ENV"
+      - name: Capture native Arm64 environment
+        run: |
+          mkdir -p "$EVIDENCE/environment" "$EVIDENCE/raw" "$EVIDENCE/build"
+          uname -a | tee "$EVIDENCE/environment/uname.txt"
+          uname -m | tee "$EVIDENCE/environment/architecture.txt"
+          lscpu --json | tee "$EVIDENCE/environment/lscpu.json"
+          cat /etc/os-release | tee "$EVIDENCE/environment/os-release.txt"
+          env | grep '^Image\|^RUNNER_' | sort | tee "$EVIDENCE/environment/runner-env.txt"
+          cp "$CONFIG" "$EVIDENCE/config.json"
+          git rev-parse HEAD | tee "$EVIDENCE/project-commit.txt"
+      - name: Install native build tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends cmake ninja-build
+          cmake --version | tee "$EVIDENCE/environment/cmake-version.txt"
+          c++ --version | tee "$EVIDENCE/environment/compiler-version.txt"
+      - name: Fetch pinned llama.cpp source
+        run: |
+          git clone --filter=blob:none https://github.com/ggml-org/llama.cpp.git "$LLAMA_DIR"
+          git -C "$LLAMA_DIR" checkout --detach "$LLAMA_SHA"
+          git -C "$LLAMA_DIR" rev-parse HEAD | tee "$EVIDENCE/llama-cpp-commit.txt"
+      - name: Cache pinned public model
+        id: model-cache
+        uses: actions/cache@v4
+        with:
+          path: models
+          key: qwen15b-q4-0-${{ env.MODEL_SHA256 }}
+      - name: Download and verify model
+        run: |
+          mkdir -p "$MODEL_DIR"
+          if [ ! -f "$MODEL_DIR/$MODEL_FILE" ]; then
+            curl --fail --location --retry 5 --retry-delay 5 \
+              "https://huggingface.co/Qwen/Qwen2.5-Coder-1.5B-Instruct-GGUF/resolve/$MODEL_REVISION/$MODEL_FILE?download=true" \
+              --output "$MODEL_DIR/$MODEL_FILE"
+          fi
+          echo "$MODEL_SHA256  $MODEL_DIR/$MODEL_FILE" | sha256sum --check
+          stat --format='%n %s bytes' "$MODEL_DIR/$MODEL_FILE" | tee "$EVIDENCE/model-size.txt"
+      - name: Build baseline without KleidiAI
+        run: |
+          cmake -S "$LLAMA_DIR" -B build/baseline -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DGGML_CPU_KLEIDIAI=OFF \
+            -DLLAMA_CURL=OFF \
+            2>&1 | tee "$EVIDENCE/build/baseline-configure.log"
+          cmake --build build/baseline --target llama-bench llama-server -j "$THREADS" \
+            2>&1 | tee "$EVIDENCE/build/baseline-build.log"
+      - name: Build optimized with KleidiAI
+        run: |
+          cmake -S "$LLAMA_DIR" -B build/kleidiai -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DGGML_CPU_KLEIDIAI=ON \
+            -DLLAMA_CURL=OFF \
+            2>&1 | tee "$EVIDENCE/build/kleidiai-configure.log"
+          cmake --build build/kleidiai --target llama-bench llama-server -j "$THREADS" \
+            2>&1 | tee "$EVIDENCE/build/kleidiai-build.log"
+      - name: Record binary identity
+        run: |
+          sha256sum build/baseline/bin/llama-bench build/kleidiai/bin/llama-bench \
+            | tee "$EVIDENCE/binary-SHA256SUMS"
+          file build/baseline/bin/llama-bench build/kleidiai/bin/llama-bench \
+            | tee "$EVIDENCE/environment/binary-file-types.txt"
+      - name: Run same-host ABBA blocks
+        shell: bash
+        run: |
+          set -euo pipefail
+          run_block() {
+            local label="$1"
+            local block="$2"
+            /usr/bin/time -v -o "$EVIDENCE/raw/${block}-${label}-time.txt" \
+              "build/${label}/bin/llama-bench" \
+              -m "$MODEL_DIR/$MODEL_FILE" \
+              -t "$THREADS" \
+              -p "$PROMPT_TOKENS" \
+              -n "$GENERATION_TOKENS" \
+              -r "$REPETITIONS" \
+              -o json \
+              > "$EVIDENCE/raw/${block}-${label}.json" \
+              2> "$EVIDENCE/raw/${block}-${label}.stderr.log"
+            python -m json.tool "$EVIDENCE/raw/${block}-${label}.json" > /dev/null
+          }
+          run_block baseline 01
+          run_block kleidiai 02
+          run_block kleidiai 03
+          run_block baseline 04
+      - name: Preserve evidence hashes
+        run: |
+          find "$EVIDENCE" -type f ! -name SHA256SUMS -print0 \
+            | sort -z \
+            | xargs -0 sha256sum \
+            | tee "$EVIDENCE/SHA256SUMS"
+      - name: Upload complete raw evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: native-arm64-llama-abba-${{ github.sha }}
+          path: artifacts/arm64-llama-bench
+          if-no-files-found: error
+          retention-days: 90
+
