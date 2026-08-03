@@ -20,6 +20,10 @@ jobs:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
           persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: "3.12"
+          cache: pip
       - name: Read pinned configuration
         run: |
           echo "LLAMA_SHA=$(jq -r .llama_cpp_commit "$CONFIG")" >> "$GITHUB_ENV"
@@ -27,6 +31,11 @@ jobs:
           echo "MODEL_FILE=$(jq -r .model.filename "$CONFIG")" >> "$GITHUB_ENV"
           echo "MODEL_SHA256=$(jq -r .model.sha256 "$CONFIG")" >> "$GITHUB_ENV"
           echo "THREADS=$(jq -r .benchmark.threads "$CONFIG")" >> "$GITHUB_ENV"
+          echo "BATCH_SIZE=$(jq -r .benchmark.batch_size "$CONFIG")" >> "$GITHUB_ENV"
+          echo "UBATCH_SIZE=$(jq -r .benchmark.ubatch_size "$CONFIG")" >> "$GITHUB_ENV"
+          echo "CONTEXT_SIZE=$(jq -r .benchmark.context_size "$CONFIG")" >> "$GITHUB_ENV"
+          echo "GPU_LAYERS=$(jq -r .benchmark.gpu_layers "$CONFIG")" >> "$GITHUB_ENV"
+          echo "DEVICE=$(jq -r .benchmark.device "$CONFIG")" >> "$GITHUB_ENV"
           echo "PROMPT_TOKENS=$(jq -r .benchmark.prompt_tokens "$CONFIG")" >> "$GITHUB_ENV"
           echo "GENERATION_TOKENS=$(jq -r .benchmark.generation_tokens "$CONFIG")" >> "$GITHUB_ENV"
           echo "REPETITIONS=$(jq -r .benchmark.repetitions_per_block "$CONFIG")" >> "$GITHUB_ENV"
@@ -46,6 +55,10 @@ jobs:
           sudo apt-get install -y --no-install-recommends cmake ninja-build
           cmake --version | tee "$EVIDENCE/environment/cmake-version.txt"
           c++ --version | tee "$EVIDENCE/environment/compiler-version.txt"
+          python -m pip install -e .
+          proofedge evaluate \
+            --cases evaluation/cases \
+            --output "$EVIDENCE/deterministic-evaluation.json"
       - name: Fetch pinned llama.cpp source
         run: |
           git clone --filter=blob:none https://github.com/ggml-org/llama.cpp.git "$LLAMA_DIR"
@@ -72,7 +85,12 @@ jobs:
           cmake -S "$LLAMA_DIR" -B build/baseline -G Ninja \
             -DCMAKE_BUILD_TYPE=Release \
             -DGGML_CPU_KLEIDIAI=OFF \
+            -DGGML_NATIVE=ON \
             -DLLAMA_CURL=OFF \
+            -DLLAMA_BUILD_UI=OFF \
+            -DLLAMA_BUILD_TESTS=OFF \
+            -DLLAMA_BUILD_EXAMPLES=OFF \
+            -DLLAMA_BUILD_APP=OFF \
             2>&1 | tee "$EVIDENCE/build/baseline-configure.log"
           cmake --build build/baseline --target llama-bench llama-server -j "$THREADS" \
             2>&1 | tee "$EVIDENCE/build/baseline-build.log"
@@ -81,16 +99,37 @@ jobs:
           cmake -S "$LLAMA_DIR" -B build/kleidiai -G Ninja \
             -DCMAKE_BUILD_TYPE=Release \
             -DGGML_CPU_KLEIDIAI=ON \
+            -DGGML_NATIVE=ON \
             -DLLAMA_CURL=OFF \
+            -DLLAMA_BUILD_UI=OFF \
+            -DLLAMA_BUILD_TESTS=OFF \
+            -DLLAMA_BUILD_EXAMPLES=OFF \
+            -DLLAMA_BUILD_APP=OFF \
             2>&1 | tee "$EVIDENCE/build/kleidiai-configure.log"
           cmake --build build/kleidiai --target llama-bench llama-server -j "$THREADS" \
             2>&1 | tee "$EVIDENCE/build/kleidiai-build.log"
       - name: Record binary identity
         run: |
-          sha256sum build/baseline/bin/llama-bench build/kleidiai/bin/llama-bench \
+          sha256sum \
+            build/baseline/bin/llama-bench \
+            build/kleidiai/bin/llama-bench \
+            build/baseline/bin/llama-server \
+            build/kleidiai/bin/llama-server \
+            build/baseline/bin/libggml-cpu.so \
+            build/kleidiai/bin/libggml-cpu.so \
             | tee "$EVIDENCE/binary-SHA256SUMS"
-          file build/baseline/bin/llama-bench build/kleidiai/bin/llama-bench \
+          file \
+            build/baseline/bin/llama-bench \
+            build/kleidiai/bin/llama-bench \
+            build/baseline/bin/llama-server \
+            build/kleidiai/bin/llama-server \
+            build/baseline/bin/libggml-cpu.so \
+            build/kleidiai/bin/libggml-cpu.so \
             | tee "$EVIDENCE/environment/binary-file-types.txt"
+          ldd build/baseline/bin/llama-server | tee "$EVIDENCE/environment/baseline-server-ldd.txt"
+          ldd build/kleidiai/bin/llama-server | tee "$EVIDENCE/environment/kleidiai-server-ldd.txt"
+          cmake -LA -N build/baseline | sort > "$EVIDENCE/build/baseline-cmake-cache.txt"
+          cmake -LA -N build/kleidiai | sort > "$EVIDENCE/build/kleidiai-cmake-cache.txt"
       - name: Run same-host ABBA blocks
         shell: bash
         run: |
@@ -98,13 +137,19 @@ jobs:
           run_block() {
             local label="$1"
             local block="$2"
+            GGML_TOTAL_THREADS="$THREADS" \
             /usr/bin/time -v -o "$EVIDENCE/raw/${block}-${label}-time.txt" \
               "build/${label}/bin/llama-bench" \
               -m "$MODEL_DIR/$MODEL_FILE" \
               -t "$THREADS" \
+              -b "$BATCH_SIZE" \
+              -ub "$UBATCH_SIZE" \
+              -ngl "$GPU_LAYERS" \
+              -dev "$DEVICE" \
               -p "$PROMPT_TOKENS" \
               -n "$GENERATION_TOKENS" \
               -r "$REPETITIONS" \
+              -v \
               -o json \
               > "$EVIDENCE/raw/${block}-${label}.json" \
               2> "$EVIDENCE/raw/${block}-${label}.stderr.log"
@@ -114,12 +159,107 @@ jobs:
           run_block kleidiai 02
           run_block kleidiai 03
           run_block baseline 04
+      - name: Run frozen local-model quality matrix
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$EVIDENCE/quality"
+          : > "$EVIDENCE/quality/exit-codes.txt"
+          server_pid=""
+          cleanup() {
+            if [ -n "$server_pid" ] && kill -0 "$server_pid" 2>/dev/null; then
+              kill -TERM "$server_pid" 2>/dev/null || true
+              wait "$server_pid" 2>/dev/null || true
+            fi
+          }
+          trap cleanup EXIT
+
+          run_quality() {
+            local label="$1"
+            local port="$2"
+            GGML_TOTAL_THREADS="$THREADS" \
+              "build/${label}/bin/llama-server" \
+                -m "$MODEL_DIR/$MODEL_FILE" \
+                --alias local-model \
+                --host 127.0.0.1 \
+                --port "$port" \
+                -t "$THREADS" \
+                -tb "$THREADS" \
+                -c "$CONTEXT_SIZE" \
+                -b "$BATCH_SIZE" \
+                -ub "$UBATCH_SIZE" \
+                -ngl "$GPU_LAYERS" \
+                -dev "$DEVICE" \
+                -np 1 \
+                --no-cont-batching \
+                --no-cache-prompt \
+                --metrics \
+                --log-verbosity 3 \
+                --log-timestamps \
+                > "$EVIDENCE/quality/${label}-server.stdout.log" \
+                2> "$EVIDENCE/quality/${label}-server.stderr.log" &
+            server_pid=$!
+            local ready=0
+            for _ in $(seq 1 90); do
+              if curl --fail --silent --noproxy '*' \
+                "http://127.0.0.1:${port}/health" \
+                > "$EVIDENCE/quality/${label}-health.json"; then
+                ready=1
+                break
+              fi
+              if ! kill -0 "$server_pid" 2>/dev/null; then
+                break
+              fi
+              sleep 1
+            done
+            if [ "$ready" -ne 1 ]; then
+              echo "${label}-startup=1" >> "$EVIDENCE/quality/exit-codes.txt"
+              cleanup
+              server_pid=""
+              return
+            fi
+
+            for profile in baseline optimized; do
+              set +e
+              proofedge evaluate-model \
+                --cases evaluation/cases \
+                --endpoint "http://127.0.0.1:${port}" \
+                --profile "$profile" \
+                --output "$EVIDENCE/quality/${label}-${profile}.json" \
+                > "$EVIDENCE/quality/${label}-${profile}.stdout.log" \
+                2> "$EVIDENCE/quality/${label}-${profile}.stderr.log"
+              local status=$?
+              set -e
+              echo "${label}-${profile}=${status}" >> "$EVIDENCE/quality/exit-codes.txt"
+            done
+            curl --fail --silent --noproxy '*' \
+              "http://127.0.0.1:${port}/metrics" \
+              > "$EVIDENCE/quality/${label}-metrics.txt"
+            cleanup
+            server_pid=""
+          }
+
+          run_quality baseline 8080
+          run_quality kleidiai 8081
+      - name: Verify KleidiAI runtime selection evidence
+        run: |
+          grep -Eq 'kleidiai: primary q4 kernel feature (SVE|I8MM|DOTPROD)' \
+            "$EVIDENCE/quality/kleidiai-server.stderr.log"
+          ! grep -Eq 'kleidiai: no compatible q4 kernels|primary q4 kernel feature NONE' \
+            "$EVIDENCE/quality/kleidiai-server.stderr.log"
+          ! grep -q 'kleidiai: primary q4 kernel feature' \
+            "$EVIDENCE/quality/baseline-server.stderr.log"
       - name: Preserve evidence hashes
+        if: always()
         run: |
           find "$EVIDENCE" -type f ! -name SHA256SUMS -print0 \
             | sort -z \
             | xargs -0 sha256sum \
-            | tee "$EVIDENCE/SHA256SUMS"
+              | tee "$EVIDENCE/SHA256SUMS"
+      - name: Enforce local-model quality gates
+        run: |
+          cat "$EVIDENCE/quality/exit-codes.txt"
+          ! grep -Ev '=0$' "$EVIDENCE/quality/exit-codes.txt"
       - name: Upload complete raw evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
