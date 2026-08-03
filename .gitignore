@@ -2,6 +2,8 @@ __pycache__/
 *.py[cod]
 *.egg-info/
 .pytest_cache/
+.coverage
+coverage.xml
 .ruff_cache/
 .mypy_cache/
 .venv/
@@ -12,4 +14,5 @@ models/
 *.gguf
 reports/
 !reports/.gitkeep
+evaluation/results/
 
