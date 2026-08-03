@@ -1,0 +1,16 @@
+{
+  "case_id": "python-refund-v2",
+  "claims": [
+    {
+      "id": "behavior-complete",
+      "statement": "The target preserves every source behavior",
+      "evidence": [
+        {
+          "repository": "target",
+          "path": "NONEXISTENT-BENCHMARK.json"
+        }
+      ]
+    }
+  ]
+}
+

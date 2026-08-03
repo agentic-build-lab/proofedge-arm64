@@ -125,6 +125,8 @@ def _openapi_contracts(record: FileRecord) -> list[Contract]:
 def extract_contracts(snapshot: RepositorySnapshot) -> tuple[Contract, ...]:
     contracts: list[Contract] = []
     for record in snapshot.files:
+        if record.is_test:
+            continue
         suffix = record.path.rsplit(".", 1)[-1].casefold() if "." in record.path else ""
         if suffix == "py":
             contracts.extend(_python_contracts(record))
