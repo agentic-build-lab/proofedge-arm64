@@ -2,44 +2,165 @@
 
 **Evidence before confidence. Private migration assurance on Arm64.**
 
-ProofEdge is a local-first AI engineering agent that compares a source system with its
-migrated implementation, builds a differential-testing plan, and emits an auditable evidence
-ledger. It is designed for compact-model inference on CPU-only Arm64 infrastructure so that
-private source code does not need to leave the machine.
+[Live demo](https://github.com/agentic-build-lab/proofedge-arm64) ·
+[Native Arm evidence](benchmarks/README.md) ·
+[Evaluation protocol](docs/EVALUATION.md) ·
+[MIT license](LICENSE)
 
-This project is being built for the **Arm Create: AI Optimization Challenge**, Cloud AI track.
-Benchmark claims remain explicitly provisional until repeated measurements on genuine Arm64
-hardware and quality-gate results are published.
+ProofEdge is a local-first engineering agent for reviewing software migrations. It compares a
+source implementation with its target, finds contract and test-coverage risks, asks a compact
+local model for differential-test proposals, and publishes only proposals whose file-and-line
+evidence survives a deterministic gate.
 
-## The problem
+The project targets the **Cloud AI** track of the Arm Create: AI Optimization Challenge. Its local
+inference path uses `llama.cpp`, a Q4_0 Qwen2.5-Coder 1.5B model, and optional KleidiAI kernels on
+CPU-only Arm64. No hosted model API or paid service is required.
 
-AI can translate code quickly. It cannot, by fluency alone, prove that a migration preserved
-behavior. Reviewers need a concrete answer to four questions:
+## Why it exists
 
-1. Which contracts must remain true?
-2. What changed, and where is the evidence?
-3. Which tests would distinguish the old and new behavior?
-4. Which claims are unsupported by reproducible artifacts?
+Code translation can look convincing while silently changing rounding, error behavior, response
+codes, or test coverage. ProofEdge does not claim to prove semantic equivalence. It creates an
+auditable review boundary:
 
-ProofEdge turns those questions into a bounded, inspectable workflow instead of a chat log.
+1. What public contracts existed before and after the migration?
+2. Which migration claims have pinned evidence?
+3. Which tests could distinguish the two behaviors?
+4. Which model suggestions are unsupported and must not be published?
 
-## Planned evidence path
+## How it works
 
-- Compare a baseline and a KleidiAI-enabled `llama.cpp` build using the same model,
-  quantization, prompts, task set, and native Arm64 machine class.
-- Isolate application-level optimizations: context selection, staged inference, structured
-  output constraints, caching, thread count, and batch/context tuning.
-- Publish every trial, including cold and warm starts, environment metadata, and failed runs.
-- Reject an optimization if fixed-set task success or unsupported-claim rate regresses beyond
-  the documented quality budget.
+```mermaid
+flowchart LR
+    A["Source + target repositories"] --> B["Bounded, non-executing scan"]
+    B --> C["Deterministic contract and claim checks"]
+    B --> D["Evidence-selected, injection-neutralized context"]
+    D --> E["Local llama.cpp model on Arm64"]
+    E --> F["Strict JSON schema"]
+    F --> G["Visible file-and-line evidence gate"]
+    C --> H["Markdown report + JSON ledger"]
+    G --> H
+```
 
-## Current status
+- Repository code is treated as hostile data and is never executed by the analyzer.
+- The scanner prunes links, junctions, ignored trees, binary files, oversized files, and excessive
+  depth or entry counts before model context is constructed.
+- Repository instruction-like text is replaced by a typed hash placeholder in model-visible
+  context.
+- Model output has a closed schema. Unknown fields, bad types, invalid enums, missing tests, and
+  nonexistent or invisible evidence references are rejected.
+- If every model proposal fails the gate, the CLI emits an explicit `deterministic-fallback`
+  report and exits with status 2. It never presents fallback output as model success.
 
-The repository is at the architecture/scaffolding stage. The deterministic engine, local model
-adapter, golden corpus, benchmark harness, user interface, and real-Arm results will land as
-separate reviewable commits.
+## Measured status
 
-## License
+Every figure below is from committed raw evidence or a linked GitHub Actions artifact. Negative
+results are retained.
 
-[MIT](LICENSE)
+| Layer | Result | Scope |
+| --- | --- | --- |
+| Deterministic quality | 2/2 cases; 5/5 expected categories; unsupported-claim recall 1.00; false unsupported rate 0.00 | Frozen synthetic controls; not local-model accuracy |
+| Native deterministic path | 30/30 task passes; warm p50 1.486 ms; warm p95 1.526 ms; cold 2.053 ms; peak RSS 19,636 KiB | Native `aarch64` Neoverse N2 runner; static analysis only |
+| Same-model runtime A/B | Prefill 130.486 → 131.180 tok/s (**+0.532%**); decode 35.384 → 35.137 tok/s (**−0.697%**) | One exploratory ABBA run, Qwen Q4_0, 4 threads, same VM and model bytes |
 
+The first KleidiAI result is deliberately reported as **mixed/negative**, not as a product
+speedup. Its exploratory prefill interval is positive, while decode does not show a stable win.
+The frozen tuning and independent local-model quality workflows are the next evidence stages.
+See [the benchmark protocol and qualifications](benchmarks/README.md).
+
+## Quick start: credential-free deterministic path
+
+Python 3.11 or newer is required.
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install -e .
+
+proofedge analyze \
+  --source evaluation/cases/python-refund-v2/source \
+  --target evaluation/cases/python-refund-v2/target \
+  --manifest evaluation/cases/python-refund-v2/manifest.json \
+  --output reports/python-refund-v2
+```
+
+On Windows PowerShell, activate with `.venv\Scripts\Activate.ps1`. The command writes
+`report.md` and `evidence-ledger.json` under the output directory.
+
+Run the frozen deterministic quality set:
+
+```bash
+proofedge evaluate \
+  --cases evaluation/cases \
+  --output evaluation/results/deterministic.json
+```
+
+## Local-model path
+
+Start an OpenAI-compatible `llama-server` on loopback with the pinned model, then run:
+
+```bash
+proofedge analyze \
+  --source evaluation/cases/python-refund-v2/source \
+  --target evaluation/cases/python-refund-v2/target \
+  --manifest evaluation/cases/python-refund-v2/manifest.json \
+  --engine llama.cpp \
+  --endpoint http://127.0.0.1:8080 \
+  --profile optimized \
+  --output reports/python-refund-v2-local
+```
+
+Only literal loopback endpoints are accepted after DNS resolution. Credentials, URL query or
+fragment data, proxies, redirects, and responses above 1 MiB are rejected. The client disables
+prompt caching for a clean evidence path.
+
+Run the separate frozen model gate with:
+
+```bash
+proofedge evaluate-model \
+  --cases evaluation/cases \
+  --endpoint http://127.0.0.1:8080 \
+  --profile optimized \
+  --output evaluation/results/local-model.json
+```
+
+## Reproduce development and Arm evidence
+
+The development environment is hash-locked:
+
+```bash
+python -m pip install --require-hashes -r requirements-dev.lock
+python -m pip install --no-build-isolation --no-deps -e .
+ruff check .
+ruff format --check .
+pytest --cov=proofedge --cov-fail-under=75
+```
+
+The native workflows are manual because they download a pinned 1.07 GB public model and compile
+one or two `llama.cpp` builds. They run on GitHub's native `ubuntu-24.04-arm` runner, never QEMU:
+
+- `Native Arm64 llama.cpp A-B benchmark` — same-host ABBA plus the frozen model-quality matrix.
+- `Native Arm64 llama.cpp tuning exploration` — predeclared thread, chunk, batch, and depth sweep.
+- `Native Arm64 evidence` — lightweight deterministic regression evidence on every push.
+
+All GitHub Actions are pinned by full commit SHA. Model, runtime, config, binary, environment, raw
+output, and artifact hashes are retained. See [reproducibility](docs/REPRODUCIBILITY.md),
+[optimization](docs/OPTIMIZATION.md), and [evaluation](docs/EVALUATION.md).
+
+## Security and limitations
+
+Read [SECURITY.md](SECURITY.md) and the [threat model](docs/THREAT_MODEL.md) before analyzing
+untrusted repositories. Important limits:
+
+- Static matching and model proposals are risk signals, not proof of equivalence.
+- Cross-language renames need explicit `contract_aliases` in the manifest.
+- No energy claim is made because the cloud runner exposes no calibrated power telemetry.
+- The current corpus is intentionally small and challenge-created; it demonstrates falsifiable
+  gates, not broad language coverage.
+- The public demo replays a frozen fixture. It does not upload code, run a model, or execute tests.
+
+## Licenses
+
+ProofEdge is [MIT licensed](LICENSE). The pinned Qwen model is Apache-2.0, `llama.cpp` is MIT, and
+KleidiAI is distributed under the license files in its upstream `LICENSES` directory. No model or
+third-party runtime source is redistributed in this repository. See
+[models and licenses](docs/MODELS_AND_LICENSES.md) and [third-party notices](THIRD_PARTY_NOTICES.md).
