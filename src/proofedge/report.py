@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import json
+import re
 from dataclasses import dataclass
+from html import escape
 from pathlib import Path
 
 from proofedge.models import AssuranceReport
@@ -15,13 +17,26 @@ class ReportPaths:
     json: Path
 
 
+MARKDOWN_SPECIAL = re.compile(r"([\\`*_{\[\]}()#+.!|>~-])")
+
+
+def _plain(value: object) -> str:
+    single_line = " ".join(str(value).splitlines())
+    return MARKDOWN_SPECIAL.sub(r"\\\1", escape(single_line, quote=False))
+
+
+def _code(value: object) -> str:
+    single_line = " ".join(str(value).splitlines())
+    return f"`{escape(single_line, quote=False).replace('`', '&#96;')}`"
+
+
 def _markdown(report: AssuranceReport) -> str:
     lines = [
         "# ProofEdge Migration Assurance Report",
         "",
-        f"- Case: `{report.case_id}`",
-        f"- Engine: `{report.engine}`",
-        f"- Schema: `{report.schema_version}`",
+        f"- Case: {_code(report.case_id)}",
+        f"- Engine: {_code(report.engine)}",
+        f"- Schema: {_code(report.schema_version)}",
         f"- Source contracts: {report.summary.contracts_source}",
         f"- Target contracts: {report.summary.contracts_target}",
         f"- High/critical findings: {report.summary.high_or_critical}",
@@ -35,28 +50,32 @@ def _markdown(report: AssuranceReport) -> str:
     for finding in report.findings:
         lines.extend(
             [
-                f"### [{finding.severity.upper()}] {finding.title}",
+                f"### [{finding.severity.upper()}] {_plain(finding.title)}",
                 "",
-                f"`{finding.id}` · `{finding.category}` · confidence {finding.confidence:.2f}",
+                f"{_code(finding.id)} · {_code(finding.category)} · "
+                f"confidence {finding.confidence:.2f}",
                 "",
-                finding.detail,
+                _plain(finding.detail),
                 "",
                 "Evidence:",
                 "",
             ]
         )
         for evidence in finding.evidence:
-            line = f"- `{evidence.repository}:{evidence.path}`"
+            line = f"- {_code(f'{evidence.repository}:{evidence.path}')}"
             if evidence.line_start:
                 line += f" line {evidence.line_start}"
             if evidence.sha256:
                 line += f" · SHA-256 `{evidence.sha256}`"
             lines.append(line)
-        lines.extend(["", f"Recommended test: {finding.recommended_test}", ""])
+        lines.extend(["", f"Recommended test: {_plain(finding.recommended_test)}", ""])
     lines.extend(["## Differential testing plan", ""])
-    lines.extend(f"{index}. {step}" for index, step in enumerate(report.differential_test_plan, 1))
+    lines.extend(
+        f"{index}. {_plain(step)}"
+        for index, step in enumerate(report.differential_test_plan, 1)
+    )
     lines.extend(["", "## Limitations", ""])
-    lines.extend(f"- {limitation}" for limitation in report.limitations)
+    lines.extend(f"- {_plain(limitation)}" for limitation in report.limitations)
     lines.append("")
     return "\n".join(lines)
 

@@ -18,11 +18,31 @@ class ContextBundle:
     files_included: int
 
 
-def _numbered(record: FileRecord, start: int = 1, end: int | None = None) -> str:
+def _numbered(
+    record: FileRecord,
+    start: int = 1,
+    end: int | None = None,
+    redactions: dict[int, str] | None = None,
+) -> str:
     lines = record.text.splitlines()
     final = min(len(lines), end or len(lines))
-    selected = [f"{index:05d}: {lines[index - 1]}" for index in range(max(1, start), final + 1)]
+    redactions = redactions or {}
+    selected = [
+        f"{index:05d}: {redactions.get(index, lines[index - 1])}"
+        for index in range(max(1, start), final + 1)
+    ]
     return f"FILE {record.path}\n" + "\n".join(selected)
+
+
+def _injection_redactions(snapshot: RepositorySnapshot) -> dict[str, dict[int, str]]:
+    redactions: dict[str, dict[int, str]] = {}
+    for record, line, _marker in find_prompt_injections(snapshot):
+        original = record.text.splitlines()[line - 1]
+        digest = hashlib.sha256(original.encode()).hexdigest()[:16]
+        redactions.setdefault(record.path, {})[line] = (
+            f"[PROMPT_INJECTION_REDACTED sha256={digest}]"
+        )
+    return redactions
 
 
 def _bundle(profile: str, parts: list[str], files: int) -> ContextBundle:
@@ -45,8 +65,12 @@ def build_baseline_context(
     files = 0
     used = 0
     for repository, snapshot in (("SOURCE", source), ("TARGET", target)):
+        redactions = _injection_redactions(snapshot)
         for record in snapshot.files:
-            part = f"REPOSITORY {repository}\n{_numbered(record)}"
+            part = (
+                f"REPOSITORY {repository}\n"
+                f"{_numbered(record, redactions=redactions.get(record.path))}"
+            )
             if used + len(part) > max_characters:
                 remaining = max_characters - used
                 if remaining > 200:
@@ -80,6 +104,7 @@ def build_optimized_context(
     files = 0
     used = 0
     for repository, snapshot in (("SOURCE", source), ("TARGET", target)):
+        redactions = _injection_redactions(snapshot)
         records = snapshot.by_path
         for path, anchors in sorted(_interesting_lines(snapshot).items()):
             record = records[path]
@@ -91,7 +116,15 @@ def build_optimized_context(
                     ranges[-1] = (ranges[-1][0], max(ranges[-1][1], end))
                 else:
                     ranges.append((start, end))
-            excerpts = "\n...\n".join(_numbered(record, start, end) for start, end in ranges)
+            excerpts = "\n...\n".join(
+                _numbered(
+                    record,
+                    start,
+                    end,
+                    redactions=redactions.get(record.path),
+                )
+                for start, end in ranges
+            )
             part = f"REPOSITORY {repository}\n{excerpts}"
             if used + len(part) > max_characters:
                 return _bundle("optimized", parts, files)

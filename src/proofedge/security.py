@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import hashlib
+import os
+import stat
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -56,6 +58,9 @@ class ScanLimits:
     max_files: int = 2_000
     max_file_bytes: int = 512 * 1024
     max_total_bytes: int = 25 * 1024 * 1024
+    max_entries: int = 20_000
+    max_depth: int = 40
+    max_relative_path_characters: int = 1_000
 
 
 @dataclass(frozen=True, slots=True)
@@ -79,12 +84,78 @@ class RepositorySnapshot:
 
 
 def _is_ignored(relative: Path) -> bool:
-    return any(part in IGNORED_DIRECTORIES for part in relative.parts[:-1])
+    ignored = {name.casefold() for name in IGNORED_DIRECTORIES}
+    return any(part.casefold() in ignored for part in relative.parts[:-1])
 
 
 def _is_test_path(relative: str) -> bool:
     normalized = relative.replace("\\", "/").casefold()
     return any(marker in normalized for marker in TEST_NAME_MARKERS)
+
+
+def _is_link_or_junction(path: Path) -> bool:
+    is_junction = getattr(path, "is_junction", lambda: False)
+    return path.is_symlink() or is_junction()
+
+
+def _bounded_candidates(root: Path, limits: ScanLimits) -> tuple[list[Path], int]:
+    """Walk without entering ignored/link directories and cap all visited entries."""
+    ignored = {name.casefold() for name in IGNORED_DIRECTORIES}
+    candidates: list[Path] = []
+    skipped = 0
+    entries_seen = 0
+    stack: list[tuple[Path, int]] = [(root, 0)]
+    while stack:
+        directory, depth = stack.pop()
+        try:
+            with os.scandir(directory) as iterator:
+                entries = sorted(iterator, key=lambda item: item.name.casefold())
+        except OSError as exc:
+            raise IngestionError(f"Unable to scan repository directory: {directory}") from exc
+        for entry in entries:
+            entries_seen += 1
+            if entries_seen > limits.max_entries:
+                raise IngestionError(f"Directory entries exceed limit ({limits.max_entries})")
+            path = Path(entry.path)
+            relative = path.relative_to(root)
+            if len(relative.as_posix()) > limits.max_relative_path_characters:
+                skipped += 1
+                continue
+            if entry.is_symlink() or _is_link_or_junction(path):
+                skipped += 1
+                continue
+            if entry.is_dir(follow_symlinks=False):
+                if entry.name.casefold() in ignored:
+                    skipped += 1
+                    continue
+                if depth >= limits.max_depth:
+                    raise IngestionError(f"Directory depth exceeds limit ({limits.max_depth})")
+                stack.append((path, depth + 1))
+            elif entry.is_file(follow_symlinks=False):
+                candidates.append(path)
+            else:
+                skipped += 1
+    return sorted(candidates, key=lambda item: item.relative_to(root).as_posix()), skipped
+
+
+def _read_bounded(path: Path, max_bytes: int) -> bytes | None:
+    """Open without following links where supported and never read past the cap."""
+    flags = os.O_RDONLY | getattr(os, "O_BINARY", 0) | getattr(os, "O_NOFOLLOW", 0)
+    try:
+        descriptor = os.open(path, flags)
+    except OSError:
+        return None
+    try:
+        metadata = os.fstat(descriptor)
+        if not stat.S_ISREG(metadata.st_mode) or metadata.st_size > max_bytes:
+            return None
+        with os.fdopen(descriptor, "rb", closefd=True) as stream:
+            descriptor = -1
+            data = stream.read(max_bytes + 1)
+        return data if len(data) <= max_bytes else None
+    finally:
+        if descriptor >= 0:
+            os.close(descriptor)
 
 
 def scan_repository(root: Path, limits: ScanLimits | None = None) -> RepositorySnapshot:
@@ -94,26 +165,25 @@ def scan_repository(root: Path, limits: ScanLimits | None = None) -> RepositoryS
         raise IngestionError(f"Repository root is not a directory: {resolved}")
 
     records: list[FileRecord] = []
-    skipped = 0
+    candidates, skipped = _bounded_candidates(resolved, limits)
     total_bytes = 0
-    for path in sorted(resolved.rglob("*"), key=lambda item: item.as_posix()):
+    for path in candidates:
         relative = path.relative_to(resolved)
-        if path.is_symlink() or _is_ignored(relative) or not path.is_file():
-            if path.is_symlink():
-                skipped += 1
+        if _is_ignored(relative):
+            skipped += 1
             continue
         if path.suffix.casefold() not in DEFAULT_EXTENSIONS:
             skipped += 1
             continue
         if len(records) >= limits.max_files:
             raise IngestionError(f"File count exceeds limit ({limits.max_files})")
-        size = path.stat().st_size
-        if size > limits.max_file_bytes:
+        data = _read_bounded(path, limits.max_file_bytes)
+        if data is None:
             skipped += 1
             continue
+        size = len(data)
         if total_bytes + size > limits.max_total_bytes:
             raise IngestionError(f"Total readable bytes exceed limit ({limits.max_total_bytes})")
-        data = path.read_bytes()
         if b"\x00" in data:
             skipped += 1
             continue

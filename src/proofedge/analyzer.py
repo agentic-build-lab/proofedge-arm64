@@ -11,6 +11,7 @@ from typing import Any
 from proofedge.context import build_baseline_context, build_optimized_context
 from proofedge.contracts import extract_contracts, find_prompt_injections
 from proofedge.engines import LlamaCppClient
+from proofedge.model_gate import gate_model_proposals
 from proofedge.models import (
     AssuranceReport,
     EvidenceRef,
@@ -253,8 +254,8 @@ def analyze_migration(config: AnalysisConfig) -> AssuranceReport:
         schema_version="1.0.0",
         engine="deterministic",
         case_id=str(manifest.get("case_id", "ad-hoc")),
-        source_root=str(source.root),
-        target_root=str(target.root),
+        source_root="source",
+        target_root="target",
         source_stats=_stats(source, len(source_contracts)),
         target_stats=_stats(target, len(target_contracts)),
         summary=summary,
@@ -265,7 +266,7 @@ def analyze_migration(config: AnalysisConfig) -> AssuranceReport:
             "Cross-language name changes require explicit contract_aliases in the case manifest.",
             "Repository code was not executed; runtime evidence must be attached separately.",
         ),
-        metadata={"manifest": str(config.manifest) if config.manifest else None},
+        metadata={"manifest_attached": config.manifest is not None},
     )
 
 
@@ -283,43 +284,34 @@ def augment_with_local_model(
         else build_optimized_context(source, target)
     )
     response = client.generate_plan(context.text)
-    repositories = {"source": source.by_path, "target": target.by_path}
     accepted: list[str] = []
     rejected: list[Finding] = []
-    for index, proposal in enumerate(response.document.get("tests", [])):
-        if not isinstance(proposal, dict):
-            continue
-        repository = str(proposal.get("repository", ""))
-        path = str(proposal.get("path", ""))
-        line = proposal.get("line")
-        record = repositories.get(repository, {}).get(path)
-        valid_line = (
-            isinstance(line, int) and record is not None and line <= len(record.text.splitlines())
-        )
-        if not valid_line:
-            rejected.append(
-                Finding(
-                    id=_finding_id(
-                        "unsupported-model-proposal", f"{index}:{repository}:{path}:{line}"
-                    ),
-                    category="unsupported_claim",
-                    severity="high",
-                    title="Local-model test proposal rejected by evidence validation",
-                    detail=(
-                        "The model cited an absent repository path or line. The proposal was "
-                        "excluded from the differential test plan."
-                    ),
-                    confidence=1.0,
-                    evidence=(EvidenceRef("manifest", "local-model-output"),),
-                    recommended_test="Regenerate with visible, numbered evidence only.",
-                )
+    gate = gate_model_proposals(response.document, source, target, context.text)
+    for decision in gate.rejected:
+        rejected.append(
+            Finding(
+                id=_finding_id(
+                    "unsupported-model-proposal",
+                    f"{decision.index}:{decision.repository}:{decision.path}:{decision.line}",
+                ),
+                category="model_evidence_rejection",
+                severity="high",
+                title="Local-model test proposal rejected by evidence validation",
+                detail=f"The model citation was rejected because the {decision.reason}.",
+                confidence=1.0,
+                evidence=(EvidenceRef("manifest", "local-model-output"),),
+                recommended_test="Regenerate with visible, numbered evidence only.",
             )
-            continue
-        name = str(proposal.get("name", "Unnamed test"))
-        purpose = str(proposal.get("purpose", ""))
-        relation = str(proposal.get("expected_relation", "investigate"))
+        )
+    for proposal in gate.accepted:
+        repository = proposal["repository"]
+        path = proposal["path"]
+        line = proposal["line"]
+        name = proposal["name"]
+        purpose = proposal["purpose"]
+        relation = proposal["expected_relation"]
         accepted.append(
-            f"[{proposal.get('priority', 'medium')}] {name}: {purpose} "
+            f"[{proposal['priority']}] {name}: {purpose} "
             f"({repository}:{path}:{line}; relation={relation})"
         )
     findings = tuple(
@@ -333,7 +325,6 @@ def augment_with_local_model(
     )
     summary = replace(
         report.summary,
-        unsupported_claims=report.summary.unsupported_claims + len(rejected),
         high_or_critical=report.summary.high_or_critical + len(rejected),
     )
     metadata = {
@@ -345,13 +336,14 @@ def augment_with_local_model(
             "files_included": context.files_included,
             "accepted_tests": len(accepted),
             "rejected_tests": len(rejected),
+            "fallback_used": not accepted,
             "timings": response.timings,
             "usage": response.usage,
         },
     }
     return replace(
         report,
-        engine="llama.cpp",
+        engine="llama.cpp" if accepted else "deterministic-fallback",
         summary=summary,
         findings=findings,
         differential_test_plan=tuple(accepted) or report.differential_test_plan,
