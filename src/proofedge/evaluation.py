@@ -18,6 +18,8 @@ class CaseEvaluation:
     missing_categories: tuple[str, ...]
     forbidden_categories_seen: tuple[str, ...]
     high_or_critical: int
+    expected_unsupported_claims: int
+    detected_unsupported_claims: int
 
 
 @dataclass(frozen=True, slots=True)
@@ -29,8 +31,13 @@ class EvaluationResult:
     expected_categories: int
     matched_categories: int
     category_recall: float
-    task_success_rate: float
-    unsupported_claim_rate: float
+    deterministic_case_pass_rate: float
+    declared_claims: int
+    expected_unsupported_claims: int
+    detected_unsupported_claims: int
+    unsupported_claim_recall: float
+    false_unsupported_claims: int
+    false_unsupported_claim_rate: float
     cases: tuple[CaseEvaluation, ...]
 
 
@@ -38,8 +45,10 @@ def evaluate_cases(cases_root: Path) -> EvaluationResult:
     evaluations: list[CaseEvaluation] = []
     total_expected = 0
     total_matched = 0
-    unsupported = 0
-    findings = 0
+    declared_claims = 0
+    expected_unsupported = 0
+    detected_unsupported = 0
+    false_unsupported = 0
     golden_files = sorted(cases_root.glob("*/golden.json"))
     if not golden_files:
         raise ValueError(f"No golden cases found below {cases_root}")
@@ -47,6 +56,9 @@ def evaluate_cases(cases_root: Path) -> EvaluationResult:
         case_dir = golden_path.parent
         golden = json.loads(golden_path.read_text(encoding="utf-8"))
         manifest = case_dir / "manifest.json"
+        manifest_document = (
+            json.loads(manifest.read_text(encoding="utf-8")) if manifest.exists() else {}
+        )
         report = analyze_migration(
             AnalysisConfig(
                 source=case_dir / "source",
@@ -57,12 +69,16 @@ def evaluate_cases(cases_root: Path) -> EvaluationResult:
         observed = {finding.category for finding in report.findings}
         expected = set(golden.get("expected_categories", []))
         forbidden = set(golden.get("forbidden_categories", []))
+        expected_unsupported_for_case = int(golden.get("expected_unsupported_claims", 0))
+        detected_unsupported_for_case = report.summary.unsupported_claims
         missing = expected - observed
         forbidden_seen = forbidden & observed
         total_expected += len(expected)
         total_matched += len(expected & observed)
-        unsupported += report.summary.unsupported_claims
-        findings += len(report.findings)
+        declared_claims += len(manifest_document.get("claims", []))
+        expected_unsupported += expected_unsupported_for_case
+        detected_unsupported += min(detected_unsupported_for_case, expected_unsupported_for_case)
+        false_unsupported += max(0, detected_unsupported_for_case - expected_unsupported_for_case)
         evaluations.append(
             CaseEvaluation(
                 case_id=report.case_id,
@@ -72,6 +88,8 @@ def evaluate_cases(cases_root: Path) -> EvaluationResult:
                 missing_categories=tuple(sorted(missing)),
                 forbidden_categories_seen=tuple(sorted(forbidden_seen)),
                 high_or_critical=report.summary.high_or_critical,
+                expected_unsupported_claims=expected_unsupported_for_case,
+                detected_unsupported_claims=detected_unsupported_for_case,
             )
         )
     passed = sum(case.passed for case in evaluations)
@@ -83,8 +101,17 @@ def evaluate_cases(cases_root: Path) -> EvaluationResult:
         expected_categories=total_expected,
         matched_categories=total_matched,
         category_recall=total_matched / total_expected if total_expected else 1.0,
-        task_success_rate=passed / len(evaluations),
-        unsupported_claim_rate=unsupported / findings if findings else 0.0,
+        deterministic_case_pass_rate=passed / len(evaluations),
+        declared_claims=declared_claims,
+        expected_unsupported_claims=expected_unsupported,
+        detected_unsupported_claims=detected_unsupported,
+        unsupported_claim_recall=(
+            detected_unsupported / expected_unsupported if expected_unsupported else 1.0
+        ),
+        false_unsupported_claims=false_unsupported,
+        false_unsupported_claim_rate=(
+            false_unsupported / declared_claims if declared_claims else 0.0
+        ),
         cases=tuple(evaluations),
     )
 

@@ -65,7 +65,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         result = evaluate_cases(args.cases)
         write_evaluation(result, args.output)
         print(
-            f"Golden evaluation: {result.cases_passed}/{result.cases_total} cases passed; "
+            f"Deterministic golden evaluation: {result.cases_passed}/"
+            f"{result.cases_total} cases passed; "
             f"category recall {result.category_recall:.1%}"
         )
         print(f"Evaluation ledger: {args.output}")

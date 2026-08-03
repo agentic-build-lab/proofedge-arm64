@@ -5,6 +5,6 @@
   ],
   "forbidden_categories": [
     "unsupported_claim"
-  ]
+  ],
+  "expected_unsupported_claims": 0
 }
-
