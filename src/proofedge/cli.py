@@ -10,6 +10,7 @@ from proofedge import __version__
 from proofedge.analyzer import AnalysisConfig, analyze_migration, augment_with_local_model
 from proofedge.engines import LlamaCppClient
 from proofedge.evaluation import evaluate_cases, write_evaluation
+from proofedge.model_evaluation import evaluate_local_model, write_model_evaluation
 from proofedge.report import write_report
 
 
@@ -36,6 +37,15 @@ def build_parser() -> argparse.ArgumentParser:
     evaluate = subparsers.add_parser("evaluate", help="Run the frozen golden evaluation set.")
     evaluate.add_argument("--cases", type=Path, default=Path("evaluation/cases"))
     evaluate.add_argument("--output", type=Path, default=Path("evaluation/results/latest.json"))
+    evaluate_model = subparsers.add_parser(
+        "evaluate-model", help="Run the frozen local-model evidence quality gate."
+    )
+    evaluate_model.add_argument("--cases", type=Path, default=Path("evaluation/cases"))
+    evaluate_model.add_argument(
+        "--output", type=Path, default=Path("evaluation/results/local-model.json")
+    )
+    evaluate_model.add_argument("--endpoint", default="http://127.0.0.1:8080")
+    evaluate_model.add_argument("--profile", choices=("baseline", "optimized"), default="optimized")
     return parser
 
 
@@ -75,4 +85,18 @@ def main(argv: Sequence[str] | None = None) -> int:
         )
         print(f"Evaluation ledger: {args.output}")
         return 0 if result.cases_passed == result.cases_total else 1
+    elif args.command == "evaluate-model":
+        result = evaluate_local_model(
+            args.cases,
+            LlamaCppClient(args.endpoint),
+            args.profile,
+        )
+        write_model_evaluation(result, args.output)
+        print(
+            f"Local-model evidence gate: {result.cases_passed}/{result.cases_total} "
+            f"cases passed; risk coverage {result.risk_evidence_coverage:.1%}; "
+            f"raw reference validity {result.raw_reference_validity:.1%}"
+        )
+        print(f"Model evaluation ledger: {args.output}")
+        return 0 if result.passed else 1
     return 0

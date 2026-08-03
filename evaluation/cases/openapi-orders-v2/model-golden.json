@@ -1,0 +1,27 @@
+{
+  "schema_version": "1.0.0",
+  "case_id": "openapi-orders-v2",
+  "freeze_note": "Frozen after the local-model path existed and before native Arm profile tuning results.",
+  "files": [
+    {
+      "repository": "source",
+      "path": "openapi.json",
+      "sha256": "3acbd2eebac19ed4e52d24a9cc7bf959209c234b1a038a7e643397dca925f8b6"
+    },
+    {
+      "repository": "target",
+      "path": "openapi.json",
+      "sha256": "85dd1eb9e52522d038f8541e2aaaa5be0c3b79894985c11beefbc727924ca2e2"
+    }
+  ],
+  "objectives": [
+    {
+      "id": "orders-success-status-change",
+      "acceptable_evidence": [
+        {"repository": "source", "path": "openapi.json", "line_start": 5, "line_end": 9},
+        {"repository": "target", "path": "openapi.json", "line_start": 5, "line_end": 9}
+      ]
+    }
+  ],
+  "forbidden_output_substrings": []
+}
