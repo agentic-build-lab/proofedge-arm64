@@ -6,6 +6,7 @@ const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://proofedge-arm64.liu891855.chatgpt.site"),
   title: "ProofEdge — Evidence before confidence",
   description:
     "A local-first migration assurance agent with auditable evidence and reproducible native Arm64 benchmarks.",
