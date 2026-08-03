@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from scripts.select_llama_tuning import select_stage_1, select_stage_2
+from proofedge.tuning import select_stage_1, select_stage_2
 
 
 def _write_run(
