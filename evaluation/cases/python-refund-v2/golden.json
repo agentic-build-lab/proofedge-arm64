@@ -6,6 +6,6 @@
   ],
   "forbidden_categories": [
     "test_weakening"
-  ]
+  ],
+  "expected_unsupported_claims": 1
 }
-
