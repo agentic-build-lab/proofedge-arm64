@@ -71,8 +71,7 @@ def _markdown(report: AssuranceReport) -> str:
         lines.extend(["", f"Recommended test: {_plain(finding.recommended_test)}", ""])
     lines.extend(["## Differential testing plan", ""])
     lines.extend(
-        f"{index}. {_plain(step)}"
-        for index, step in enumerate(report.differential_test_plan, 1)
+        f"{index}. {_plain(step)}" for index, step in enumerate(report.differential_test_plan, 1)
     )
     lines.extend(["", "## Limitations", ""])
     lines.extend(f"- {_plain(limitation)}" for limitation in report.limitations)
