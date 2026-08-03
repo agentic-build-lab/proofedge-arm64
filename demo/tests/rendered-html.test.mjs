@@ -1,0 +1,63 @@
+import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
+import test from "node:test";
+
+async function render() {
+  const workerUrl = new URL("../dist/server/index.js", import.meta.url);
+  workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}`);
+  const { default: worker } = await import(workerUrl.href);
+
+  return worker.fetch(
+    new Request("http://localhost/", {
+      headers: { accept: "text/html" },
+    }),
+    {
+      ASSETS: {
+        fetch: async () => new Response("Not found", { status: 404 }),
+      },
+    },
+    {
+      waitUntil() {},
+      passThroughOnException() {},
+    },
+  );
+}
+
+test("server-renders the complete public ProofEdge narrative", async () => {
+  const response = await render();
+  assert.equal(response.status, 200);
+  assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
+
+  const html = await response.text();
+  assert.match(html, /<title>ProofEdge — Evidence before confidence<\/title>/i);
+  assert.match(html, /Migrations are easy to generate/);
+  assert.match(html, /The first optimization result is mixed\. We kept it\./);
+  assert.match(html, /no decode win is claimed/i);
+  assert.match(html, /Run verified replay/);
+  assert.match(html, /genuine aarch64 runner/);
+  assert.match(html, /28 raw files \+ hashes/);
+  assert.match(html, /github\.com\/agentic-build-lab\/proofedge-arm64/);
+  assert.doesNotMatch(html, /codex-preview|react-loading-skeleton|starter loading/i);
+});
+
+test("keeps benchmark claims qualified and production dependencies audited", async () => {
+  const [page, consoleSource, layout, packageJson] = await Promise.all([
+    readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/ProofConsole.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/layout.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../package.json", import.meta.url), "utf8"),
+  ]);
+
+  assert.match(page, /\+0\.53%/);
+  assert.match(page, /−0\.70%/);
+  assert.match(page, /Interval crosses zero/);
+  assert.match(page, /Same VM, source commit, model bytes/);
+  assert.match(consoleSource, /browser demo replays|replay fixture/);
+  assert.match(consoleSource, /repository code execution/i);
+  assert.match(layout, /summary_large_image/);
+  assert.match(layout, /\/og\.png/);
+  assert.doesNotMatch(packageJson, /react-loading-skeleton/);
+  assert.match(packageJson, /"next": "16\.2\.12"/);
+  assert.match(packageJson, /"postcss": "8\.5\.25"/);
+  assert.match(packageJson, /"sharp": "0\.35\.3"/);
+});

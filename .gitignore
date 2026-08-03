@@ -9,10 +9,11 @@ coverage.xml
 .venv/
 dist/
 build/
+!demo/build/
+!demo/build/sites-vite-plugin.ts
 artifacts/
 models/
 *.gguf
 reports/
 !reports/.gitkeep
 evaluation/results/
-
