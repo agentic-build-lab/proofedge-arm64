@@ -61,6 +61,10 @@ def main(argv: Sequence[str] | None = None) -> int:
         print(f"ProofEdge report: {paths.markdown}")
         print(f"Evidence ledger: {paths.json}")
         print(f"Findings: {len(report.findings)} ({report.summary.high_or_critical} high/critical)")
+        local_model = report.metadata.get("local_model", {})
+        if args.engine == "llama.cpp" and local_model.get("fallback_used"):
+            print("Local-model quality gate: failed; deterministic fallback was used")
+            return 2
     elif args.command == "evaluate":
         result = evaluate_cases(args.cases)
         write_evaluation(result, args.output)
