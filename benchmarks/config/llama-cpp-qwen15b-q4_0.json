@@ -11,11 +11,15 @@
   "hardware_class": "GitHub-hosted ubuntu-24.04-arm, 4 vCPU, 16 GB RAM",
   "benchmark": {
     "threads": 4,
+    "batch_size": 2048,
+    "ubatch_size": 512,
+    "context_size": 4096,
+    "gpu_layers": 0,
+    "device": "none",
     "prompt_tokens": 512,
     "generation_tokens": 128,
     "repetitions_per_block": 5,
     "block_order": ["baseline", "kleidiai", "kleidiai", "baseline"]
   },
-  "causal_comparison": "The same source commit, compiler, model bytes, quantization, workload, thread count, and VM are used. Only GGML_CPU_KLEIDIAI changes."
+  "causal_comparison": "The same source commit, compiler, model bytes, quantization, workload, thread count, batch sizes, context, device selection, and VM are used. Only GGML_CPU_KLEIDIAI changes."
 }
-
