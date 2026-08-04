@@ -61,15 +61,19 @@ results are retained.
 | Layer | Result | Scope |
 | --- | --- | --- |
 | Deterministic quality | 2/2 cases; 5/5 expected categories; unsupported-claim recall 1.00; false unsupported rate 0.00 | Frozen synthetic controls; not local-model accuracy |
-| Native deterministic path | 30/30 task passes; warm p50 1.486 ms; warm p95 1.526 ms; cold 2.053 ms; peak RSS 19,636 KiB | Native `aarch64` Neoverse N2 runner; static analysis only |
+| Native deterministic function path | 30/30 task passes; warm p50 2.397 ms; warm p95 2.539 ms; cold 3.034 ms; peak RSS 24,516 KiB | Latest main commit on native `aarch64` Neoverse N2; direct static evaluation, excluding CLI startup and report I/O |
 | Confirmed same-model runtime A/B | pp1024 96.738 → 97.280 tok/s (**+0.560%**); tg128 35.244 → 36.753 tok/s (**+4.281%**) | Independent ABBA confirmation of the preselected profile; Qwen Q4_0, same native Neoverse N2 VM and model bytes |
+| Frozen product requests | Mean model compute 13.367 → 13.118 s (**−1.869%**); both responses byte-identical | Two descriptive quality-gate requests inside `llama-server`; not full CLI end-to-end latency or a repeated-trial claim |
 | Frozen local-model gate | Baseline and KleidiAI each passed 2/2 cases; schema, raw-reference validity, and risk coverage all 1.00; canary leakage and fallback both 0 | Optimized context on both runtimes; raw responses and ledgers retained |
 
 The first exploratory profile remains published as **mixed/negative** (+0.532% prefill,
 −0.697% decode). A separately frozen tuning sweep selected a new profile, and independent run
 [`30830782393`](https://github.com/agentic-build-lab/proofedge-arm64/actions/runs/30830782393)
 confirmed the figures above while both local-model quality gates passed. These are runtime
-throughput results, not end-to-end latency or energy claims. See the
+throughput results, not energy claims. The same run also captured server timings for two frozen
+ProofEdge quality requests: KleidiAI reduced aggregate model compute by 1.869% while preserving
+the exact response hashes. This is descriptive product-task evidence, not full CLI latency or a
+repeated-trial estimate. See the
 [benchmark protocol and qualifications](BENCHMARKS.md).
 
 ## Quick start: credential-free deterministic path

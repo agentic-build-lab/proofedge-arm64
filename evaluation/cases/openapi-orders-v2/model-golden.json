@@ -1,7 +1,8 @@
 {
   "schema_version": "1.0.0",
   "case_id": "openapi-orders-v2",
-  "freeze_note": "Frozen after the local-model path existed and before native Arm profile tuning results.",
+  "semantic_gate_revision": 2,
+  "freeze_note": "Evidence anchors were frozen before native Arm profile tuning. Semantic constraints were added after an independent usefulness audit and frozen before the revision-2 native confirmation.",
   "files": [
     {
       "repository": "source",
@@ -17,6 +18,9 @@
   "objectives": [
     {
       "id": "orders-success-status-change",
+      "required_content_any": ["status", "201", "200", "created", "accepted"],
+      "required_input_any": ["post", "/orders", "order"],
+      "allowed_expected_relations": ["investigate", "intentional_difference"],
       "acceptable_evidence": [
         {"repository": "source", "path": "openapi.json", "line_start": 5, "line_end": 9},
         {"repository": "target", "path": "openapi.json", "line_start": 5, "line_end": 9}

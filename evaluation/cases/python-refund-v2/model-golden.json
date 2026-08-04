@@ -1,7 +1,8 @@
 {
   "schema_version": "1.0.0",
   "case_id": "python-refund-v2",
-  "freeze_note": "Frozen after the local-model path existed and before native Arm profile tuning results.",
+  "semantic_gate_revision": 2,
+  "freeze_note": "Evidence anchors were frozen before native Arm profile tuning. Semantic constraints were added after an independent usefulness audit and frozen before the revision-2 native confirmation.",
   "files": [
     {
       "repository": "source",
@@ -22,6 +23,9 @@
   "objectives": [
     {
       "id": "rounding-policy-change",
+      "required_content_any": ["round", "1.005", "precision"],
+      "required_input_any": ["1.005"],
+      "allowed_expected_relations": ["investigate", "intentional_difference"],
       "acceptable_evidence": [
         {"repository": "source", "path": "pricing.py", "line_start": 4, "line_end": 5},
         {"repository": "target", "path": "pricing.py", "line_start": 4, "line_end": 7}
@@ -29,6 +33,9 @@
     },
     {
       "id": "refund-reason-loss",
+      "required_content_any": ["reason", "duplicate"],
+      "required_input_any": ["reason", "duplicate"],
+      "allowed_expected_relations": ["investigate", "intentional_difference"],
       "acceptable_evidence": [
         {"repository": "source", "path": "pricing.py", "line_start": 8, "line_end": 9},
         {"repository": "target", "path": "pricing.py", "line_start": 11, "line_end": 12}

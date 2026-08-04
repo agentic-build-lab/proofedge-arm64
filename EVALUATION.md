@@ -8,7 +8,8 @@ quality or product correctness.
 | Deterministic analyzer | Two challenge-created migration controls | 2/2 cases; 5/5 categories; unsupported-claim recall 1.00; false unsupported rate 0.00 |
 | Local-model evidence | Strict schema, reference validity, predeclared risk objectives, injection canaries, fallback | Baseline and KleidiAI each pass 2/2 optimized-context cases; schema/reference/coverage 1.00; canary and fallback 0 |
 | Runtime throughput | Same model/runtime workload, native Arm64 ABBA | +0.5604% pp1024 and +4.2808% tg128 for the confirmed KleidiAI profile |
-| Product latency | Complete deterministic CLI task | Native warm p50 1.486 ms and p95 1.526 ms; this excludes local-model inference |
+| Product-request model compute | Prompt + generation timings inside two frozen quality requests | 13.367 → 13.118 s mean (−1.869%); byte-identical response hashes; descriptive n=2 |
+| Deterministic function latency | Direct static evaluation of both frozen cases | Latest-main native warm p50 2.397 ms and p95 2.539 ms; excludes interpreter/CLI startup, report I/O, and local-model inference |
 
 The corpus is intentionally small and auditable; 2/2 is not a claim of broad migration accuracy.
 Model objectives and thresholds were frozen before the selected profile's confirmation run.

@@ -10,11 +10,14 @@ ProofEdge interoperates with, but does not vendor or redistribute, these benchma
 | Geist / Geist Mono | tag `1.8.0`, commit `91158e012bdc4abd59fa066d0eae9fc11c2c9f24` | [SIL Open Font License 1.1](videos/proofedge-launch/assets/fonts/OFL.txt) |
 | `kokoro-onnx` | local narration tooling; generated audio only is retained | [MIT](https://github.com/thewh1teagle/kokoro-onnx/blob/main/LICENSE) |
 | Kokoro-82M | local text-to-speech model used to generate narration | [Apache-2.0](https://huggingface.co/hexgrad/Kokoro-82M) |
+| HyperFrames bundled sound effects | twelve hash-identified files embedded in the edited launch film | [Pixabay Content License](https://pixabay.com/service/license-summary/) |
 
 The workflow downloads these components directly from their upstream public repositories. Any
 redistribution must preserve the notices and terms supplied by those upstream projects.
 
 Python and JavaScript development dependencies are not bundled in the source repository. Their
 exact resolved versions are recorded in `requirements-dev.lock` and `demo/package-lock.json`.
-Bundled HyperFrames sound-effect source files are not redistributed; they are resolved from the
-installed media library when the launch film is rendered.
+Bundled HyperFrames sound-effect source files are not redistributed as standalone assets; they
+are resolved from the installed media library and embedded in the edited launch film. Exact file
+hashes, cue records, and the distribution boundary are documented in
+[`videos/proofedge-launch/SFX_PROVENANCE.md`](videos/proofedge-launch/SFX_PROVENANCE.md).

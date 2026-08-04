@@ -77,3 +77,8 @@ passed this policy. Both baseline and KleidiAI optimized-context ledgers passed 
 schema completion 1.00, raw reference validity 1.00, risk-evidence coverage 1.00, zero canary
 leakage, and zero fallback. The runtime A/B simultaneously measured +0.560% pp1024 and +4.281%
 tg128 mean throughput for the preselected KleidiAI profile.
+
+The two optimized-context ledgers also produced byte-identical response hashes across runtimes.
+Their aggregate prompt-plus-generation compute decreased by 1.8693%. This timing is reported as
+descriptive model compute inside the frozen product requests, not as user-observed TTFT or full
+ProofEdge end-to-end latency.
