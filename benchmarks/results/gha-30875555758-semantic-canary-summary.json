@@ -1,0 +1,41 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": 30875555758,
+  "run_url": "https://github.com/agentic-build-lab/proofedge-arm64/actions/runs/30875555758",
+  "project_commit": "ee1a1f19993b0cf0b6c17bd905be17ced8db3735",
+  "purpose": "Second fail-closed canary for semantic quality-gate revision 2 and repeated product instrumentation",
+  "status": "rejected_by_semantic_quality_gate",
+  "native_environment": {
+    "architecture": "aarch64",
+    "cpu": "Arm Neoverse-N2",
+    "kleidiai_runtime_selection_verified": true
+  },
+  "quality": {
+    "four_single_run_ledgers_passed": 0,
+    "baseline_repeated_product_runs_passed": 0,
+    "kleidiai_repeated_product_runs_passed": 0,
+    "repeated_runs_per_configuration": 5,
+    "risk_evidence_coverage": 1.0,
+    "semantic_objective_coverage": 0.0,
+    "failure_reason": "The compact model still labeled visible differences equal or intentional and supplied expected outputs instead of executable scenario inputs. The gate rejected every run."
+  },
+  "instrumentation_validation": {
+    "streaming_ttft_captured": true,
+    "context_hashes_stable_across_repetitions": true,
+    "unique_response_count_per_case_and_configuration": 1,
+    "startup_trials_per_configuration": 3,
+    "client_and_server_resource_records_captured": true
+  },
+  "runtime_result_not_eligible_for_product_claim": {
+    "prompt_processing_change_percent": 0.656822775642496,
+    "token_generation_change_percent": 3.575176126655233,
+    "reason": "The paired semantic quality gate failed, so the runtime and client timing measurements are preserved but not selected."
+  },
+  "evidence": {
+    "directory": "benchmarks/raw/gha-30875555758",
+    "sha256sums_file_sha256": "49262179f24236933792266f9cd73347bd18365bb1e76f9cb668b5d8b312c6f8",
+    "sha256sums_verified": true,
+    "runtime_summary": "benchmarks/results/gha-30875555758-runtime-summary.json"
+  },
+  "next_revision": "Constrain code-only relation claims to investigate and add a redacted deterministic source-target diff plus generic executable-input examples."
+}

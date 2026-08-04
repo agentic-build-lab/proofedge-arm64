@@ -4,13 +4,14 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 from dataclasses import dataclass, replace
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import Any
 
 from proofedge.context import build_baseline_context, build_optimized_context
 from proofedge.contracts import extract_contracts, find_prompt_injections
-from proofedge.engines import LlamaCppClient
+from proofedge.engines import LlamaCppClient, LlamaCppError
 from proofedge.model_gate import gate_model_proposals
 from proofedge.models import (
     AssuranceReport,
@@ -19,6 +20,7 @@ from proofedge.models import (
     ReportSummary,
     RepositoryStats,
 )
+from proofedge.proposal_compiler import compile_model_plan
 from proofedge.security import FileRecord, RepositorySnapshot, scan_repository
 
 
@@ -27,6 +29,81 @@ class AnalysisConfig:
     source: Path
     target: Path
     manifest: Path | None = None
+
+
+MAX_MANIFEST_BYTES = 262_144
+_SHA256_PATTERN = re.compile(r"[0-9a-fA-F]{64}")
+
+
+def _bounded_string(
+    value: Any, field: str, maximum: int, *, allow_line_whitespace: bool = False
+) -> str:
+    permitted_controls = {"\n", "\r", "\t"} if allow_line_whitespace else set()
+    if (
+        not isinstance(value, str)
+        or not value.strip()
+        or len(value) > maximum
+        or any(
+            (ord(character) < 32 and character not in permitted_controls) or ord(character) == 127
+            for character in value
+        )
+    ):
+        raise ValueError(f"manifest.{field} must be a non-empty bounded string")
+    return value
+
+
+def _validate_manifest(document: dict[str, Any]) -> dict[str, Any]:
+    if not set(document).issubset({"case_id", "claims", "contract_aliases"}):
+        raise ValueError("Manifest contains unsupported top-level fields")
+    if "case_id" in document:
+        _bounded_string(document["case_id"], "case_id", 200, allow_line_whitespace=True)
+
+    aliases = document.get("contract_aliases", {})
+    if not isinstance(aliases, dict) or len(aliases) > 100:
+        raise ValueError("manifest.contract_aliases must be an object with at most 100 entries")
+    for key, value in aliases.items():
+        _bounded_string(key, "contract_aliases key", 300)
+        _bounded_string(value, "contract_aliases value", 300)
+
+    claims = document.get("claims", [])
+    if not isinstance(claims, list) or len(claims) > 100:
+        raise ValueError("manifest.claims must be an array with at most 100 entries")
+    for claim in claims:
+        if not isinstance(claim, dict) or not set(claim).issubset({"id", "statement", "evidence"}):
+            raise ValueError("Each manifest claim must be a bounded claim object")
+        if "id" in claim:
+            _bounded_string(claim["id"], "claims[].id", 200)
+        if "statement" in claim:
+            _bounded_string(
+                claim["statement"],
+                "claims[].statement",
+                2_000,
+                allow_line_whitespace=True,
+            )
+        evidence = claim.get("evidence", [])
+        if not isinstance(evidence, list) or len(evidence) > 50:
+            raise ValueError("manifest.claims[].evidence must contain at most 50 references")
+        for reference in evidence:
+            if not isinstance(reference, dict) or not set(reference).issubset(
+                {"repository", "path", "line", "sha256"}
+            ):
+                raise ValueError("Each manifest evidence reference must be an object")
+            repository = reference.get("repository", "target")
+            if repository not in {"source", "target"}:
+                raise ValueError("manifest evidence repository must be source or target")
+            path = _bounded_string(reference.get("path"), "claims[].evidence[].path", 500)
+            normalized = PurePosixPath(path.replace("\\", "/"))
+            if normalized.is_absolute() or ".." in normalized.parts:
+                raise ValueError("manifest evidence path must stay repository-relative")
+            line = reference.get("line")
+            if line is not None and (type(line) is not int or line < 1):
+                raise ValueError("manifest evidence line must be a positive integer")
+            sha256 = reference.get("sha256")
+            if sha256 is not None and (
+                not isinstance(sha256, str) or _SHA256_PATTERN.fullmatch(sha256) is None
+            ):
+                raise ValueError("manifest evidence sha256 must be 64 hexadecimal characters")
+    return document
 
 
 def _stats(snapshot: RepositorySnapshot, contracts: int) -> RepositoryStats:
@@ -42,10 +119,16 @@ def _stats(snapshot: RepositorySnapshot, contracts: int) -> RepositoryStats:
 def _load_manifest(path: Path | None) -> dict[str, Any]:
     if path is None:
         return {}
-    document = json.loads(path.read_text(encoding="utf-8"))
+    raw = path.read_bytes()
+    if len(raw) > MAX_MANIFEST_BYTES:
+        raise ValueError(f"Manifest exceeds the {MAX_MANIFEST_BYTES}-byte limit")
+    try:
+        document = json.loads(raw.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise ValueError("Manifest must be valid UTF-8 JSON") from exc
     if not isinstance(document, dict):
         raise ValueError("Manifest must be a JSON object")
-    return document
+    return _validate_manifest(document)
 
 
 def _finding_id(category: str, identity: str) -> str:
@@ -283,10 +366,28 @@ def augment_with_local_model(
         if profile == "baseline"
         else build_optimized_context(source, target)
     )
-    response = client.generate_plan(context.text)
+    try:
+        response = client.generate_plan(context.text)
+    except LlamaCppError as exc:
+        metadata = {
+            **report.metadata,
+            "local_model": {
+                "profile": profile,
+                "context_characters": context.characters,
+                "context_sha256": context.sha256,
+                "files_included": context.files_included,
+                "accepted_tests": 0,
+                "rejected_tests": 0,
+                "fallback_used": True,
+                "error": str(exc),
+            },
+        }
+        return replace(report, engine="deterministic-fallback", metadata=metadata)
     accepted: list[str] = []
     rejected: list[Finding] = []
-    gate = gate_model_proposals(response.document, source, target, context.text)
+    compilation = compile_model_plan(response.document, source, target)
+    published_document = compilation.document
+    gate = gate_model_proposals(published_document, source, target, context.text)
     for decision in gate.rejected:
         rejected.append(
             Finding(
@@ -337,13 +438,24 @@ def augment_with_local_model(
             "accepted_tests": len(accepted),
             "rejected_tests": len(rejected),
             "fallback_used": not accepted,
+            "accepted_proposals": list(gate.accepted),
+            "published_limitations": list(published_document["limitations"]),
+            "raw_model_proposals": list(response.document["tests"]),
+            "raw_model_limitations": list(response.document["limitations"]),
+            "compiler": compilation.metadata(),
             "timings": response.timings,
             "usage": response.usage,
         },
     }
     return replace(
         report,
-        engine="llama.cpp" if accepted else "deterministic-fallback",
+        engine=(
+            "llama.cpp+deterministic-change-compiler"
+            if accepted and compilation.mode != "model-direct"
+            else "llama.cpp"
+            if accepted
+            else "deterministic-fallback"
+        ),
         summary=summary,
         findings=findings,
         differential_test_plan=tuple(accepted) or report.differential_test_plan,

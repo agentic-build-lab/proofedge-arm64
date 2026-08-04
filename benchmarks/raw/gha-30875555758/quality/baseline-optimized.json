@@ -1,0 +1,192 @@
+{
+  "accepted_proposals": 4,
+  "canary_leakage_count": 0,
+  "cases": [
+    {
+      "accepted_proposals": 2,
+      "canary_leakage": [],
+      "case_id": "openapi-orders-v2",
+      "client_timings": {
+        "end_to_end_ms": 12784.106863,
+        "streaming": false,
+        "time_to_first_token_ms": null
+      },
+      "context_characters": 798,
+      "context_sha256": "a20c42384cdb966183e03178c39a3190c2fc28b2746e2f8e1939b5f01111be79",
+      "error": null,
+      "evidence_objectives_matched": 1,
+      "fallback_used": false,
+      "gold_target_density": 0.0,
+      "matched_objective_ids": [],
+      "objectives_matched": 0,
+      "objectives_total": 1,
+      "passed": false,
+      "profile": "optimized",
+      "proposals_total": 2,
+      "published_reference_validity": 1.0,
+      "raw_reference_validity": 1.0,
+      "rejected": [],
+      "rejected_proposals": 0,
+      "response": {
+        "limitations": [
+          "The test focuses on the response status, not the actual content of the response body."
+        ],
+        "tests": [
+          {
+            "expected_relation": "equal",
+            "inputs": [
+              "201"
+            ],
+            "line": 8,
+            "name": "Ensure '201' response status is preserved in the target",
+            "path": "openapi.json",
+            "priority": "high",
+            "purpose": "source == target",
+            "repository": "source"
+          },
+          {
+            "expected_relation": "intentional_difference",
+            "inputs": [
+              "200"
+            ],
+            "line": 8,
+            "name": "Ensure '200' response status is added in the target",
+            "path": "openapi.json",
+            "priority": "high",
+            "purpose": "source != target",
+            "repository": "target"
+          }
+        ]
+      },
+      "response_sha256": "b2ce8ef62ab626cea9ae78485a01f6cec6598832d893c1623d1d05f79288538c",
+      "risk_evidence_coverage": 1.0,
+      "schema_valid": true,
+      "semantic_objective_coverage": 0.0,
+      "timings": {
+        "cache_n": 0,
+        "predicted_ms": 6708.322,
+        "predicted_n": 214,
+        "predicted_per_second": 31.90067501232052,
+        "predicted_per_token_ms": 31.34729906542056,
+        "prompt_ms": 6056.034,
+        "prompt_n": 646,
+        "prompt_per_second": 106.67047113672083,
+        "prompt_per_token_ms": 9.374665634674923
+      },
+      "usage": {
+        "completion_tokens": 214,
+        "prompt_tokens": 646,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "total_tokens": 860
+      }
+    },
+    {
+      "accepted_proposals": 2,
+      "canary_leakage": [],
+      "case_id": "python-refund-v2",
+      "client_timings": {
+        "end_to_end_ms": 16957.92163,
+        "streaming": false,
+        "time_to_first_token_ms": null
+      },
+      "context_characters": 1623,
+      "context_sha256": "f3e81182ef8ae1f1d9db75081b9f41a032187958b2f9a53d01e8874bfbc60ba5",
+      "error": null,
+      "evidence_objectives_matched": 2,
+      "fallback_used": false,
+      "gold_target_density": 0.0,
+      "matched_objective_ids": [],
+      "objectives_matched": 0,
+      "objectives_total": 2,
+      "passed": false,
+      "profile": "optimized",
+      "proposals_total": 2,
+      "published_reference_validity": 1.0,
+      "raw_reference_validity": 1.0,
+      "rejected": [],
+      "rejected_proposals": 0,
+      "response": {
+        "limitations": [
+          "The target repository note does not provide any specific migration requirements or instructions."
+        ],
+        "tests": [
+          {
+            "expected_relation": "equal",
+            "inputs": [
+              "2"
+            ],
+            "line": 6,
+            "name": "Test quote with half-up rounding",
+            "path": "pricing.py",
+            "priority": "high",
+            "purpose": "Ensure that the quote function rounds to the nearest cent using HALF_UP rounding.",
+            "repository": "target"
+          },
+          {
+            "expected_relation": "equal",
+            "inputs": [
+              "order-7"
+            ],
+            "line": 11,
+            "name": "Test refund with no reason",
+            "path": "pricing.py",
+            "priority": "high",
+            "purpose": "Ensure that the refund function sets the reason to None.",
+            "repository": "target"
+          }
+        ]
+      },
+      "response_sha256": "7f6dc992bacfbeb04c65470837dd5d46f67eb8ee943b3cee727bad40c6a03e28",
+      "risk_evidence_coverage": 1.0,
+      "schema_valid": true,
+      "semantic_objective_coverage": 0.0,
+      "timings": {
+        "cache_n": 0,
+        "predicted_ms": 6909.236,
+        "predicted_n": 212,
+        "predicted_per_second": 30.68356617142619,
+        "predicted_per_token_ms": 32.5907358490566,
+        "prompt_ms": 10032.276,
+        "prompt_n": 933,
+        "prompt_per_second": 92.99983373663166,
+        "prompt_per_token_ms": 10.752707395498392
+      },
+      "usage": {
+        "completion_tokens": 212,
+        "prompt_tokens": 933,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "total_tokens": 1145
+      }
+    }
+  ],
+  "cases_passed": 0,
+  "cases_total": 2,
+  "engine": "llama.cpp",
+  "evidence_objectives_matched": 3,
+  "fallback_count": 0,
+  "objectives_matched": 0,
+  "objectives_total": 3,
+  "passed": false,
+  "profile": "optimized",
+  "proposals_total": 4,
+  "published_reference_validity": 1.0,
+  "raw_reference_validity": 1.0,
+  "rejected_proposals": 0,
+  "risk_evidence_coverage": 1.0,
+  "schema_completion_rate": 1.0,
+  "schema_version": "1.0.0",
+  "semantic_objective_coverage": 0.0,
+  "thresholds": {
+    "maximum_canary_leakage_count": 0,
+    "maximum_fallback_count": 0,
+    "minimum_case_gold_target_density": 0.4,
+    "minimum_case_raw_reference_validity": 0.75,
+    "minimum_case_risk_evidence_coverage": 0.75,
+    "minimum_case_semantic_objective_coverage": 0.75,
+    "schema_completion_rate": 1.0
+  }
+}

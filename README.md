@@ -4,7 +4,7 @@
 
 [Live demo](https://github.com/agentic-build-lab/proofedge-arm64) ·
 [Challenge video](https://youtu.be/iuY49KZkrSs) ·
-[v1.0.0 release](https://github.com/agentic-build-lab/proofedge-arm64/releases/tag/v1.0.0) ·
+[v1.0.1 release](https://github.com/agentic-build-lab/proofedge-arm64/releases/tag/v1.0.1) ·
 [Native Arm evidence](BENCHMARKS.md) ·
 [Evaluation protocol](EVALUATION.md) ·
 [MIT license](LICENSE)
@@ -38,9 +38,10 @@ flowchart LR
     B --> D["Evidence-selected, injection-neutralized context"]
     D --> E["Local llama.cpp model on Arm64"]
     E --> F["Strict JSON schema"]
-    F --> G["Visible file-and-line evidence gate"]
+    F --> G["Model-ranked deterministic change compiler"]
+    G --> I["Visible file-and-line evidence gate"]
     C --> H["Markdown report + JSON ledger"]
-    G --> H
+    I --> H
 ```
 
 - Repository code is treated as hostile data and is never executed by the analyzer.
@@ -50,8 +51,13 @@ flowchart LR
   context.
 - Model output has a closed schema. Unknown fields, bad types, invalid enums, missing tests, and
   nonexistent or invisible evidence references are rejected.
-- If every model proposal fails the gate, the CLI emits an explicit `deterministic-fallback`
-  report and exits with status 2. It never presents fallback output as model success.
+- The raw model plan is retained but is not authoritative. It ranks mechanically detected risks;
+  an AST/OpenAPI compiler creates the executable stimuli, explicit source-versus-target purpose,
+  and citation used by the published plan. Compiler provenance records whether each candidate was
+  model-aligned or restored by the deterministic safety floor.
+- If the loopback model server is unavailable or every model proposal fails the gate, the CLI
+  still writes an explicit `deterministic-fallback` report and exits with status 2. It never
+  presents fallback output as model success.
 
 ## Measured status
 
@@ -61,16 +67,22 @@ results are retained.
 | Layer | Result | Scope |
 | --- | --- | --- |
 | Deterministic quality | 2/2 cases; 5/5 expected categories; unsupported-claim recall 1.00; false unsupported rate 0.00 | Frozen synthetic controls; not local-model accuracy |
-| Native deterministic path | 30/30 task passes; warm p50 1.486 ms; warm p95 1.526 ms; cold 2.053 ms; peak RSS 19,636 KiB | Native `aarch64` Neoverse N2 runner; static analysis only |
-| Confirmed same-model runtime A/B | pp1024 96.738 → 97.280 tok/s (**+0.560%**); tg128 35.244 → 36.753 tok/s (**+4.281%**) | Independent ABBA confirmation of the preselected profile; Qwen Q4_0, same native Neoverse N2 VM and model bytes |
-| Frozen local-model gate | Baseline and KleidiAI each passed 2/2 cases; schema, raw-reference validity, and risk coverage all 1.00; canary leakage and fallback both 0 | Optimized context on both runtimes; raw responses and ledgers retained |
+| Native deterministic function path | 30/30 task passes; warm p50 2.397 ms; warm p95 2.539 ms; cold 3.034 ms; peak RSS 24,516 KiB | Latest main commit on native `aarch64` Neoverse N2; direct static evaluation, excluding CLI startup and report I/O |
+| Final same-model runtime A/B | pp1024 96.604 → 97.186 tok/s (**+0.603%**); tg128 34.773 → 36.991 tok/s (**+6.378%**) | Four-process ABBA confirmation of the frozen profile; 14 observations per build on the same native Neoverse N2 VM |
+| Repeated full product task | p50 45.387 → 44.639 s (**−1.648%**); p95 45.464 → 44.688 s (**−1.706%**); 5/5 runs passed per build | Complete two-case task in a persistent client; descriptive because raw model responses differed |
+| Streaming request timing | TTFT p50 14.960 → 14.867 s (**−0.622%**); request p50 22.674 → 22.314 s (**−1.587%**) | Ten requests per build; same prompts before response divergence, not an isolated kernel-effect claim |
+| Frozen local-model gate | Four configurations passed 2/2 cases; compiled references, semantic objectives, and risk coverage all 1.00; canary leakage and fallback both 0 | Raw model reference validity is disclosed separately: 0.50 baseline and 0.75 KleidiAI |
 
-The first exploratory profile remains published as **mixed/negative** (+0.532% prefill,
-−0.697% decode). A separately frozen tuning sweep selected a new profile, and independent run
-[`30830782393`](https://github.com/agentic-build-lab/proofedge-arm64/actions/runs/30830782393)
-confirmed the figures above while both local-model quality gates passed. These are runtime
-throughput results, not end-to-end latency or energy claims. See the
-[benchmark protocol and qualifications](BENCHMARKS.md).
+Final native run
+[`30880259094`](https://github.com/agentic-build-lab/proofedge-arm64/actions/runs/30880259094)
+produced the figures above from project commit `6d828a9e`. The same model bytes, runtime commit,
+configuration, prompts, context hashes, and native VM class were frozen. Published test-plan
+hashes were identical across both builds and all five trials. Raw model responses and completion
+token counts differed, so exact model-compute comparison is deliberately marked ineligible and
+end-to-end changes are descriptive product observations. The causal headline is the same-workload
+`llama-bench` ABBA result. Energy remains unmeasured because the runner exposes no calibrated
+power telemetry. Four earlier semantic canaries and the first mixed runtime profile remain
+public in the [benchmark protocol and qualifications](BENCHMARKS.md).
 
 ## Quick start: credential-free deterministic path
 
@@ -159,6 +171,9 @@ untrusted repositories. Important limits:
 - Static matching and model proposals are risk signals, not proof of equivalence.
 - Cross-language renames need explicit `contract_aliases` in the manifest.
 - No energy claim is made because the cloud runner exposes no calibrated power telemetry.
+- Windows/x64 is a development and deterministic-analysis path only. The published local-model
+  performance, startup, TTFT, RSS, and CPU measurements apply only to the documented Ubuntu
+  Arm64 runner; Windows llama.cpp binaries, compiler flags, and kernels may behave differently.
 - The current corpus is intentionally small and challenge-created; it demonstrates falsifiable
   gates, not broad language coverage.
 - The public demo replays a frozen fixture. It does not upload code, run a model, or execute tests.

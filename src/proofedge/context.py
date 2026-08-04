@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 from dataclasses import dataclass
+from difflib import SequenceMatcher
 
 from proofedge.contracts import extract_contracts, find_prompt_injections
 from proofedge.security import FileRecord, RepositorySnapshot
@@ -61,9 +62,10 @@ def build_baseline_context(
     target: RepositorySnapshot,
     max_characters: int = 120_000,
 ) -> ContextBundle:
-    parts: list[str] = []
+    change_map = _migration_change_map(source, target)
+    parts: list[str] = [change_map] if change_map else []
     files = 0
-    used = 0
+    used = len(change_map)
     for repository, snapshot in (("SOURCE", source), ("TARGET", target)):
         redactions = _injection_redactions(snapshot)
         for record in snapshot.files:
@@ -94,15 +96,125 @@ def _interesting_lines(snapshot: RepositorySnapshot) -> dict[str, set[int]]:
     return interesting
 
 
+def _redacted_lines(record: FileRecord, redactions: dict[int, str]) -> list[str]:
+    return [
+        redactions.get(index, line) for index, line in enumerate(record.text.splitlines(), start=1)
+    ]
+
+
+def _changed_excerpt(
+    record: FileRecord,
+    start: int,
+    end: int,
+    redactions: dict[int, str],
+) -> str:
+    if start == end:
+        return "[no line on this side]"
+    return _numbered(record, start + 1, end, redactions=redactions)
+
+
+def _change_score(source_lines: list[str], target_lines: list[str]) -> int:
+    """Put likely behavioral changes before metadata without claiming semantics."""
+
+    text = "\n".join([*source_lines, *target_lines]).casefold()
+    score = 0
+    for marker, weight in (
+        ("def ", 6),
+        ("return", 6),
+        ("responses", 6),
+        ("assert", 5),
+        ("round", 5),
+        ("decimal", 4),
+        ("status", 4),
+        ("required", 3),
+        ("schema", 3),
+    ):
+        if marker in text:
+            score += weight
+    if any(f'"{status}"' in text or f"'{status}'" in text for status in range(100, 600)):
+        score += 6
+    return score
+
+
+def _migration_change_map(
+    source: RepositorySnapshot,
+    target: RepositorySnapshot,
+    max_characters: int = 12_000,
+) -> str:
+    source_redactions = _injection_redactions(source)
+    target_redactions = _injection_redactions(target)
+    candidates: list[tuple[int, str, int, int, int, int]] = []
+    for path in sorted(source.by_path.keys() & target.by_path.keys()):
+        source_record = source.by_path[path]
+        target_record = target.by_path[path]
+        if source_record.sha256 == target_record.sha256:
+            continue
+        source_lines = _redacted_lines(source_record, source_redactions.get(path, {}))
+        target_lines = _redacted_lines(target_record, target_redactions.get(path, {}))
+        matcher = SequenceMatcher(None, source_lines, target_lines, autojunk=False)
+        for tag, source_start, source_end, target_start, target_end in matcher.get_opcodes():
+            if tag == "equal":
+                continue
+            score = _change_score(
+                source_lines[source_start:source_end], target_lines[target_start:target_end]
+            )
+            candidates.append((score, path, source_start, source_end, target_start, target_end))
+
+    if not candidates:
+        return ""
+    candidates.sort(key=lambda item: (-item[0], item[1], item[2], item[4]))
+    heading = (
+        "DERIVED SOURCE-TARGET CHANGE MAP\n"
+        "Mechanical changed-line candidates, not semantic conclusions. Numbered lines below "
+        "are valid citation anchors; inspect their text before proposing a test."
+    )
+    parts = [heading]
+    used = len(heading)
+    for index, (_score, path, source_start, source_end, target_start, target_end) in enumerate(
+        candidates, start=1
+    ):
+        source_record = source.by_path[path]
+        target_record = target.by_path[path]
+        part = "\n".join(
+            [
+                f"CHANGE CANDIDATE {index}: {path}",
+                "REPOSITORY SOURCE",
+                _changed_excerpt(
+                    source_record,
+                    source_start,
+                    source_end,
+                    source_redactions.get(path, {}),
+                ),
+                "REPOSITORY TARGET",
+                _changed_excerpt(
+                    target_record,
+                    target_start,
+                    target_end,
+                    target_redactions.get(path, {}),
+                ),
+            ]
+        )
+        remaining = max_characters - used
+        if remaining <= 0:
+            break
+        if len(part) > remaining:
+            parts.append(part[:remaining] + "\n[CHANGE MAP TRUNCATED]")
+            break
+        parts.append(part)
+        used += len(part)
+    return "\n\n".join(parts)
+
+
 def build_optimized_context(
     source: RepositorySnapshot,
     target: RepositorySnapshot,
     radius: int = 8,
     max_characters: int = 40_000,
 ) -> ContextBundle:
-    parts: list[str] = []
+    change_map = _migration_change_map(source, target)
+    parts: list[str] = [change_map] if change_map else []
     files = 0
-    used = 0
+    used = len(change_map)
     for repository, snapshot in (("SOURCE", source), ("TARGET", target)):
         redactions = _injection_redactions(snapshot)
         records = snapshot.by_path
