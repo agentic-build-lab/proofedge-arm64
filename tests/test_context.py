@@ -25,7 +25,7 @@ def test_optimized_context_is_numbered_and_smaller(tmp_path: Path) -> None:
     assert "irrelevant" not in optimized.text
 
 
-def test_optimized_context_includes_a_redacted_source_target_diff(tmp_path: Path) -> None:
+def test_contexts_include_a_redacted_numbered_source_target_change_map(tmp_path: Path) -> None:
     source = tmp_path / "source"
     target = tmp_path / "target"
     source.mkdir()
@@ -35,13 +35,17 @@ def test_optimized_context_includes_a_redacted_source_target_diff(tmp_path: Path
     )
     (target / "api.py").write_text("def cancel(item_id):\n    return None\n", encoding="utf-8")
 
-    optimized = build_optimized_context(scan_repository(source), scan_repository(target))
+    source_snapshot = scan_repository(source)
+    target_snapshot = scan_repository(target)
+    baseline = build_baseline_context(source_snapshot, target_snapshot)
+    optimized = build_optimized_context(source_snapshot, target_snapshot)
 
-    assert "DERIVED SOURCE-TARGET DIFF" in optimized.text
-    assert "--- source/api.py" in optimized.text
-    assert "+++ target/api.py" in optimized.text
-    assert "-def cancel(item_id, note=None):" in optimized.text
-    assert "+def cancel(item_id):" in optimized.text
+    for context in (baseline, optimized):
+        assert "DERIVED SOURCE-TARGET CHANGE MAP" in context.text
+        assert "CHANGE CANDIDATE 1: api.py" in context.text
+        source_change = "REPOSITORY SOURCE\nFILE api.py\n00001: def cancel(item_id, note=None):"
+        assert source_change in context.text
+        assert "REPOSITORY TARGET\nFILE api.py\n00001: def cancel(item_id):" in context.text
 
 
 def test_prompt_injection_text_is_replaced_with_a_typed_fact(tmp_path: Path) -> None:

@@ -84,6 +84,17 @@ alone. That run is also excluded and retained in its
 freedom: code-only proposals are `investigate`, and the optimized prompt receives a bounded,
 prompt-injection-redacted source/target diff.
 
+Third canary
+[`30876839849`](https://github.com/agentic-build-lab/proofedge-arm64/actions/runs/30876839849)
+confirmed that constraint but exposed two remaining evidence defects: the compact model cited
+unnumbered diff positions for OpenAPI and copied generic few-shot terms into Python proposals.
+The unchanged semantic gate rejected all configurations, so its positive runtime result
+(+0.7099% prompt processing, +3.4337% generation) is ineligible. The complete
+[canary summary](benchmarks/results/gha-30876839849-semantic-canary-summary.json) and
+[raw evidence](benchmarks/raw/gha-30876839849) are retained. The next revision replaces the
+ambiguous diff with a generic ranked change map whose source and target excerpts preserve real
+repository line numbers, and removes contaminating few-shot examples.
+
 The bootstrap ranges in the summary resample observations within processes and are descriptive;
 they are not confidence intervals across independent hosts. `llama-bench` is not end-to-end
 product latency, and no energy claim is made. Full protocol, artifacts, and qualifications are in

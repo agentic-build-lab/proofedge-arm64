@@ -74,16 +74,15 @@ must exercise the changed behavior, not a nearby unchanged field. For a removed 
 parameter, include a non-default named value for that parameter. For a changed rounding policy,
 include a halfway boundary value. For an HTTP change, include method, path, and a valid request
 body when applicable. Avoid vague purposes such as "ensure correct".
+When a DERIVED SOURCE-TARGET CHANGE MAP is present, inspect its highest-value behavioral
+candidates first. Its existence means the repository texts differ, so never state that they are
+identical or that no differences were found. Copy relevant changed identifiers and literal values
+from this repository only; do not import names or examples from elsewhere. Prefer implementation
+lines over test lines as evidence, while using nearby test literals as executable stimuli.
 
-Example for source cancel(item_id, note=None) versus target cancel(item_id): use inputs
-["item_id=item-7", "note=damaged"], purpose "Compare source preservation of a non-default note
-with the target that cannot accept note", and expected_relation "investigate".
-Example for source POST /widgets returning 201 versus target returning 202: use inputs
-["POST /widgets", "valid widget JSON body"], purpose "Compare the source 201 success response
-with the target 202 response", and expected_relation "investigate".
-
-Cite exactly one visible repository file and line for each test. Return only the required JSON
-object. Do not request tools, secrets, network access, or execution."""
+Cite exactly one numbered line shown after matching REPOSITORY and FILE headings for each test.
+Unnumbered diff or prose lines are never valid citations. Return only the required JSON object.
+Do not request tools, secrets, network access, or execution."""
 
 MAX_RESPONSE_BYTES = 1_048_576
 
@@ -212,7 +211,9 @@ class LlamaCppClient:
                     "role": "user",
                     "content": (
                         "Propose high-value differential tests grounded only in the numbered "
-                        "evidence below.\n\n<UNTRUSTED_REPOSITORIES>\n"
+                        "evidence below. Start with the mechanical change map when present, but "
+                        "independently describe the source-versus-target risk in each purpose. "
+                        "Cite only numbered repository lines.\n\n<UNTRUSTED_REPOSITORIES>\n"
                         + context
                         + "\n</UNTRUSTED_REPOSITORIES>"
                     ),
