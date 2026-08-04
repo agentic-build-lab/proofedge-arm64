@@ -1,0 +1,602 @@
+<template>
+  <style>
+    @font-face {
+      font-family: "Geist";
+      src: url("assets/fonts/Geist-Variable.woff2") format("woff2");
+      font-weight: 100 900;
+      font-style: normal;
+    }
+
+    @font-face {
+      font-family: "Geist Mono";
+      src: url("assets/fonts/GeistMono-Variable.woff2") format("woff2");
+      font-weight: 100 900;
+      font-style: normal;
+    }
+
+    #root {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      container-type: size;
+      font-family: "Geist", sans-serif;
+      color: #f3efe7;
+    }
+
+    .f09-ground {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 50% 35%, rgba(243, 167, 18, 0.065), transparent 48%),
+        #0e1319;
+    }
+
+    .f09-scene {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+
+    .f09-world {
+      position: absolute;
+      inset: 0;
+      overflow: visible;
+      transform-origin: 50% 50%;
+      will-change: transform;
+    }
+
+    .f09-page-viewport {
+      position: absolute;
+      inset: 0 0 auto;
+      width: 1920px;
+      height: 896px;
+      overflow: hidden;
+      background: #0a0f14;
+    }
+
+    .f09-page-content {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1920px;
+      height: 3924px;
+      will-change: transform;
+    }
+
+    .f09-full-page {
+      display: block;
+      width: 1920px;
+      height: 3924px;
+      max-width: none;
+      user-select: none;
+      pointer-events: none;
+    }
+
+    .f09-page-shade {
+      position: absolute;
+      z-index: 2;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(to right, rgba(14, 19, 25, 0.13), transparent 48%, rgba(14, 19, 25, 0.12)),
+        linear-gradient(to bottom, rgba(14, 19, 25, 0.08), transparent 28%, rgba(14, 19, 25, 0.1));
+    }
+
+    .f09-dock {
+      position: absolute;
+      z-index: 12;
+      left: 4.7cqw;
+      top: 4.1cqh;
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      padding: 12px 17px 12px 14px;
+      border: 1.5px solid rgba(243, 167, 18, 0.28);
+      border-radius: 100px;
+      background: rgba(14, 19, 25, 0.94);
+      font-size: 0.78cqw;
+      font-weight: 680;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      color: #f3a712;
+    }
+
+    .f09-dock-mark {
+      display: grid;
+      place-items: center;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: #f3a712;
+      font-family: "Geist Mono", monospace;
+      font-size: 13px;
+      font-weight: 700;
+      color: #0e1319;
+    }
+
+    .f09-runner {
+      position: absolute;
+      z-index: 11;
+      right: 4.7cqw;
+      top: 4.3cqh;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 100px;
+      background: rgba(243, 167, 18, 0.08);
+      font-family: "Geist Mono", monospace;
+      font-size: 12px;
+      letter-spacing: 0.06em;
+      color: #63d6c5;
+    }
+
+    .f09-runner::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #63d6c5;
+    }
+
+    .f09-evidence-rail {
+      position: absolute;
+      z-index: 14;
+      right: 4.7cqw;
+      top: 17.5cqh;
+      display: grid;
+      width: 15.5cqw;
+      gap: 11px;
+    }
+
+    .f09-evidence-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 14px;
+      border: 1px solid rgba(243, 167, 18, 0.22);
+      border-radius: 10px;
+      background: rgba(14, 19, 25, 0.92);
+      font-family: "Geist Mono", monospace;
+      font-size: 11px;
+      font-weight: 620;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #f3efe7;
+    }
+
+    .f09-evidence-label::after {
+      content: "VERIFIED";
+      padding: 5px 8px;
+      border-radius: 100px;
+      background: rgba(243, 167, 18, 0.08);
+      font-size: 9px;
+      color: #f3a712;
+    }
+
+    .f09-file-panel {
+      position: absolute;
+      z-index: 16;
+      right: 4.7cqw;
+      top: 36.2cqh;
+      width: 19.5cqw;
+      min-height: 38cqh;
+      padding: 15px;
+      border: 1.5px solid rgba(243, 167, 18, 0.25);
+      border-radius: 14px;
+      background: rgba(14, 19, 25, 0.96);
+    }
+
+    .f09-file-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      padding: 0 3px 12px;
+      border-bottom: 1px solid rgba(99, 214, 197, 0.13);
+      font-family: "Geist Mono", monospace;
+      font-size: 11px;
+      font-weight: 650;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: #63d6c5;
+    }
+
+    .f09-file-head span:last-child {
+      color: #f3a712;
+    }
+
+    .f09-file-list {
+      display: grid;
+      gap: 8px;
+      min-height: 312px;
+    }
+
+    .f09-file-chip {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      min-height: 44px;
+      padding: 9px 12px;
+      border: 1px solid rgba(243, 167, 18, 0.18);
+      border-radius: 10px;
+      background: rgba(243, 167, 18, 0.045);
+      font-family: "Geist Mono", monospace;
+      font-size: 12px;
+      color: #f3efe7;
+    }
+
+    .f09-file-icon {
+      display: grid;
+      place-items: center;
+      width: 24px;
+      height: 24px;
+      border: 1px solid rgba(243, 167, 18, 0.34);
+      border-radius: 6px;
+      font-size: 10px;
+      font-weight: 700;
+      color: #f3a712;
+    }
+
+    .f09-hinge {
+      position: absolute;
+      z-index: 34;
+      left: 16cqw;
+      top: 7.1cqh;
+      display: inline-flex;
+      align-items: center;
+      padding: 10px 14px;
+      font-size: 0.8cqw;
+      font-weight: 680;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      color: #f3efe7;
+    }
+
+    .f09-hinge-marker {
+      position: absolute;
+      z-index: -1;
+      inset: 3px -5px;
+      border-radius: 6px;
+      background: rgba(243, 167, 18, 0.42);
+      transform-origin: left center;
+    }
+
+    .f09-artifact-card {
+      position: absolute;
+      z-index: 30;
+      left: 12.5cqw;
+      top: 4.2cqh;
+      width: 75cqw;
+      height: 75cqh;
+      overflow: hidden;
+      border: 1.5px solid rgba(243, 167, 18, 0.32);
+      border-radius: 14px;
+      background: #090e13;
+    }
+
+    .f09-artifact-image {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      user-select: none;
+      pointer-events: none;
+    }
+
+    .f09-lanes {
+      position: absolute;
+      z-index: 38;
+      left: 18.5cqw;
+      top: 68.5cqh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      width: 37cqw;
+      gap: 12px;
+    }
+
+    .f09-lane {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 54px;
+      padding: 0 15px;
+      overflow: hidden;
+      border: 1px solid rgba(243, 167, 18, 0.24);
+      border-radius: 100px;
+      background: rgba(14, 19, 25, 0.96);
+      font-family: "Geist Mono", monospace;
+      font-size: 11px;
+      font-weight: 650;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #f3efe7;
+    }
+
+    .f09-lane::after {
+      content: "";
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #63d6c5;
+    }
+
+    .f09-lane-arm64 {
+      border-color: rgba(243, 167, 18, 0.42);
+      color: #f3a712;
+    }
+
+    .f09-lane-arm64::after {
+      background: #f3a712;
+    }
+
+    .f09-final-lockup {
+      position: absolute;
+      z-index: 40;
+      right: 15.8cqw;
+      top: 68.4cqh;
+      width: 25.5cqw;
+      padding: 10px 0 8px;
+    }
+
+    .f09-final-text {
+      width: max-content;
+      max-width: 100%;
+      overflow: hidden;
+      font-size: 1.3cqw;
+      font-weight: 700;
+      letter-spacing: -0.015em;
+      white-space: nowrap;
+      color: #f3efe7;
+    }
+
+    .f09-final-text strong {
+      color: #f3a712;
+    }
+
+    .f09-draw-line {
+      display: block;
+      width: 100%;
+      height: 18px;
+      margin-top: 7px;
+      overflow: visible;
+    }
+
+    .f09-draw-path {
+      fill: none;
+      stroke: #f3a712;
+      stroke-width: 4;
+      stroke-linecap: round;
+    }
+
+    .f09-progress {
+      position: absolute;
+      z-index: 42;
+      left: 5cqw;
+      top: 82.5cqh;
+      width: 90cqw;
+      height: 3px;
+      background: rgba(243, 167, 18, 0.08);
+    }
+
+    .f09-progress-fill {
+      display: block;
+      width: 100%;
+      height: 100%;
+      background: #f3a712;
+      transform-origin: left center;
+    }
+  </style>
+
+  <div id="root" data-composition-id="09-falsifiable" data-width="1920" data-height="1080" data-start="0" data-duration="18.619">
+    <div class="clip f09-ground" data-start="0" data-duration="18.619" data-track-index="0"></div>
+
+    <div class="clip f09-scene" data-start="0" data-duration="18.619" data-track-index="1">
+      <div class="f09-world" id="f09-world">
+        <div class="f09-page-viewport">
+          <div class="f09-page-content" id="f09-page-content">
+            <img class="f09-full-page" src="assets/full-page.png" alt="Full captured ProofEdge evidence page" />
+          </div>
+          <div class="f09-page-shade"></div>
+        </div>
+
+        <div class="f09-dock" id="f09-dock">
+          <span class="f09-dock-mark">PE</span>
+          Raw evidence, not a claim deck
+        </div>
+        <div class="f09-runner" id="f09-runner">native runner · public fixture</div>
+
+        <div class="f09-evidence-rail">
+          <div class="f09-evidence-label" id="f09-label-hashes">Hashes</div>
+          <div class="f09-evidence-label" id="f09-label-environment">Environment</div>
+          <div class="f09-evidence-label" id="f09-label-samples">Repeated samples</div>
+        </div>
+
+        <aside class="f09-file-panel" id="f09-file-panel">
+          <div class="f09-file-head"><span>Published evidence</span><span>Open</span></div>
+          <div class="f09-file-list">
+            <div class="f09-file-chip"><span class="f09-file-icon">01</span><span>RAW LOGS</span></div>
+            <div class="f09-file-chip"><span class="f09-file-icon">02</span><span>METADATA</span></div>
+            <div class="f09-file-chip"><span class="f09-file-icon">03</span><span>HASHES</span></div>
+            <div class="f09-file-chip"><span class="f09-file-icon">04</span><span>SAMPLES</span></div>
+            <div class="f09-file-chip"><span class="f09-file-icon">05</span><span>QUALITY REPORTS</span></div>
+            <div class="f09-file-chip"><span class="f09-file-icon">06</span><span>LIMITATIONS</span></div>
+          </div>
+        </aside>
+
+        <section class="f09-artifact-card" id="f09-artifact-card">
+          <img class="f09-artifact-image" src="assets/scroll-100.png" alt="Captured ProofEdge architecture and falsifiability artifact" />
+        </section>
+        <div class="f09-hinge" id="f09-hinge">
+          <span class="f09-hinge-marker" id="f09-hinge-marker"></span>
+          Real AArch64 workflow
+        </div>
+
+        <div class="f09-lanes" id="f09-lanes">
+          <div class="f09-lane">Ordinary CI</div>
+          <div class="f09-lane f09-lane-arm64">Native AArch64 evidence</div>
+        </div>
+
+        <div class="f09-final-lockup" id="f09-final-lockup">
+          <div class="f09-final-text" id="f09-final-text"><strong>REPRODUCE</strong> — OR FALSIFY</div>
+          <svg class="f09-draw-line" viewBox="0 0 500 18" preserveAspectRatio="none" aria-hidden="true">
+            <path class="f09-draw-path" id="f09-draw-path" d="M3 9 C 90 2, 166 16, 250 8 S 410 2, 497 9" />
+          </svg>
+        </div>
+
+        <div class="f09-progress">
+          <span class="f09-progress-fill" id="f09-progress-fill"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script>
+    (() => {
+      const tl = gsap.timeline({ paused: true });
+      window.__timelines = window.__timelines || {};
+      window.__timelines["09-falsifiable"] = tl;
+
+      const world = document.querySelector("#f09-world");
+      const cam = { scale: 1, x: 0, y: 0 };
+      const applyCamera = () => {
+        world.style.transform = `translate(${cam.x}px, ${cam.y}px) scale(${cam.scale})`;
+      };
+      applyCamera();
+
+      tl.fromTo(
+        "#f09-dock",
+        { opacity: 0, x: -20 },
+        { opacity: 1, x: 0, duration: 0.46, ease: "power3.out" },
+        0
+      );
+      tl.fromTo(
+        "#f09-runner",
+        { opacity: 0, x: 16 },
+        { opacity: 1, x: 0, duration: 0.4, ease: "power2.out" },
+        0.22
+      );
+      tl.fromTo(
+        "#f09-progress-fill",
+        { scaleX: 0 },
+        { scaleX: 1, duration: 17.8, ease: "none" },
+        0.2
+      );
+
+      tl.fromTo(
+        "#f09-page-content",
+        { y: 0 },
+        { y: -3028, duration: 8.1, ease: "power3.out" },
+        3.02
+      );
+      tl.fromTo(
+        "#f09-label-hashes",
+        { opacity: 0, x: 18 },
+        { opacity: 1, x: 0, duration: 0.38, ease: "power2.out" },
+        4.08
+      );
+      tl.fromTo(
+        "#f09-label-environment",
+        { opacity: 0, x: 18 },
+        { opacity: 1, x: 0, duration: 0.38, ease: "power2.out" },
+        5.18
+      );
+      tl.fromTo(
+        "#f09-label-samples",
+        { opacity: 0, x: 18 },
+        { opacity: 1, x: 0, duration: 0.38, ease: "power2.out" },
+        6.38
+      );
+
+      tl.fromTo(
+        "#f09-file-panel",
+        { opacity: 0, y: 18 },
+        { opacity: 1, y: 0, duration: 0.46, ease: "power3.out" },
+        7.52
+      );
+
+      const fileChips = Array.from(document.querySelectorAll(".f09-file-chip"));
+      let fileCursor = 7.82;
+      const fileSequence = fileChips.map((chip) => {
+        const duration = 0.16 + chip.textContent.trim().length * 0.008;
+        const start = fileCursor;
+        fileCursor += duration;
+        return { chip, start, duration };
+      });
+      fileSequence.forEach(({ chip, start, duration }) => {
+        tl.fromTo(
+          chip,
+          { opacity: 0, x: 15 },
+          { opacity: 1, x: 0, duration, ease: "power2.out" },
+          start
+        );
+      });
+
+      tl.fromTo(
+        "#f09-artifact-card",
+        { opacity: 0 },
+        { opacity: 1, duration: 0.5, ease: "power2.out" },
+        11.52
+      );
+      tl.fromTo(
+        "#f09-hinge",
+        { opacity: 0, x: -16 },
+        { opacity: 1, x: 0, duration: 0.36, ease: "power2.out" },
+        11.62
+      );
+      tl.fromTo(
+        "#f09-hinge-marker",
+        { scaleX: 0, opacity: 0.25 },
+        { scaleX: 1, opacity: 1, duration: 0.52, ease: "power2.out" },
+        11.92
+      );
+
+      tl.fromTo(
+        cam,
+        { scale: 1.24, x: 818, y: 539 },
+        {
+          scale: 1,
+          x: 0,
+          y: 0,
+          duration: 2.05,
+          ease: "power4.out",
+          immediateRender: false,
+          onUpdate: applyCamera
+        },
+        12.18
+      );
+
+      const drawPath = document.querySelector("#f09-draw-path");
+      const drawLength = drawPath.getTotalLength();
+      drawPath.style.strokeDasharray = `${drawLength}`;
+      tl.fromTo(
+        "#f09-final-text",
+        { clipPath: "inset(0 100% 0 0)", opacity: 0.4 },
+        { clipPath: "inset(0 0% 0 0)", opacity: 1, duration: 0.72, ease: "power2.out" },
+        15.52
+      );
+      tl.fromTo(
+        drawPath,
+        { strokeDashoffset: drawLength },
+        { strokeDashoffset: 0, duration: 0.82, ease: "power2.inOut" },
+        15.72
+      );
+      tl.fromTo(
+        "#f09-lanes",
+        { opacity: 0, y: 12 },
+        { opacity: 1, y: 0, duration: 0.42, ease: "power3.out" },
+        16.18
+      );
+      tl.fromTo(
+        ".f09-lane",
+        { opacity: 0, x: -12 },
+        { opacity: 1, x: 0, duration: 0.34, stagger: 0.42, ease: "power2.out" },
+        16.48
+      );
+    })();
+  </script>
+</template>

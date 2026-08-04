@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0.0",
+  "benchmark": "deterministic-pipeline",
+  "run_id": 30872968711,
+  "project_commit": "2c3c1f3f1ad94e8cc705654bced491eb3c7049b6",
+  "artifact_url": "https://github.com/agentic-build-lab/proofedge-arm64/actions/runs/30872968711",
+  "environment": {
+    "architecture": "aarch64",
+    "cpu_count": 4,
+    "platform": "Linux-6.17.0-1020-azure-aarch64-with-glibc2.39",
+    "python": "3.12.13"
+  },
+  "configuration": {
+    "cases": "evaluation/cases",
+    "runs": 30
+  },
+  "summary": {
+    "cold_latency_ms": 3.033627,
+    "mean_latency_ms": 2.4297872666666667,
+    "warm_p50_latency_ms": 2.397475,
+    "warm_p95_latency_ms": 2.538995,
+    "peak_rss_kib": 24516,
+    "task_success_rate": 1.0
+  },
+  "scope": "Direct evaluate_cases static pipeline over two frozen cases",
+  "exclusions": [
+    "Python interpreter startup",
+    "CLI argument parsing",
+    "report serialization and file I/O",
+    "local-model inference"
+  ],
+  "source_raw_sha256": "fe216d05e7893b794cb981d0b7371b5e2a2e860fda81fcfe4121ba77426d80f1",
+  "artifact_manifest_verified": true
+}

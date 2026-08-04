@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0.0",
+  "benchmark": "native-arm64-kleidiai-profile-selection",
+  "run_id": 30828989800,
+  "project_commit": "d840e87c4fc68e97322284182037096cc1a39dc9",
+  "status": "successful_exploratory_selection",
+  "hardware": "native aarch64 Neoverse N2, GitHub ubuntu-24.04-arm, 4 vCPU",
+  "runtime_kernel_evidence": "kleidiai: primary q4 kernel feature I8MM",
+  "selected_profile": {
+    "threads": 4,
+    "kleidiai_chunk_multiplier": 1,
+    "batch_size": 1024,
+    "ubatch_size": 256
+  },
+  "selection_metrics": {
+    "stage_1_pp512_tokens_per_second": 131.67966666666666,
+    "stage_1_tg128_tokens_per_second": 36.5661,
+    "stage_2_pp1024_tokens_per_second": 97.07813333333333,
+    "peak_rss_kib": 2012040
+  },
+  "decode_depth_check_tokens_per_second": {
+    "0": 35.33571,
+    "512": 32.596172,
+    "1024": 30.156047
+  },
+  "selection_policy": "Maximum tg128 among profiles within 2% of best pp512, then maximum pp1024 across frozen batch pairs; deterministic tie-breakers prefer lower RSS and smaller settings.",
+  "limitations": [
+    "This is an exploratory selection run, not independent confirmation.",
+    "Three within-process repetitions were used per candidate.",
+    "The selected profile must pass a separately committed ABBA confirmation and both optimized-context model quality gates."
+  ],
+  "artifact_url": "https://github.com/agentic-build-lab/proofedge-arm64/actions/runs/30828989800"
+}

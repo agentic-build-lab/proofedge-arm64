@@ -1,0 +1,39 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": 30874565788,
+  "run_url": "https://github.com/agentic-build-lab/proofedge-arm64/actions/runs/30874565788",
+  "project_commit": "43673a8c3ee531ade148cb4c4a12cd5ab21f4302",
+  "purpose": "Fail-closed canary for semantic quality-gate revision 2",
+  "status": "rejected_by_semantic_quality_gate",
+  "native_environment": {
+    "architecture": "aarch64",
+    "cpu": "Arm Neoverse-N2",
+    "kleidiai_runtime_selection_verified": true
+  },
+  "quality": {
+    "configurations": [
+      "baseline-baseline",
+      "baseline-optimized",
+      "kleidiai-baseline",
+      "kleidiai-optimized"
+    ],
+    "all_exit_codes": 1,
+    "risk_evidence_coverage": 1.0,
+    "semantic_objective_coverage": 0.3333333333333333,
+    "openapi_orders_case_passed": true,
+    "python_refund_case_passed": false,
+    "failure_reason": "The model cited valid lines but labeled both visible Python behavior changes as equal and omitted a non-default refund reason input. The semantic gate rejected those proposals instead of publishing them."
+  },
+  "runtime_result_not_eligible_for_product_claim": {
+    "prompt_processing_change_percent": 0.9021129485654589,
+    "token_generation_change_percent": 6.129513691658661,
+    "reason": "The paired model-quality gate failed, so this throughput result is preserved but not selected as confirmation evidence."
+  },
+  "evidence": {
+    "directory": "benchmarks/raw/gha-30874565788",
+    "sha256sums_file_sha256": "212b50d269b43f8bcd7350c3b4389119f0f58d6b6956f849ae07f904dcb57a66",
+    "sha256sums_verified": true,
+    "runtime_summary": "benchmarks/results/gha-30874565788-runtime-summary.json"
+  },
+  "supersession_policy": "This failed run remains public. A later run may supersede it only after passing the stricter semantics and repeated product-task gates."
+}

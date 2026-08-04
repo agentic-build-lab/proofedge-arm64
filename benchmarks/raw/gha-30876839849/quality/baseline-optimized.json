@@ -1,0 +1,209 @@
+{
+  "accepted_proposals": 2,
+  "canary_leakage_count": 0,
+  "cases": [
+    {
+      "accepted_proposals": 0,
+      "canary_leakage": [],
+      "case_id": "openapi-orders-v2",
+      "client_timings": {
+        "end_to_end_ms": 17798.852779,
+        "streaming": false,
+        "time_to_first_token_ms": null
+      },
+      "context_characters": 1311,
+      "context_sha256": "ceb93e2cac1486a3a681cdd8493ddb0eea584d993a62caa730f21ab93019a526",
+      "error": null,
+      "evidence_objectives_matched": 0,
+      "fallback_used": true,
+      "gold_target_density": 0.0,
+      "matched_objective_ids": [],
+      "objectives_matched": 0,
+      "objectives_total": 1,
+      "passed": false,
+      "profile": "optimized",
+      "proposals_total": 2,
+      "published_reference_validity": 0.0,
+      "raw_reference_validity": 0.0,
+      "rejected": [
+        {
+          "index": 0,
+          "line": 10,
+          "path": "openapi.json",
+          "reason": "line was not included in the model-visible context",
+          "repository": "source"
+        },
+        {
+          "index": 1,
+          "line": 11,
+          "path": "openapi.json",
+          "reason": "line was not included in the model-visible context",
+          "repository": "source"
+        }
+      ],
+      "rejected_proposals": 2,
+      "response": {
+        "limitations": [
+          "The source and target OpenAPI files are identical, so no specific inputs or expected outputs are provided."
+        ],
+        "tests": [
+          {
+            "expected_relation": "investigate",
+            "inputs": [
+              "POST /orders",
+              "valid widget JSON body"
+            ],
+            "line": 10,
+            "name": "Compare source 201 success response with the target 200 response",
+            "path": "openapi.json",
+            "priority": "high",
+            "purpose": "Compare the source 201 success response with the target 200 response",
+            "repository": "source"
+          },
+          {
+            "expected_relation": "investigate",
+            "inputs": [
+              "POST /orders",
+              "invalid widget JSON body"
+            ],
+            "line": 11,
+            "name": "Compare source 400 error response with the target 400 error response",
+            "path": "openapi.json",
+            "priority": "high",
+            "purpose": "Compare the source 400 error response with the target 400 error response",
+            "repository": "source"
+          }
+        ]
+      },
+      "response_sha256": "bfae72aa8b84e8971876c8348827d28173a9d9a1d827df1cae1fc160fde892b0",
+      "risk_evidence_coverage": 0.0,
+      "schema_valid": true,
+      "semantic_objective_coverage": 0.0,
+      "timings": {
+        "cache_n": 0,
+        "predicted_ms": 8455.331,
+        "predicted_n": 259,
+        "predicted_per_second": 30.631562501810986,
+        "predicted_per_token_ms": 32.64606563706564,
+        "prompt_ms": 9325.066,
+        "prompt_n": 869,
+        "prompt_per_second": 93.18968895233556,
+        "prompt_per_token_ms": 10.730800920598389
+      },
+      "usage": {
+        "completion_tokens": 259,
+        "prompt_tokens": 869,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "total_tokens": 1128
+      }
+    },
+    {
+      "accepted_proposals": 2,
+      "canary_leakage": [],
+      "case_id": "python-refund-v2",
+      "client_timings": {
+        "end_to_end_ms": 22225.676911,
+        "streaming": false,
+        "time_to_first_token_ms": null
+      },
+      "context_characters": 2746,
+      "context_sha256": "f8aca1b85c451a300c39fd49ce34c66a385e08acf344d0955e3080a2435b42ed",
+      "error": null,
+      "evidence_objectives_matched": 1,
+      "fallback_used": false,
+      "gold_target_density": 0.0,
+      "matched_objective_ids": [],
+      "objectives_matched": 0,
+      "objectives_total": 2,
+      "passed": false,
+      "profile": "optimized",
+      "proposals_total": 2,
+      "published_reference_validity": 1.0,
+      "raw_reference_validity": 1.0,
+      "rejected": [],
+      "rejected_proposals": 0,
+      "response": {
+        "limitations": [
+          "The source and target code are identical, so no differences are found."
+        ],
+        "tests": [
+          {
+            "expected_relation": "investigate",
+            "inputs": [
+              "2"
+            ],
+            "line": 11,
+            "name": "Test Happy Path",
+            "path": "pricing.py",
+            "priority": "high",
+            "purpose": "Compare the source happy path with the target happy path",
+            "repository": "target"
+          },
+          {
+            "expected_relation": "investigate",
+            "inputs": [
+              "order-7"
+            ],
+            "line": 12,
+            "name": "Test Refund with None Reason",
+            "path": "pricing.py",
+            "priority": "high",
+            "purpose": "Compare the source refund with the target refund with no reason",
+            "repository": "target"
+          }
+        ]
+      },
+      "response_sha256": "5f02b070b1c5bd748f6d56aba7492b7350c891c351d55edd55d71c1a1cb060d7",
+      "risk_evidence_coverage": 0.5,
+      "schema_valid": true,
+      "semantic_objective_coverage": 0.0,
+      "timings": {
+        "cache_n": 0,
+        "predicted_ms": 6868.814,
+        "predicted_n": 201,
+        "predicted_per_second": 29.262693676084403,
+        "predicted_per_token_ms": 34.1732039800995,
+        "prompt_ms": 15338.6,
+        "prompt_n": 1314,
+        "prompt_per_second": 85.66622768701184,
+        "prompt_per_token_ms": 11.673211567732116
+      },
+      "usage": {
+        "completion_tokens": 201,
+        "prompt_tokens": 1314,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "total_tokens": 1515
+      }
+    }
+  ],
+  "cases_passed": 0,
+  "cases_total": 2,
+  "engine": "llama.cpp",
+  "evidence_objectives_matched": 1,
+  "fallback_count": 1,
+  "objectives_matched": 0,
+  "objectives_total": 3,
+  "passed": false,
+  "profile": "optimized",
+  "proposals_total": 4,
+  "published_reference_validity": 1.0,
+  "raw_reference_validity": 0.5,
+  "rejected_proposals": 2,
+  "risk_evidence_coverage": 0.3333333333333333,
+  "schema_completion_rate": 1.0,
+  "schema_version": "1.0.0",
+  "semantic_objective_coverage": 0.0,
+  "thresholds": {
+    "maximum_canary_leakage_count": 0,
+    "maximum_fallback_count": 0,
+    "minimum_case_gold_target_density": 0.4,
+    "minimum_case_raw_reference_validity": 0.75,
+    "minimum_case_risk_evidence_coverage": 0.75,
+    "minimum_case_semantic_objective_coverage": 0.75,
+    "schema_completion_rate": 1.0
+  }
+}

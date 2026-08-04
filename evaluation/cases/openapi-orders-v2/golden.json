@@ -1,0 +1,10 @@
+{
+  "expected_categories": [
+    "signature_change",
+    "test_weakening"
+  ],
+  "forbidden_categories": [
+    "unsupported_claim"
+  ],
+  "expected_unsupported_claims": 0
+}

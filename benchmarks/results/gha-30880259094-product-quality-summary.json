@@ -1,0 +1,324 @@
+{
+  "benchmark": "proofedge-native-model-quality-request-comparison",
+  "cases": [
+    {
+      "baseline_completion_tokens": 238,
+      "baseline_prompt_tokens": 910,
+      "case_id": "openapi-orders-v2",
+      "kleidiai_completion_tokens": 222,
+      "kleidiai_prompt_tokens": 910,
+      "matching_fields": {
+        "completion_tokens": false,
+        "context_sha256": true,
+        "prompt_tokens": true,
+        "published_response_sha256": true,
+        "raw_response_sha256": false
+      },
+      "model_compute_comparison_eligible": false,
+      "published_response_sha256": "c558aea62d17a346c8409ef695a6b41c0240b5f2d5cada3965bd3688b4476aac",
+      "quality_gate_passed": true
+    },
+    {
+      "baseline_completion_tokens": 221,
+      "baseline_prompt_tokens": 1484,
+      "case_id": "python-refund-v2",
+      "kleidiai_completion_tokens": 223,
+      "kleidiai_prompt_tokens": 1484,
+      "matching_fields": {
+        "completion_tokens": false,
+        "context_sha256": true,
+        "prompt_tokens": true,
+        "published_response_sha256": true,
+        "raw_response_sha256": false
+      },
+      "model_compute_comparison_eligible": false,
+      "published_response_sha256": "a0854494d28afaa07bf9235faebd351e0fd6329a02c425818a31250d2349b01d",
+      "quality_gate_passed": true
+    }
+  ],
+  "explicitly_unmeasured": {
+    "energy_or_power": "Not measured because the hosted VM exposes no calibrated power telemetry.",
+    "whole_system_peak_rss": "Server and client were separate processes; server and client resource records are published separately rather than summed into a false instantaneous peak."
+  },
+  "limitations": [
+    "The fixed quality corpus has two deliberately compact migration cases.",
+    "Five repeated task trials support descriptive p50/p95, not population inference.",
+    "Startup has three observed trials per configuration on one hosted Arm64 VM.",
+    "Raw model output identity is reported separately from compiled published-plan identity."
+  ],
+  "model": {
+    "quantization": "Q4_0",
+    "size_bytes": 1066227264
+  },
+  "model_compute_comparison_eligible": false,
+  "model_compute_comparison_exclusion_reason": "Raw model responses or token counts differed across configurations; model compute timings are retained in the case ledgers but are not compared as an identical workload.",
+  "product_resource_measurements": {
+    "baseline": {
+      "client": {
+        "cpu_utilization_percent": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 1,
+          "p50": 0.0,
+          "p95": 0.0
+        },
+        "elapsed_seconds": {
+          "max": 227.06,
+          "mean": 227.06,
+          "min": 227.06,
+          "n": 1,
+          "p50": 227.06,
+          "p95": 227.06
+        },
+        "peak_rss_kib": {
+          "max": 26236.0,
+          "mean": 26236.0,
+          "min": 26236.0,
+          "n": 1,
+          "p50": 26236.0,
+          "p95": 26236.0
+        },
+        "processes": 1
+      },
+      "server": {
+        "average_cpu_utilization_percent_at_capture": 383.0,
+        "cpu_time_at_capture": "00:20:30",
+        "elapsed_seconds_at_capture": 320,
+        "peak_rss_kib": 2094936,
+        "process": "llama-server",
+        "ps_rss_kib": 2047592,
+        "ps_vsz_kib": 2692136,
+        "rss_at_capture_kib": 2047592
+      }
+    },
+    "kleidiai": {
+      "client": {
+        "cpu_utilization_percent": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 1,
+          "p50": 0.0,
+          "p95": 0.0
+        },
+        "elapsed_seconds": {
+          "max": 223.25,
+          "mean": 223.25,
+          "min": 223.25,
+          "n": 1,
+          "p50": 223.25,
+          "p95": 223.25
+        },
+        "peak_rss_kib": {
+          "max": 25192.0,
+          "mean": 25192.0,
+          "min": 25192.0,
+          "n": 1,
+          "p50": 25192.0,
+          "p95": 25192.0
+        },
+        "processes": 1
+      },
+      "server": {
+        "average_cpu_utilization_percent_at_capture": 383.0,
+        "cpu_time_at_capture": "00:20:14",
+        "elapsed_seconds_at_capture": 316,
+        "peak_rss_kib": 2091712,
+        "process": "llama-server",
+        "ps_rss_kib": 2044328,
+        "ps_vsz_kib": 2687196,
+        "rss_at_capture_kib": 2044328
+      }
+    }
+  },
+  "quality_gate": {
+    "baseline_passed": true,
+    "cases_per_configuration": 2,
+    "kleidiai_passed": true
+  },
+  "repeated_product_task": {
+    "attribution": "TTFT compares the same prompts before response divergence. End-to-end task changes are descriptive product observations, not an isolated kernel effect, when raw model responses differ.",
+    "profile": "optimized",
+    "quality_gate": {
+      "baseline_all_runs_passed": true,
+      "baseline_runs": 5,
+      "kleidiai_all_runs_passed": true,
+      "kleidiai_runs": 5
+    },
+    "request_end_to_end_ms": {
+      "baseline": {
+        "max": 27700.918241,
+        "mean": 22688.2214666,
+        "min": 17705.746585,
+        "n": 10,
+        "p50": 22674.030619999998,
+        "p95": 27700.918241
+      },
+      "kleidiai": {
+        "max": 27660.574921,
+        "mean": 22311.237964,
+        "min": 17012.778417,
+        "n": 10,
+        "p50": 22314.160501500002,
+        "p95": 27660.574921
+      },
+      "mean_change_percent": -1.6615824345463492,
+      "p50_change_percent": -1.5871466548279534,
+      "p95_change_percent": -0.14563892665582223
+    },
+    "request_time_to_first_token_ms": {
+      "baseline": {
+        "max": 20025.042062,
+        "mean": 14961.753369000002,
+        "min": 9903.690003,
+        "n": 10,
+        "p50": 14960.25731,
+        "p95": 20025.042062
+      },
+      "kleidiai": {
+        "max": 19969.019755,
+        "mean": 14878.2589367,
+        "min": 9827.512015,
+        "n": 10,
+        "p50": 14867.2505425,
+        "p95": 19969.019755
+      },
+      "mean_change_percent": -0.5580524570936829,
+      "p50_change_percent": -0.6216922982857476,
+      "p95_change_percent": -0.2797612450777698
+    },
+    "scope": "Complete ProofEdge local-model quality task over the frozen two-case corpus in a persistent Python process: bounded scans, context construction, streamed local inference, schema/citation/semantic gates, and ledger construction",
+    "task_end_to_end_ms": {
+      "baseline": {
+        "max": 45463.519811,
+        "mean": 45382.775035599996,
+        "min": 45304.350063,
+        "n": 5,
+        "p50": 45387.468789,
+        "p95": 45463.519811
+      },
+      "kleidiai": {
+        "max": 44688.038322,
+        "mean": 44628.9063744,
+        "min": 44556.704468,
+        "n": 5,
+        "p50": 44639.487809,
+        "p95": 44688.038322
+      },
+      "mean_change_percent": -1.66113390071152,
+      "p50_change_percent": -1.647990072936778,
+      "p95_change_percent": -1.7057225050409963
+    },
+    "workload_identity": {
+      "baseline_raw_model_response_hashes_per_case": {
+        "openapi-orders-v2": [
+          "73b40c40849a825b54589d9b36d78e0160245c16481458954967a78be174395f"
+        ],
+        "python-refund-v2": [
+          "0ec5cce472f7579ab2ed3342189b3350a38e06844657451fc9921d74023b8746"
+        ]
+      },
+      "contexts_stable": true,
+      "kleidiai_raw_model_response_hashes_per_case": {
+        "openapi-orders-v2": [
+          "8d695eba6f8f34a0665012c507c56d224bd9b2608e644359137641339e965ea9"
+        ],
+        "python-refund-v2": [
+          "61cfcc1ea5198785df54d80912bff82e46408113bae31565451d3aa5218d566b"
+        ]
+      },
+      "published_response_hashes_per_case": {
+        "openapi-orders-v2": [
+          "c558aea62d17a346c8409ef695a6b41c0240b5f2d5cada3965bd3688b4476aac"
+        ],
+        "python-refund-v2": [
+          "a0854494d28afaa07bf9235faebd351e0fd6329a02c425818a31250d2349b01d"
+        ]
+      },
+      "published_responses_identical_across_configurations": true,
+      "raw_model_responses_identical_across_configurations": false
+    }
+  },
+  "run_id": 30880259094,
+  "runtime_process_measurements": {
+    "baseline": {
+      "cpu_utilization_percent": {
+        "max": 387.0,
+        "mean": 387.0,
+        "min": 387.0,
+        "n": 2,
+        "p50": 387.0,
+        "p95": 387.0
+      },
+      "elapsed_seconds": {
+        "max": 112.6,
+        "mean": 111.6,
+        "min": 110.6,
+        "n": 2,
+        "p50": 111.6,
+        "p95": 112.6
+      },
+      "peak_rss_kib": {
+        "max": 2011996.0,
+        "mean": 2011988.0,
+        "min": 2011980.0,
+        "n": 2,
+        "p50": 2011988.0,
+        "p95": 2011996.0
+      },
+      "processes": 2
+    },
+    "kleidiai": {
+      "cpu_utilization_percent": {
+        "max": 387.0,
+        "mean": 386.5,
+        "min": 386.0,
+        "n": 2,
+        "p50": 386.5,
+        "p95": 387.0
+      },
+      "elapsed_seconds": {
+        "max": 109.52000000000001,
+        "mean": 109.46000000000001,
+        "min": 109.4,
+        "n": 2,
+        "p50": 109.46000000000001,
+        "p95": 109.52000000000001
+      },
+      "peak_rss_kib": {
+        "max": 2012040.0,
+        "mean": 2012038.0,
+        "min": 2012036.0,
+        "n": 2,
+        "p50": 2012038.0,
+        "p95": 2012040.0
+      },
+      "processes": 2
+    }
+  },
+  "schema_version": "1.0.0",
+  "scope": "llama-server model compute inside complete frozen ProofEdge quality requests",
+  "server_startup_ms": {
+    "baseline": {
+      "max": 2040.0,
+      "mean": 2026.6666666666667,
+      "min": 2020.0,
+      "n": 3,
+      "p50": 2020.0,
+      "p95": 2040.0
+    },
+    "kleidiai": {
+      "max": 2020.0,
+      "mean": 2020.0,
+      "min": 2020.0,
+      "n": 3,
+      "p50": 2020.0,
+      "p95": 2020.0
+    }
+  },
+  "workload_identity": {
+    "all_exact_workload_fields_match": false,
+    "same_case_ids": true
+  }
+}

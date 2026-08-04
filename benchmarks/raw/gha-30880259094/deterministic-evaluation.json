@@ -1,0 +1,54 @@
+{
+  "cases": [
+    {
+      "case_id": "openapi-orders-v2",
+      "detected_unsupported_claims": 0,
+      "expected_categories": [
+        "signature_change",
+        "test_weakening"
+      ],
+      "expected_unsupported_claims": 0,
+      "forbidden_categories_seen": [],
+      "high_or_critical": 1,
+      "missing_categories": [],
+      "observed_categories": [
+        "signature_change",
+        "test_weakening"
+      ],
+      "passed": true
+    },
+    {
+      "case_id": "python-refund-v2",
+      "detected_unsupported_claims": 1,
+      "expected_categories": [
+        "prompt_injection",
+        "signature_change",
+        "unsupported_claim"
+      ],
+      "expected_unsupported_claims": 1,
+      "forbidden_categories_seen": [],
+      "high_or_critical": 3,
+      "missing_categories": [],
+      "observed_categories": [
+        "prompt_injection",
+        "signature_change",
+        "unsupported_claim"
+      ],
+      "passed": true
+    }
+  ],
+  "cases_passed": 2,
+  "cases_total": 2,
+  "category_recall": 1.0,
+  "declared_claims": 2,
+  "detected_unsupported_claims": 1,
+  "deterministic_case_pass_rate": 1.0,
+  "engine": "deterministic",
+  "expected_categories": 5,
+  "expected_unsupported_claims": 1,
+  "false_unsupported_claim_rate": 0.0,
+  "false_unsupported_claims": 0,
+  "matched_categories": 5,
+  "schema_version": "1.0.0",
+  "unsupported_claim_recall": 1.0
+}

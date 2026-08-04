@@ -1,0 +1,128 @@
+{
+  "benchmark": "same-host-llama-cpp-kleidiai-abba",
+  "block_order": [
+    "baseline",
+    "kleidiai",
+    "kleidiai",
+    "baseline"
+  ],
+  "complete_blocks": 4,
+  "interpretation": {
+    "claim": "KleidiAI changed mean prompt-processing throughput by +0.902% and mean token-generation throughput by +6.130% in this fixed same-host configuration.",
+    "quality_scope": "This benchmark does not establish output-quality equivalence. Apply the separate frozen model-quality gate before making a product claim.",
+    "status": "positive_runtime_result"
+  },
+  "limitations": [
+    "The exploratory bootstrap treats within-process repetitions as samples; it is not a confidence interval across independent VMs.",
+    "Only one native Neoverse-N2 VM and one thread/batch configuration were measured.",
+    "llama-bench excludes tokenization and sampling and is not an end-to-end application benchmark.",
+    "Energy was not measured because the cloud VM exposes no calibrated power telemetry."
+  ],
+  "metrics": {
+    "prompt_processing_tokens_per_second": {
+      "baseline": {
+        "coefficient_of_variation": 0.0016046443040728022,
+        "max": 96.3606,
+        "mean": 96.0594,
+        "min": 95.7965,
+        "n": 14,
+        "p50": 96.0469,
+        "p95": 96.2416
+      },
+      "block_means": [
+        {
+          "block": "01",
+          "configuration": "baseline",
+          "mean": 96.11335714285714
+        },
+        {
+          "block": "02",
+          "configuration": "kleidiai",
+          "mean": 96.78312857142858
+        },
+        {
+          "block": "03",
+          "configuration": "kleidiai",
+          "mean": 97.06880000000001
+        },
+        {
+          "block": "04",
+          "configuration": "baseline",
+          "mean": 96.00544285714285
+        }
+      ],
+      "exploratory_sample_bootstrap_95ci_percent": [
+        0.7569090995576344,
+        1.0420474367986543
+      ],
+      "kleidiai": {
+        "coefficient_of_variation": 0.002181163668117033,
+        "max": 97.2172,
+        "mean": 96.92596428571429,
+        "min": 96.5626,
+        "n": 14,
+        "p50": 96.99405,
+        "p95": 97.2104
+      },
+      "relative_mean_change_percent": 0.9021129485654589
+    },
+    "token_generation_tokens_per_second": {
+      "baseline": {
+        "coefficient_of_variation": 0.02451185297856495,
+        "max": 33.81,
+        "mean": 32.2673,
+        "min": 31.0722,
+        "n": 14,
+        "p50": 32.15965,
+        "p95": 33.727
+      },
+      "block_means": [
+        {
+          "block": "01",
+          "configuration": "baseline",
+          "mean": 32.83031428571429
+        },
+        {
+          "block": "02",
+          "configuration": "kleidiai",
+          "mean": 34.36602857142857
+        },
+        {
+          "block": "03",
+          "configuration": "kleidiai",
+          "mean": 34.12422857142857
+        },
+        {
+          "block": "04",
+          "configuration": "baseline",
+          "mean": 31.704285714285714
+        }
+      ],
+      "exploratory_sample_bootstrap_95ci_percent": [
+        4.453007264398812,
+        7.75489765561288
+      ],
+      "kleidiai": {
+        "coefficient_of_variation": 0.01711030745095617,
+        "max": 35.5765,
+        "mean": 34.24512857142857,
+        "min": 33.3687,
+        "n": 14,
+        "p50": 34.33045,
+        "p95": 34.8744
+      },
+      "relative_mean_change_percent": 6.129513691658661
+    }
+  },
+  "peak_rss_kib_by_process": {
+    "baseline": [
+      2011992,
+      2011996
+    ],
+    "kleidiai": [
+      2012040,
+      2012040
+    ]
+  },
+  "schema_version": "1.0.0"
+}

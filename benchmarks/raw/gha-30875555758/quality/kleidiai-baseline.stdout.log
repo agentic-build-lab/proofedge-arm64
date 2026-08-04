@@ -1,0 +1,2 @@
+Local-model evidence gate: 0/2 cases passed; risk coverage 100.0%; semantic coverage 0.0%; raw reference validity 100.0%
+Model evaluation ledger: artifacts/arm64-llama-bench/quality/kleidiai-baseline.json

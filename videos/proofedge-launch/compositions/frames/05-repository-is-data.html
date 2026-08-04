@@ -1,0 +1,602 @@
+<template>
+  <style>
+    @font-face {
+      font-family: "Geist";
+      src: url("assets/fonts/Geist-Variable.woff2") format("woff2");
+      font-weight: 100 900;
+      font-style: normal;
+    }
+
+    @font-face {
+      font-family: "Geist Mono";
+      src: url("assets/fonts/GeistMono-Variable.woff2") format("woff2");
+      font-weight: 100 900;
+      font-style: normal;
+    }
+
+    #root {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      container-type: size;
+      color: #f3efe7;
+      font-family: "Geist";
+    }
+
+    #root * {
+      box-sizing: border-box;
+    }
+
+    #root [data-frame-05="ground"] {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: #0e1319;
+    }
+
+    #root [data-frame-05="ground"]::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      opacity: 0.28;
+      background-image:
+        linear-gradient(rgba(243, 167, 18, 0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(243, 167, 18, 0.018) 1px, transparent 1px);
+      background-size: 72px 72px;
+    }
+
+    #root [data-frame-05="stage"] {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+
+    #root [data-frame-05="excerpt"] {
+      position: absolute;
+      top: 54px;
+      right: 94px;
+      width: 1030px;
+      height: 250px;
+      overflow: hidden;
+      padding: 26px 30px 24px 82px;
+      border: 1.5px solid rgba(243, 167, 18, 0.2);
+      border-radius: 14px;
+      background: rgba(243, 167, 18, 0.04);
+      color: #656565;
+      font-family: "Geist Mono";
+      font-size: 17px;
+      font-weight: 500;
+      line-height: 1.74;
+    }
+
+    #root [data-frame-05="excerpt"]::before {
+      content: "";
+      position: absolute;
+      left: 58px;
+      top: 0;
+      width: 1px;
+      height: 100%;
+      background: rgba(243, 167, 18, 0.2);
+    }
+
+    #root [data-frame-05="code-line"] {
+      position: relative;
+      display: block;
+      white-space: nowrap;
+    }
+
+    #root [data-frame-05="line-number"] {
+      position: absolute;
+      left: -57px;
+      width: 30px;
+      color: #656565;
+      text-align: right;
+    }
+
+    #root [data-frame-05="hash"] {
+      display: inline-block;
+      margin-left: 12px;
+      padding: 2px 10px;
+      border-radius: 100px;
+      background: rgba(243, 167, 18, 0.08);
+      color: #f3a712;
+      letter-spacing: 0.04em;
+    }
+
+    #root [data-frame-05="headline-block"] {
+      position: absolute;
+      left: 96px;
+      top: 84px;
+      z-index: 2;
+      width: 970px;
+    }
+
+    #root [data-frame-05="eyebrow"] {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 17px;
+      color: #f3a712;
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    #root [data-frame-05="eyebrow-line"] {
+      width: 60px;
+      height: 4px;
+      border-radius: 2px;
+      background: #f3a712;
+    }
+
+    #root [data-frame-05="headline"] {
+      margin: 0;
+      color: #f3efe7;
+      font-size: 62px;
+      font-weight: 700;
+      line-height: 0.98;
+      letter-spacing: -0.03em;
+    }
+
+    #root [data-frame-05="headline-line"] {
+      display: block;
+    }
+
+    #root [data-frame-05="headline-accent"] {
+      display: block;
+      margin-top: 5px;
+      color: #f3a712;
+    }
+
+    #root [data-frame-05="burst-wrap"] {
+      position: absolute;
+      left: 0;
+      top: 314px;
+      width: 1920px;
+      height: 516px;
+    }
+
+    #root [data-frame-05="card"] {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 500px;
+      height: 174px;
+      padding: 22px 24px;
+      border: 1.5px solid rgba(243, 167, 18, 0.2);
+      border-radius: 14px;
+      background: rgba(243, 167, 18, 0.04);
+      will-change: transform;
+    }
+
+    #root [data-frame-05="card-head"] {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    #root [data-frame-05="card-index"] {
+      display: grid;
+      flex: 0 0 42px;
+      width: 42px;
+      height: 42px;
+      place-items: center;
+      border-radius: 50%;
+      background: #f3a712;
+      color: #0e1319;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    #root [data-frame-05="card-copy"] {
+      flex: 1;
+      min-width: 0;
+    }
+
+    #root [data-frame-05="card-title"] {
+      color: #f3efe7;
+      font-size: 26px;
+      font-weight: 650;
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      text-transform: uppercase;
+    }
+
+    #root [data-frame-05="reject-reason"] {
+      margin-top: 11px;
+      color: #63d6c5;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+    }
+
+    #root [data-frame-05="state-slot"] {
+      position: relative;
+      flex: 0 0 94px;
+      width: 94px;
+      height: 28px;
+      perspective: 600px;
+    }
+
+    #root [data-frame-05="state"] {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      border-radius: 100px;
+      background: rgba(243, 167, 18, 0.08);
+      color: #f3a712;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      backface-visibility: hidden;
+    }
+
+    #root [data-frame-05="fill-stack"] {
+      display: grid;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    #root [data-frame-05="fill-chip"] {
+      position: relative;
+      height: 24px;
+      overflow: hidden;
+      border-radius: 100px;
+      background: rgba(243, 167, 18, 0.08);
+    }
+
+    #root [data-frame-05="fill"] {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: 100px;
+      background: rgba(243, 167, 18, 0.15);
+      transform-origin: left center;
+    }
+
+    #root [data-frame-05="fill-label"] {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      height: 100%;
+      padding: 0 12px;
+      color: #f3a712;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    #root [data-frame-05="gate"] {
+      position: absolute;
+      left: 320px;
+      top: 392px;
+      z-index: 4;
+      width: 1280px;
+      height: 238px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      background: rgba(243, 167, 18, 0.04);
+    }
+
+    #root [data-frame-05="gate-svg"] {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+
+    #root [data-frame-05="gate-outline"] {
+      fill: none;
+      stroke: #f3a712;
+      stroke-width: 4;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    #root [data-frame-05="gate-copy"] {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+    }
+
+    #root [data-frame-05="gate-kicker"] {
+      margin-bottom: 18px;
+      color: #63d6c5;
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    #root [data-frame-05="gate-title"] {
+      color: #f3efe7;
+      font-size: 48px;
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: -0.025em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    #root [data-frame-05="plus"] {
+      display: inline-block;
+      margin: 0 18px;
+      color: #f3a712;
+    }
+  </style>
+
+  <div
+    id="root"
+    data-composition-id="05-repository-is-data"
+    data-start="0"
+    data-duration="17.744"
+    data-width="1920"
+    data-height="1080"
+  >
+    <div class="clip" data-frame-05="ground" data-start="0" data-duration="17.744" data-track-index="0"></div>
+
+    <div class="clip" data-frame-05="stage" data-start="0" data-duration="17.744" data-track-index="1">
+      <div id="05-repository-is-data-excerpt" data-frame-05="excerpt">
+        <span data-frame-05="code-line"><span data-frame-05="line-number">01</span>repository/input.md</span>
+        <span data-frame-05="code-line"><span data-frame-05="line-number">02</span>content_channel = "UNTRUSTED_DATA"</span>
+        <span data-frame-05="code-line"><span data-frame-05="line-number">03</span>prompt_injection <span id="05-repository-is-data-hash" data-frame-05="hash">[SHA256: REDACTED]</span></span>
+        <span data-frame-05="code-line"><span data-frame-05="line-number">04</span>execution_policy = "DENY"</span>
+      </div>
+
+      <header id="05-repository-is-data-headline-block" data-frame-05="headline-block">
+        <div id="05-repository-is-data-eyebrow" data-frame-05="eyebrow">
+          <span data-frame-05="eyebrow-line"></span>
+          Trust boundary
+        </div>
+        <h1 data-frame-05="headline">
+          <span id="05-repository-is-data-headline-one" data-frame-05="headline-line">REPOSITORIES ARE DATA</span>
+          <span id="05-repository-is-data-headline-two" data-frame-05="headline-accent">NOT INSTRUCTIONS</span>
+        </h1>
+      </header>
+
+      <div data-frame-05="burst-wrap">
+        <article id="05-repository-is-data-binaries" data-frame-05="card" data-target-x="-270" data-target-y="-112">
+          <div data-frame-05="card-head">
+            <span data-frame-05="card-index">01</span>
+            <div data-frame-05="card-copy">
+              <div data-frame-05="card-title">Binaries</div>
+              <div id="05-repository-is-data-binaries-reason" data-frame-05="reject-reason">Executable content</div>
+            </div>
+            <div data-frame-05="state-slot">
+              <span id="05-repository-is-data-binaries-seen" data-frame-05="state">SEEN</span>
+              <span id="05-repository-is-data-binaries-rejected" data-frame-05="state">REJECTED</span>
+            </div>
+          </div>
+        </article>
+
+        <article id="05-repository-is-data-symlinks" data-frame-05="card" data-target-x="270" data-target-y="-112">
+          <div data-frame-05="card-head">
+            <span data-frame-05="card-index">02</span>
+            <div data-frame-05="card-copy">
+              <div data-frame-05="card-title">Symlinks</div>
+              <div id="05-repository-is-data-symlinks-reason" data-frame-05="reject-reason">Path escape</div>
+            </div>
+            <div data-frame-05="state-slot">
+              <span id="05-repository-is-data-symlinks-seen" data-frame-05="state">SEEN</span>
+              <span id="05-repository-is-data-symlinks-rejected" data-frame-05="state">REJECTED</span>
+            </div>
+          </div>
+        </article>
+
+        <article id="05-repository-is-data-dependencies" data-frame-05="card" data-target-x="-270" data-target-y="112">
+          <div data-frame-05="card-head">
+            <span data-frame-05="card-index">03</span>
+            <div data-frame-05="card-copy">
+              <div data-frame-05="card-title">Dependency trees</div>
+              <div id="05-repository-is-data-dependencies-reason" data-frame-05="reject-reason">Unbounded input</div>
+            </div>
+            <div data-frame-05="state-slot">
+              <span id="05-repository-is-data-dependencies-seen" data-frame-05="state">SEEN</span>
+              <span id="05-repository-is-data-dependencies-rejected" data-frame-05="state">REJECTED</span>
+            </div>
+          </div>
+        </article>
+
+        <article id="05-repository-is-data-oversized" data-frame-05="card" data-target-x="270" data-target-y="112">
+          <div data-frame-05="card-head">
+            <span data-frame-05="card-index">04</span>
+            <div data-frame-05="card-copy">
+              <div data-frame-05="card-title">Oversized files</div>
+              <div id="05-repository-is-data-oversized-reason" data-frame-05="reject-reason">Size limit</div>
+            </div>
+            <div data-frame-05="state-slot">
+              <span id="05-repository-is-data-oversized-seen" data-frame-05="state">SEEN</span>
+              <span id="05-repository-is-data-oversized-rejected" data-frame-05="state">REJECTED</span>
+            </div>
+          </div>
+        </article>
+
+        <article id="05-repository-is-data-injection" data-frame-05="card" data-target-x="0" data-target-y="112">
+          <div data-frame-05="card-head">
+            <span data-frame-05="card-index">05</span>
+            <div data-frame-05="card-copy">
+              <div data-frame-05="card-title">Injection bait</div>
+              <div id="05-repository-is-data-injection-reason" data-frame-05="reject-reason">Instruction boundary</div>
+            </div>
+            <div data-frame-05="state-slot">
+              <span id="05-repository-is-data-injection-seen" data-frame-05="state">SEEN</span>
+              <span id="05-repository-is-data-injection-rejected" data-frame-05="state">REJECTED</span>
+            </div>
+          </div>
+          <div data-frame-05="fill-stack">
+            <div data-frame-05="fill-chip">
+              <span id="05-repository-is-data-path-fill" data-frame-05="fill"></span>
+              <span data-frame-05="fill-label">Path cited</span>
+            </div>
+          </div>
+        </article>
+
+        <article id="05-repository-is-data-schema" data-frame-05="card" data-target-x="550" data-target-y="112">
+          <div data-frame-05="card-head">
+            <span data-frame-05="card-index">06</span>
+            <div data-frame-05="card-copy">
+              <div data-frame-05="card-title">Closed schema</div>
+              <div id="05-repository-is-data-schema-reason" data-frame-05="reject-reason">Output contract</div>
+            </div>
+            <div data-frame-05="state-slot">
+              <span id="05-repository-is-data-schema-seen" data-frame-05="state">SEEN</span>
+              <span id="05-repository-is-data-schema-required" data-frame-05="state">REQUIRED</span>
+            </div>
+          </div>
+          <div data-frame-05="fill-stack">
+            <div data-frame-05="fill-chip">
+              <span id="05-repository-is-data-line-fill" data-frame-05="fill"></span>
+              <span data-frame-05="fill-label">Valid line</span>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <section id="05-repository-is-data-gate" data-frame-05="gate">
+        <svg data-frame-05="gate-svg" viewBox="0 0 1280 238" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect id="05-repository-is-data-gate-outline" data-frame-05="gate-outline" x="4" y="4" width="1272" height="230" rx="14"></rect>
+        </svg>
+        <div data-frame-05="gate-copy">
+          <div data-frame-05="gate-kicker">Closed-schema trust boundary</div>
+          <div data-frame-05="gate-title">
+            SCANNED PATH<span data-frame-05="plus">+</span>VALID LINE<span data-frame-05="plus">+</span>CLOSED SCHEMA
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    (() => {
+      const frameId = "05-repository-is-data";
+      const excerpt = document.getElementById(frameId + "-excerpt");
+      const eyebrow = document.getElementById(frameId + "-eyebrow");
+      const headlineOne = document.getElementById(frameId + "-headline-one");
+      const headlineTwo = document.getElementById(frameId + "-headline-two");
+      const hash = document.getElementById(frameId + "-hash");
+      const gate = document.getElementById(frameId + "-gate");
+      const gateOutline = document.getElementById(frameId + "-gate-outline");
+      const pathFill = document.getElementById(frameId + "-path-fill");
+      const lineFill = document.getElementById(frameId + "-line-fill");
+
+      const threatKeys = ["binaries", "symlinks", "dependencies", "oversized"];
+      const allCardKeys = [...threatKeys, "injection", "schema"];
+      const cards = Object.fromEntries(
+        allCardKeys.map((key) => [key, document.getElementById(frameId + "-" + key)]),
+      );
+
+      const tl = gsap.timeline({ paused: true });
+
+      tl.fromTo(excerpt, { autoAlpha: 0, x: 34 }, { autoAlpha: 1, x: 0, duration: 0.7, ease: "power3.out" }, 0);
+      tl.fromTo(eyebrow, { autoAlpha: 0, x: -24 }, { autoAlpha: 1, x: 0, duration: 0.5, ease: "power3.out" }, 0.04);
+      tl.fromTo(headlineOne, { autoAlpha: 0, y: 24 }, { autoAlpha: 1, y: 0, duration: 0.58, ease: "power3.out" }, 0.16);
+      tl.fromTo(headlineTwo, { autoAlpha: 0, y: 24 }, { autoAlpha: 1, y: 0, duration: 0.58, ease: "power3.out" }, 0.62);
+      tl.fromTo(hash, { autoAlpha: 0, scale: 0.88 }, { autoAlpha: 1, scale: 1, duration: 0.55, ease: "power3.out" }, 1.55);
+
+      const initialTargets = {
+        binaries: { x: -270, y: -112 },
+        symlinks: { x: 270, y: -112 },
+        dependencies: { x: -270, y: 112 },
+        oversized: { x: 270, y: 112 },
+      };
+      const finalTargets = {
+        binaries: { x: -550, y: -112 },
+        symlinks: { x: 0, y: -112 },
+        dependencies: { x: 550, y: -112 },
+        oversized: { x: -550, y: 112 },
+        injection: { x: 0, y: 112 },
+        schema: { x: 550, y: 112 },
+      };
+      const entryTimes = [3.04, 4.08, 5.12, 6.16];
+
+      const flipState = (key, nextState, at) => {
+        const seen = document.getElementById(frameId + "-" + key + "-seen");
+        const next = document.getElementById(frameId + "-" + key + "-" + nextState);
+        const reason = document.getElementById(frameId + "-" + key + "-reason");
+        tl.fromTo(seen, { autoAlpha: 1, rotationX: 0 }, { autoAlpha: 0, rotationX: -88, duration: 0.3, ease: "power2.in" }, at);
+        tl.fromTo(next, { autoAlpha: 0, rotationX: 88 }, { autoAlpha: 1, rotationX: 0, duration: 0.34, ease: "power2.out" }, at + 0.24);
+        tl.fromTo(reason, { autoAlpha: 0, y: 8 }, { autoAlpha: 1, y: 0, duration: 0.34, ease: "power2.out" }, at + 0.27);
+      };
+
+      threatKeys.forEach((key, index) => {
+        const target = initialTargets[key];
+        tl.fromTo(
+          cards[key],
+          { xPercent: -50, yPercent: -50, x: 0, y: 0, scale: 0.6, opacity: 0 },
+          {
+            x: target.x,
+            y: target.y,
+            scale: 1,
+            opacity: 1,
+            duration: 0.72,
+            ease: "power3.out",
+          },
+          entryTimes[index],
+        );
+        flipState(key, "rejected", entryTimes[index] + 0.46);
+      });
+
+      threatKeys.forEach((key) => {
+        const target = finalTargets[key];
+        tl.to(cards[key], { x: target.x, y: target.y, duration: 0.78, ease: "power3.out" }, 8.04);
+      });
+
+      ["injection", "schema"].forEach((key, index) => {
+        const target = finalTargets[key];
+        tl.fromTo(
+          cards[key],
+          { xPercent: -50, yPercent: -50, x: 0, y: 0, scale: 0.65, opacity: 0 },
+          {
+            x: target.x,
+            y: target.y,
+            scale: 1,
+            opacity: 1,
+            duration: 0.76,
+            ease: "power3.out",
+          },
+          8.72 + index * 0.92,
+        );
+      });
+      flipState("injection", "rejected", 9.56);
+      flipState("schema", "required", 10.42);
+
+      tl.fromTo(pathFill, { scaleX: 0 }, { scaleX: 1, duration: 1, ease: "power2.out" }, 10.18);
+      tl.fromTo(lineFill, { scaleX: 0 }, { scaleX: 1, duration: 1, ease: "power2.out" }, 11.42);
+
+      const cardList = allCardKeys.map((key) => cards[key]);
+      tl.to(
+        cardList,
+        {
+          x: 0,
+          y: 0,
+          scale: 0.62,
+          autoAlpha: 0,
+          duration: 0.92,
+          ease: "power3.in",
+          stagger: 0.035,
+        },
+        13,
+      );
+
+      tl.fromTo(gate, { autoAlpha: 0, scale: 0.9 }, { autoAlpha: 1, scale: 1, duration: 0.68, ease: "power3.out" }, 13.42);
+
+      const outlineLength = gateOutline.getTotalLength();
+      gateOutline.style.strokeDasharray = `${outlineLength}`;
+      gateOutline.style.strokeDashoffset = `${outlineLength}`;
+      tl.to(gateOutline, { strokeDashoffset: 0, duration: 1.35, ease: "power2.out" }, 14.08);
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines[frameId] = tl;
+    })();
+  </script>
+</template>

@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0.0",
+  "purpose": "Exploratory Neoverse N2 profile selection; not a confirmation benchmark",
+  "llama_cpp_commit": "67d5978bb1ba490070ddbd2a7c59c7ec5a60b7cc",
+  "model_config": "benchmarks/config/llama-cpp-qwen15b-q4_0.json",
+  "stage_1": {
+    "threads": [2, 3, 4],
+    "kleidiai_chunk_multipliers": [1, 2, 4, 8],
+    "batch_size": 2048,
+    "ubatch_size": 512,
+    "prompt_tokens": 512,
+    "generation_tokens": 128,
+    "repetitions": 3,
+    "prefill_floor_relative_to_best": 0.98,
+    "selection": "maximum tg128 among candidates within 2% of the best pp512; then lower RSS, fewer threads, lower chunk multiplier"
+  },
+  "stage_2": {
+    "batch_ubatch_pairs": [[512, 128], [1024, 256], [2048, 512]],
+    "prompt_tokens": 1024,
+    "generation_tokens": 0,
+    "repetitions": 3,
+    "selection": "maximum pp1024; then lower RSS, smaller batch, smaller ubatch"
+  },
+  "depth_check": {
+    "depths": [0, 512, 1024],
+    "generation_tokens": 128,
+    "repetitions": 3
+  },
+  "fixed": {
+    "gpu_layers": 0,
+    "device": "none",
+    "model_sha256": "aa8353e0d0fca3a0041828701e90db7635197400f040676d11d7798665fa316e"
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": 30876839849,
+  "run_url": "https://github.com/agentic-build-lab/proofedge-arm64/actions/runs/30876839849",
+  "project_commit": "ebc1956940af9f95368701473d8d8305245e7c21",
+  "purpose": "Third fail-closed canary for code-only investigate relations and a redacted source-target diff",
+  "status": "rejected_by_semantic_quality_gate",
+  "native_environment": {
+    "architecture": "aarch64",
+    "cpu": "Arm Neoverse-N2",
+    "kleidiai_runtime_selection_verified": true
+  },
+  "quality": {
+    "four_single_run_ledgers_passed": 0,
+    "baseline_repeated_product_runs_passed": 0,
+    "kleidiai_repeated_product_runs_passed": 0,
+    "repeated_runs_per_configuration": 5,
+    "failure_reason": "The compact model observed relevant changes but still claimed identical files in optimized-profile limitations. Its OpenAPI proposals cited unnumbered diff positions rather than visible repository lines, and its Python proposals missed the frozen halfway-rounding and non-default refund-reason stimuli. The unchanged revision-2 gate rejected every configuration."
+  },
+  "instrumentation_validation": {
+    "streaming_ttft_captured": true,
+    "context_hashes_stable_across_repetitions": true,
+    "unique_response_count_per_case_and_configuration": 1,
+    "startup_trials_per_configuration": 3,
+    "client_and_server_resource_records_captured": true
+  },
+  "runtime_result_not_eligible_for_product_claim": {
+    "prompt_processing_change_percent": 0.7098741297855815,
+    "token_generation_change_percent": 3.433704353211886,
+    "reason": "The paired semantic quality gate failed, so the runtime and client timing measurements are preserved but not selected."
+  },
+  "evidence": {
+    "directory": "benchmarks/raw/gha-30876839849",
+    "sha256sums_file_sha256": "c9cc6cf0fde7b4c61151c21cf2d7a6c9011ccf409f18898edee05f00bcf2fa28",
+    "sha256sums_verified": true,
+    "runtime_summary": "benchmarks/results/gha-30876839849-runtime-summary.json"
+  },
+  "next_revision": "Replace ambiguous unnumbered diff prose with a generic ranked change map whose source and target excerpts retain valid repository line numbers; remove few-shot examples that contaminated the compact model output."
+}

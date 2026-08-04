@@ -1,0 +1,23 @@
+	Command being timed: "build/baseline/bin/llama-bench -m models/qwen2.5-coder-1.5b-instruct-q4_0.gguf -t 4 -b 1024 -ub 256 -ngl 0 -dev none -p 1024 -n 128 -r 7 -v -o json"
+	User time (seconds): 434.91
+	System time (seconds): 0.87
+	Percent of CPU this job got: 387%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 1:52.60
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 2011996
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 276486
+	Voluntary context switches: 11874
+	Involuntary context switches: 27634
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 120
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0

@@ -1,0 +1,16 @@
+{
+  "case_id": "openapi-orders-v2",
+  "claims": [
+    {
+      "id": "target-contract-present",
+      "statement": "The target publishes an OpenAPI contract",
+      "evidence": [
+        {
+          "repository": "target",
+          "path": "openapi.json",
+          "line": 1
+        }
+      ]
+    }
+  ]
+}

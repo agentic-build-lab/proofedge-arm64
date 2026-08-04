@@ -1,0 +1,32 @@
+{
+  "schema_version": "1.0.0",
+  "case_id": "openapi-orders-v2",
+  "semantic_gate_revision": 2,
+  "freeze_note": "Evidence anchors were frozen before native Arm profile tuning. Semantic constraints were added after an independent usefulness audit and frozen before the revision-2 native confirmation.",
+  "files": [
+    {
+      "repository": "source",
+      "path": "openapi.json",
+      "sha256": "3acbd2eebac19ed4e52d24a9cc7bf959209c234b1a038a7e643397dca925f8b6"
+    },
+    {
+      "repository": "target",
+      "path": "openapi.json",
+      "sha256": "85dd1eb9e52522d038f8541e2aaaa5be0c3b79894985c11beefbc727924ca2e2"
+    }
+  ],
+  "objectives": [
+    {
+      "id": "orders-success-status-change",
+      "required_content_any": ["status", "201", "200", "created", "accepted"],
+      "required_purpose_any": ["source", "target", "compare", "versus"],
+      "required_input_any": ["post", "/orders", "order"],
+      "allowed_expected_relations": ["investigate"],
+      "acceptable_evidence": [
+        {"repository": "source", "path": "openapi.json", "line_start": 5, "line_end": 9},
+        {"repository": "target", "path": "openapi.json", "line_start": 5, "line_end": 9}
+      ]
+    }
+  ],
+  "forbidden_output_substrings": []
+}

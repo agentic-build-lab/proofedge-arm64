@@ -1,0 +1,4 @@
+baseline-baseline=1
+baseline-optimized=1
+kleidiai-baseline=1
+kleidiai-optimized=1

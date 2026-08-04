@@ -1,0 +1,438 @@
+<template>
+  <style>
+    @font-face {
+      font-family: "Geist";
+      src: url("assets/fonts/Geist-Variable.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 400 700;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "Geist Mono";
+      src: url("assets/fonts/GeistMono-Variable.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 400 700;
+      font-display: swap;
+    }
+
+    #root {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      container-type: size;
+      font-family: "Geist";
+      color: #f3efe7;
+    }
+
+    .f10-inspect-the-proof-ground,
+    .f10-inspect-the-proof-stage {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+
+    .f10-inspect-the-proof-ground {
+      background: #0e1319;
+    }
+
+    .f10-inspect-the-proof-plate {
+      position: absolute;
+      top: 82px;
+      left: 1030px;
+      width: 790px;
+      height: 444px;
+      object-fit: cover;
+      border: 1.5px solid rgba(243, 167, 18, 0.2);
+      border-radius: 14px;
+      opacity: 0;
+    }
+
+    .f10-inspect-the-proof-plate-mask {
+      position: absolute;
+      top: 82px;
+      left: 1030px;
+      width: 790px;
+      height: 444px;
+      border-radius: 14px;
+      background: rgba(14, 19, 25, 0.34);
+      pointer-events: none;
+    }
+
+    .f10-inspect-the-proof-header {
+      position: absolute;
+      top: 122px;
+      left: 100px;
+      width: 820px;
+      transform-origin: left top;
+    }
+
+    .f10-inspect-the-proof-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      color: #f3a712;
+      font-size: 0.82cqw;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .f10-inspect-the-proof-eyebrow::before {
+      content: "";
+      width: 60px;
+      height: 4px;
+      border-radius: 2px;
+      background: #f3a712;
+    }
+
+    .f10-inspect-the-proof-title {
+      margin-top: 18px;
+      color: #f3efe7;
+      font-size: 4.2cqw;
+      font-weight: 680;
+      line-height: 1.02;
+      letter-spacing: -0.045em;
+    }
+
+    .f10-inspect-the-proof-dollar-chip {
+      position: absolute;
+      top: 368px;
+      left: 100px;
+      width: 64px;
+      height: 64px;
+      display: grid;
+      place-items: center;
+      border: 1.5px solid rgba(243, 167, 18, 0.2);
+      border-radius: 50%;
+      background: rgba(243, 167, 18, 0.08);
+      color: #f3a712;
+      font-family: "Geist Mono";
+      font-size: 1.7cqw;
+      font-weight: 650;
+    }
+
+    .f10-inspect-the-proof-morph-card {
+      position: absolute;
+      top: 350px;
+      left: 100px;
+      width: 1450px;
+      height: 100px;
+      overflow: hidden;
+      border: 1.5px solid rgba(243, 167, 18, 0.2);
+      border-radius: 220px;
+      background: rgba(243, 167, 18, 0.08);
+      transform-origin: left center;
+      will-change: transform;
+    }
+
+    .f10-inspect-the-proof-terminal,
+    .f10-inspect-the-proof-brand-lockup {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      box-sizing: border-box;
+    }
+
+    .f10-inspect-the-proof-terminal {
+      padding: 0 32px;
+      font-family: "Geist Mono";
+      white-space: pre;
+    }
+
+    .f10-inspect-the-proof-prompt {
+      flex: 0 0 42px;
+      color: #f3a712;
+      font-size: 1.75cqw;
+      font-weight: 650;
+      line-height: 1;
+    }
+
+    .f10-inspect-the-proof-text-wrap {
+      display: inline-flex;
+      align-items: center;
+      min-width: 1260px;
+      white-space: nowrap;
+    }
+
+    .f10-inspect-the-proof-command {
+      color: #f3efe7;
+      font-size: 1.42cqw;
+      font-weight: 500;
+      line-height: 1;
+      white-space: pre;
+    }
+
+    .f10-inspect-the-proof-caret {
+      display: inline-block;
+      width: 12px;
+      height: 32px;
+      margin-left: 8px;
+      background: #f3a712;
+      vertical-align: -6px;
+    }
+
+    .f10-inspect-the-proof-brand-lockup {
+      padding: 0 96px;
+      gap: 34px;
+      opacity: 0;
+    }
+
+    .f10-inspect-the-proof-mark {
+      width: 72px;
+      height: 72px;
+      display: grid;
+      place-items: center;
+      border: 3px solid #f3a712;
+      border-radius: 12px;
+      color: #f3a712;
+      font-size: 34px;
+      font-weight: 700;
+      letter-spacing: -0.05em;
+    }
+
+    .f10-inspect-the-proof-brand-name {
+      color: #f3efe7;
+      font-size: 6.1cqw;
+      font-weight: 680;
+      line-height: 1;
+      letter-spacing: -0.045em;
+    }
+
+    .f10-inspect-the-proof-final {
+      position: absolute;
+      top: 352px;
+      left: 100px;
+      width: 850px;
+    }
+
+    .f10-inspect-the-proof-final-row {
+      width: 850px;
+      min-height: 74px;
+      display: grid;
+      grid-template-columns: 132px 1fr;
+      align-items: center;
+      padding: 0 22px;
+      box-sizing: border-box;
+      border: 1.5px solid rgba(243, 167, 18, 0.2);
+      border-radius: 14px;
+      background: rgba(243, 167, 18, 0.04);
+      margin-bottom: 14px;
+      transform-origin: left center;
+    }
+
+    .f10-inspect-the-proof-final-label {
+      color: #f3a712;
+      font-size: 0.74cqw;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .f10-inspect-the-proof-final-value {
+      color: #f3efe7;
+      font-size: 1.42cqw;
+      font-weight: 560;
+      line-height: 1.12;
+      letter-spacing: -0.02em;
+    }
+
+    .f10-inspect-the-proof-platform {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 13px 18px;
+      border-radius: 100px;
+      background: #f3a712;
+      color: #0e1319;
+      font-size: 0.8cqw;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .f10-inspect-the-proof-platform-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #0e1319;
+    }
+
+    .f10-inspect-the-proof-progress {
+      position: absolute;
+      top: 872px;
+      left: 96px;
+      width: 1728px;
+      height: 3px;
+      overflow: hidden;
+      background: rgba(243, 167, 18, 0.08);
+    }
+
+    .f10-inspect-the-proof-progress-fill {
+      display: block;
+      width: 100%;
+      height: 100%;
+      background: #f3a712;
+    }
+  </style>
+
+  <div id="root" data-composition-id="10-inspect-the-proof" data-width="1920" data-height="1080" data-start="0" data-duration="11.136">
+    <div class="clip f10-inspect-the-proof-ground" data-start="0" data-duration="11.136" data-track-index="0"></div>
+    <div class="clip f10-inspect-the-proof-stage" data-start="0" data-duration="11.136" data-track-index="1">
+      <img id="10-inspect-the-proof-plate" class="f10-inspect-the-proof-plate" src="assets/scroll-100.png" alt="Captured ProofEdge evidence and reproducibility call to action">
+      <div class="f10-inspect-the-proof-plate-mask" aria-hidden="true"></div>
+
+      <div id="10-inspect-the-proof-header" class="f10-inspect-the-proof-header">
+        <div class="f10-inspect-the-proof-eyebrow">Public evidence</div>
+        <div class="f10-inspect-the-proof-title">INSPECT THE PROOF.</div>
+      </div>
+
+      <div id="10-inspect-the-proof-dollar-chip" class="f10-inspect-the-proof-dollar-chip">$</div>
+
+      <div id="10-inspect-the-proof-morph-card" class="f10-inspect-the-proof-morph-card">
+        <div id="10-inspect-the-proof-terminal" class="f10-inspect-the-proof-terminal">
+          <span class="f10-inspect-the-proof-prompt">$</span>
+          <span class="f10-inspect-the-proof-text-wrap">
+            <span id="10-inspect-the-proof-command" class="f10-inspect-the-proof-command"></span><span id="10-inspect-the-proof-caret" class="f10-inspect-the-proof-caret"></span>
+          </span>
+        </div>
+        <div id="10-inspect-the-proof-brand-lockup" class="f10-inspect-the-proof-brand-lockup">
+          <span class="f10-inspect-the-proof-mark">PE</span>
+          <span class="f10-inspect-the-proof-brand-name">ProofEdge</span>
+        </div>
+      </div>
+
+      <div id="10-inspect-the-proof-final" class="f10-inspect-the-proof-final">
+        <div id="10-inspect-the-proof-source" class="f10-inspect-the-proof-final-row">
+          <span class="f10-inspect-the-proof-final-label">Source</span>
+          <span class="f10-inspect-the-proof-final-value">github.com/agentic-build-lab/proofedge-arm64</span>
+        </div>
+        <div id="10-inspect-the-proof-demo" class="f10-inspect-the-proof-final-row">
+          <span class="f10-inspect-the-proof-final-label">Demo</span>
+          <span class="f10-inspect-the-proof-final-value">github.com/agentic-build-lab/proofedge-arm64</span>
+        </div>
+        <div id="10-inspect-the-proof-platform" class="f10-inspect-the-proof-platform">
+          <span class="f10-inspect-the-proof-platform-dot"></span>
+          <span>CLOUD AI · NATIVE ARM64</span>
+        </div>
+      </div>
+
+      <div class="f10-inspect-the-proof-progress" aria-hidden="true"><span class="f10-inspect-the-proof-progress-fill"></span></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script>
+    (() => {
+      const tl = gsap.timeline({ paused: true });
+      window.__timelines = window.__timelines || {};
+      window.__timelines["10-inspect-the-proof"] = tl;
+
+      const plate = document.getElementById("10-inspect-the-proof-plate");
+      const header = document.getElementById("10-inspect-the-proof-header");
+      const dollarChip = document.getElementById("10-inspect-the-proof-dollar-chip");
+      const morphCard = document.getElementById("10-inspect-the-proof-morph-card");
+      const terminal = document.getElementById("10-inspect-the-proof-terminal");
+      const brandLockup = document.getElementById("10-inspect-the-proof-brand-lockup");
+      const commandEl = document.getElementById("10-inspect-the-proof-command");
+      const caretEl = document.getElementById("10-inspect-the-proof-caret");
+      const finalWrap = document.getElementById("10-inspect-the-proof-final");
+      const sourceRow = document.getElementById("10-inspect-the-proof-source");
+      const demoRow = document.getElementById("10-inspect-the-proof-demo");
+      const platform = document.getElementById("10-inspect-the-proof-platform");
+
+      gsap.set(morphCard, { scale: 0.18, autoAlpha: 0 });
+      gsap.set(terminal, { autoAlpha: 0 });
+      gsap.set(brandLockup, { autoAlpha: 0 });
+      gsap.set(finalWrap, { autoAlpha: 0 });
+      gsap.set(sourceRow, { autoAlpha: 0 });
+      gsap.set(demoRow, { autoAlpha: 0 });
+      gsap.set(platform, { autoAlpha: 0 });
+
+      tl.fromTo(plate, { opacity: 0 }, { opacity: 0.22, duration: 0.5, ease: "power1.out" }, 0.06);
+      tl.fromTo(header, { y: 24, opacity: 0 }, { y: 0, opacity: 1, duration: 0.42, ease: "power3.out" }, 0.08);
+      tl.fromTo(dollarChip, { scale: 0.82, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: "power3.out" }, 0.38);
+      tl.to(header, { scale: 0.7, y: -46, duration: 0.62, ease: "power2.inOut" }, 1.12);
+
+      tl.set(morphCard, { autoAlpha: 1 }, 1.8);
+      tl.to(
+        morphCard,
+        {
+          scale: 1,
+          borderRadius: 50,
+          backgroundColor: "rgba(243, 167, 18, 0.04)",
+          duration: 0.82,
+          ease: "power2.inOut",
+        },
+        1.8,
+      );
+      tl.to(dollarChip, { opacity: 0, duration: 0.3, ease: "power1.in" }, 1.92);
+      tl.to(terminal, { autoAlpha: 1, duration: 0.34, ease: "power1.out" }, 2.23);
+
+      const SEQUENCE = [
+        { t: 0, text: "", color: "#f3a712" },
+        { t: 2.42, text: "python", color: "#f3a712" },
+        { t: 2.74, text: "python -m", color: "#63d6c5" },
+        { t: 3.02, text: "python -m pip", color: "#63d6c5" },
+        { t: 3.35, text: "python -m pip install", color: "#f3efe7" },
+        { t: 3.72, text: "python -m pip install -e", color: "#f3a712" },
+        { t: 4.05, text: "python -m pip install -e .", color: "#f3efe7" },
+        { t: 5.5, text: "", color: "#f3a712" },
+        { t: 5.72, text: "proofedge", color: "#f3a712" },
+        { t: 6.08, text: "proofedge evaluate", color: "#f3efe7" },
+        { t: 6.48, text: "proofedge evaluate --cases", color: "#f3a712" },
+        { t: 6.94, text: "proofedge evaluate --cases evaluation/", color: "#63d6c5" },
+        { t: 7.42, text: "proofedge evaluate --cases evaluation/cases", color: "#f3efe7" },
+      ];
+      function entryAt(time) {
+        for (let i = SEQUENCE.length - 1; i >= 0; i -= 1) {
+          if (time >= SEQUENCE[i].t) return SEQUENCE[i];
+        }
+        return SEQUENCE[0];
+      }
+      const changeTimes = SEQUENCE.filter((entry, index) => index > 0 && entry.text !== SEQUENCE[index - 1].text).map((entry) => entry.t);
+      const driver = { t: 0 };
+      const blink = { p: 0 };
+      tl.to(
+        driver,
+        {
+          t: 11.136,
+          duration: 11.136,
+          ease: "none",
+          onUpdate: () => {
+            const entry = entryAt(driver.t);
+            commandEl.textContent = entry.text;
+            caretEl.style.background = entry.color;
+            const typing = changeTimes.some((time) => time <= driver.t && driver.t - time < 0.2);
+            caretEl.style.opacity = driver.t >= 8.38 ? "0" : typing ? "1" : Math.sin(blink.p) > 0 ? "1" : "0";
+          },
+        },
+        0,
+      );
+      tl.to(blink, { p: Math.PI * 2 * 10, duration: 8.38, ease: "none" }, 0);
+
+      tl.to(header, { opacity: 0, duration: 0.24, ease: "power1.in" }, 8.8);
+      tl.to(terminal, { opacity: 0, duration: 0.28, ease: "power1.in" }, 8.8);
+      tl.to(
+        morphCard,
+        {
+          scale: 0.42,
+          y: -150,
+          borderRadius: 34,
+          backgroundColor: "rgba(243, 167, 18, 0.08)",
+          duration: 0.72,
+          ease: "power2.inOut",
+        },
+        8.8,
+      );
+      tl.to(brandLockup, { autoAlpha: 1, duration: 0.3, ease: "power1.out" }, 9.2);
+
+      tl.set(finalWrap, { autoAlpha: 1 }, 9.3);
+      tl.fromTo(sourceRow, { scale: 0.96, x: -28, autoAlpha: 0 }, { scale: 1, x: 0, autoAlpha: 1, duration: 0.42, ease: "power3.out" }, 9.36);
+      tl.fromTo(demoRow, { scale: 0.96, x: -28, autoAlpha: 0 }, { scale: 1, x: 0, autoAlpha: 1, duration: 0.42, ease: "power3.out" }, 9.78);
+      tl.fromTo(platform, { scale: 0.94, autoAlpha: 0 }, { scale: 1, autoAlpha: 1, duration: 0.42, ease: "power3.out" }, 10.2);
+    })();
+  </script>
+</template>

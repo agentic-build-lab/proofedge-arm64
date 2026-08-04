@@ -1,0 +1,10 @@
+ImageOS=ubuntu24-arm64
+ImageVersion=20260719.67.1
+RUNNER_ARCH=ARM64
+RUNNER_ENVIRONMENT=github-hosted
+RUNNER_NAME=GitHub Actions 1000000118
+RUNNER_OS=Linux
+RUNNER_TEMP=/home/runner/work/_temp
+RUNNER_TOOL_CACHE=/opt/hostedtoolcache
+RUNNER_TRACKING_ID=github_b22d35e0-5220-4a95-82c5-de767d5c4e59
+RUNNER_WORKSPACE=/home/runner/work/proofedge-arm64

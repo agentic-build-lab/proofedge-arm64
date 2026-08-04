@@ -1,0 +1,1620 @@
+{
+  "limitations": [
+    "Task latency excludes Python interpreter startup and the final JSON file write.",
+    "TTFT is client-observed first non-empty streamed content, not a server-internal proxy.",
+    "Energy is not reported because the hosted runner exposes no calibrated power data."
+  ],
+  "passed": true,
+  "profile": "optimized",
+  "quality": {
+    "all_schema_and_semantic_gates_passed": true,
+    "successful_runs": 5,
+    "total_runs": 5
+  },
+  "repetitions": 5,
+  "request_end_to_end_ms": {
+    "max": 27660.574921,
+    "mean": 22311.237964,
+    "min": 17012.778417,
+    "n": 10,
+    "p50": 22314.160501500002,
+    "p95": 27660.574921
+  },
+  "request_time_to_first_token_ms": {
+    "max": 19969.019755,
+    "mean": 14878.2589367,
+    "min": 9827.512015,
+    "n": 10,
+    "p50": 14867.2505425,
+    "p95": 19969.019755
+  },
+  "runs": [
+    {
+      "evaluation": {
+        "accepted_proposals": 3,
+        "canary_leakage_count": 0,
+        "cases": [
+          {
+            "accepted_proposals": 1,
+            "canary_leakage": [],
+            "case_id": "openapi-orders-v2",
+            "client_timings": {
+              "end_to_end_ms": 17020.533066,
+              "streaming": true,
+              "time_to_first_token_ms": 9827.512015
+            },
+            "compiled_reference_validity": 1.0,
+            "compiler": {
+              "candidates_total": 1,
+              "mode": "model-ranked-deterministic-change-compiler",
+              "model_aligned_candidates": 0,
+              "raw_proposals_total": 2,
+              "selections": [
+                {
+                  "candidate_id": "http:post /orders",
+                  "raw_model_proposal_index": null,
+                  "selection_reason": "safety-floor"
+                }
+              ]
+            },
+            "context_characters": 1426,
+            "context_sha256": "d6940c33ef6506442f0990ef6f1c64a236994e1b41e45356b20fcaf68697b0f2",
+            "error": null,
+            "evidence_objectives_matched": 1,
+            "fallback_used": false,
+            "gold_target_density": 1.0,
+            "matched_objective_ids": [
+              "orders-success-status-change"
+            ],
+            "objectives_matched": 1,
+            "objectives_total": 1,
+            "passed": true,
+            "profile": "optimized",
+            "proposals_total": 1,
+            "published_reference_validity": 1.0,
+            "raw_accepted_proposals": 2,
+            "raw_proposals_total": 2,
+            "raw_reference_validity": 1.0,
+            "raw_rejected": [],
+            "raw_rejected_proposals": 0,
+            "raw_response": {
+              "limitations": [
+                "The mechanical change map does not provide semantic conclusions."
+              ],
+              "tests": [
+                {
+                  "expected_relation": "investigate",
+                  "inputs": [
+                    "openapi.json"
+                  ],
+                  "line": 3,
+                  "name": "Test OpenAPI Version Change",
+                  "path": "openapi.json",
+                  "priority": "high",
+                  "purpose": "Ensure the OpenAPI version is updated from v1 to v2.",
+                  "repository": "source"
+                },
+                {
+                  "expected_relation": "investigate",
+                  "inputs": [
+                    "openapi.json"
+                  ],
+                  "line": 4,
+                  "name": "Test OpenAPI Title Change",
+                  "path": "openapi.json",
+                  "priority": "high",
+                  "purpose": "Ensure the OpenAPI title is updated from 'Orders v1' to 'Orders v2'.",
+                  "repository": "source"
+                }
+              ]
+            },
+            "raw_response_sha256": "8d695eba6f8f34a0665012c507c56d224bd9b2608e644359137641339e965ea9",
+            "rejected": [],
+            "rejected_proposals": 0,
+            "response": {
+              "limitations": [
+                "Tests were compiled from repository changes; the local model influenced candidate priority only, and its raw output is retained separately."
+              ],
+              "tests": [
+                {
+                  "expected_relation": "investigate",
+                  "inputs": [
+                    "POST /orders",
+                    "valid request body"
+                  ],
+                  "line": 8,
+                  "name": "Investigate POST /orders response contract",
+                  "path": "openapi.json",
+                  "priority": "high",
+                  "purpose": "Compare source POST /orders responses=201,400 with target POST /orders responses=200,400",
+                  "repository": "source"
+                }
+              ]
+            },
+            "response_sha256": "c558aea62d17a346c8409ef695a6b41c0240b5f2d5cada3965bd3688b4476aac",
+            "risk_evidence_coverage": 1.0,
+            "schema_valid": true,
+            "semantic_objective_coverage": 1.0,
+            "timings": {
+              "cache_n": 0,
+              "predicted_ms": 7286.031,
+              "predicted_n": 222,
+              "predicted_per_second": 30.46926371847718,
+              "predicted_per_token_ms": 32.81995945945946,
+              "prompt_ms": 9708.957,
+              "prompt_n": 910,
+              "prompt_per_second": 93.72788446791967,
+              "prompt_per_token_ms": 10.669183516483518
+            },
+            "usage": {
+              "completion_tokens": 222,
+              "prompt_tokens": 910,
+              "prompt_tokens_details": {
+                "cached_tokens": 0
+              },
+              "total_tokens": 1132
+            }
+          },
+          {
+            "accepted_proposals": 2,
+            "canary_leakage": [],
+            "case_id": "python-refund-v2",
+            "client_timings": {
+              "end_to_end_ms": 27660.574921,
+              "streaming": true,
+              "time_to_first_token_ms": 19969.019755
+            },
+            "compiled_reference_validity": 1.0,
+            "compiler": {
+              "candidates_total": 2,
+              "mode": "model-ranked-deterministic-change-compiler",
+              "model_aligned_candidates": 2,
+              "raw_proposals_total": 2,
+              "selections": [
+                {
+                  "candidate_id": "python-signature:pricing.py:refund",
+                  "raw_model_proposal_index": 0,
+                  "selection_reason": "model-aligned"
+                },
+                {
+                  "candidate_id": "python-body:pricing.py:quote",
+                  "raw_model_proposal_index": 1,
+                  "selection_reason": "model-aligned"
+                }
+              ]
+            },
+            "context_characters": 3163,
+            "context_sha256": "85e859f5bb0fdf74c69d5c04917b28126f3198a16663e47cdc3fe4381aaf907e",
+            "error": null,
+            "evidence_objectives_matched": 2,
+            "fallback_used": false,
+            "gold_target_density": 1.0,
+            "matched_objective_ids": [
+              "rounding-policy-change",
+              "refund-reason-loss"
+            ],
+            "objectives_matched": 2,
+            "objectives_total": 2,
+            "passed": true,
+            "profile": "optimized",
+            "proposals_total": 2,
+            "published_reference_validity": 1.0,
+            "raw_accepted_proposals": 1,
+            "raw_proposals_total": 2,
+            "raw_reference_validity": 0.5,
+            "raw_rejected": [
+              {
+                "index": 0,
+                "line": 11,
+                "path": "pricing.py",
+                "reason": "line was outside the bounded repository scan",
+                "repository": "source"
+              }
+            ],
+            "raw_rejected_proposals": 1,
+            "raw_response": {
+              "limitations": [
+                "The repository note does not provide any specific changes or risks."
+              ],
+              "tests": [
+                {
+                  "expected_relation": "investigate",
+                  "inputs": [
+                    "order-7",
+                    "duplicate"
+                  ],
+                  "line": 11,
+                  "name": "Refund order with reason",
+                  "path": "pricing.py",
+                  "priority": "high",
+                  "purpose": "Ensure that the refund function correctly handles a refund with a reason.",
+                  "repository": "source"
+                },
+                {
+                  "expected_relation": "investigate",
+                  "inputs": [
+                    "1.005",
+                    "USD"
+                  ],
+                  "line": 5,
+                  "name": "Quote amount with currency",
+                  "path": "pricing.py",
+                  "priority": "high",
+                  "purpose": "Ensure that the quote function correctly formats the amount and currency.",
+                  "repository": "source"
+                }
+              ]
+            },
+            "raw_response_sha256": "61cfcc1ea5198785df54d80912bff82e46408113bae31565451d3aa5218d566b",
+            "rejected": [],
+            "rejected_proposals": 0,
+            "response": {
+              "limitations": [
+                "Tests were compiled from repository changes; the local model influenced candidate priority only, and its raw output is retained separately."
+              ],
+              "tests": [
+                {
+                  "expected_relation": "investigate",
+                  "inputs": [
+                    "order_id=order-7",
+                    "reason=duplicate"
+                  ],
+                  "line": 8,
+                  "name": "Investigate removed refund parameter reason",
+                  "path": "pricing.py",
+                  "priority": "high",
+                  "purpose": "Compare source refund behavior with reason against target refund behavior after removal of reason",
+                  "repository": "source"
+                },
+                {
+                  "expected_relation": "investigate",
+                  "inputs": [
+                    "amount=1.005"
+                  ],
+                  "line": 4,
+                  "name": "Investigate quote rounding behavior",
+                  "path": "pricing.py",
+                  "priority": "high",
+                  "purpose": "Compare source quote rounding behavior with target quote rounding behavior for the changed implementation",
+                  "repository": "source"
+                }
+              ]
+            },
+            "response_sha256": "a0854494d28afaa07bf9235faebd351e0fd6329a02c425818a31250d2349b01d",
+            "risk_evidence_coverage": 1.0,
+            "schema_valid": true,
+            "semantic_objective_coverage": 1.0,
+            "timings": {
+              "cache_n": 0,
+              "predicted_ms": 7788.877,
+              "predicted_n": 223,
+              "predicted_per_second": 28.630571518846686,
+              "predicted_per_token_ms": 34.92769955156951,
+              "prompt_ms": 19849.823,
+              "prompt_n": 1484,
+              "prompt_per_second": 74.76137192759855,
+              "prompt_per_token_ms": 13.375891509433963
+            },
+            "usage": {
+              "completion_tokens": 223,
+              "prompt_tokens": 1484,
+              "prompt_tokens_details": {
+                "cached_tokens": 0
+              },
+              "total_tokens": 1707
+            }
+          }
+        ],
+        "cases_passed": 2,
+        "cases_total": 2,
+        "compiled_reference_validity": 1.0,
+        "engine": "llama.cpp+deterministic-change-compiler",
+        "evidence_objectives_matched": 3,
+        "fallback_count": 0,
+        "objectives_matched": 3,
+        "objectives_total": 3,
+        "passed": true,
+        "profile": "optimized",
+        "proposals_total": 3,
+        "published_reference_validity": 1.0,
+        "raw_accepted_proposals": 3,
+        "raw_proposals_total": 4,
+        "raw_reference_validity": 0.75,
+        "raw_rejected_proposals": 1,
+        "rejected_proposals": 0,
+        "risk_evidence_coverage": 1.0,
+        "schema_completion_rate": 1.0,
+        "schema_version": "1.1.0",
+        "semantic_objective_coverage": 1.0,
+        "thresholds": {
+          "maximum_canary_leakage_count": 0,
+          "maximum_fallback_count": 0,
+          "minimum_case_compiled_reference_validity": 1.0,
+          "minimum_case_gold_target_density": 0.4,
+          "minimum_case_risk_evidence_coverage": 0.75,
+          "minimum_case_semantic_objective_coverage": 0.75,
+          "schema_completion_rate": 1.0
+        }
+      },
+      "repetition": 1,
+      "task_end_to_end_ms": 44688.038322
+    },
+    {
+      "evaluation": {
+        "accepted_proposals": 3,
+        "canary_leakage_count": 0,
+        "cases": [
+          {
+            "accepted_proposals": 1,
+            "canary_leakage": [],
+            "case_id": "openapi-orders-v2",
+            "client_timings": {
+              "end_to_end_ms": 17072.545728,
+              "streaming": true,
+              "time_to_first_token_ms": 9839.985031
+            },
+            "compiled_reference_validity": 1.0,
+            "compiler": {
+              "candidates_total": 1,
+              "mode": "model-ranked-deterministic-change-compiler",
+              "model_aligned_candidates": 0,
+              "raw_proposals_total": 2,
+              "selections": [
+                {
+                  "candidate_id": "http:post /orders",
+                  "raw_model_proposal_index": null,
+                  "selection_reason": "safety-floor"
+                }
+              ]
+            },
+            "context_characters": 1426,
+            "context_sha256": "d6940c33ef6506442f0990ef6f1c64a236994e1b41e45356b20fcaf68697b0f2",
+            "error": null,
+            "evidence_objectives_matched": 1,
+            "fallback_used": false,
+            "gold_target_density": 1.0,
+            "matched_objective_ids": [
+              "orders-success-status-change"
+            ],
+            "objectives_matched": 1,
+            "objectives_total": 1,
+            "passed": true,
+            "profile": "optimized",
+            "proposals_total": 1,
+            "published_reference_validity": 1.0,
+            "raw_accepted_proposals": 2,
+            "raw_proposals_total": 2,
+            "raw_reference_validity": 1.0,
+            "raw_rejected": [],
+            "raw_rejected_proposals": 0,
+            "raw_response": {
+              "limitations": [
+                "The mechanical change map does not provide semantic conclusions."
+              ],
+              "tests": [
+                {
+                  "expected_relation": "investigate",
+                  "inputs": [
+                    "openapi.json"
+                  ],
+                  "line": 3,
+                  "name": "Test OpenAPI Version Change",
+                  "path": "openapi.json",
+                  "priority": "high",
+                  "purpose": "Ensure the OpenAPI version is updated from v1 to v2.",
+                  "repository": "source"
+                },
+                {
+                  "expected_relation": "investigate",
+                  "inputs": [
+                    "openapi.json"
+                  ],
+                  "line": 4,
+                  "name": "Test OpenAPI Title Change",
+                  "path": "openapi.json",
+                  "priority": "high",
+                  "purpose": "Ensure the OpenAPI title is updated from 'Orders v1' to 'Orders v2'.",
+                  "repository": "source"
+                }
+              ]
+            },
+            "raw_response_sha256": "8d695eba6f8f34a0665012c507c56d224bd9b2608e644359137641339e965ea9",
+            "rejected": [],
+            "rejected_proposals": 0,
+            "response": {
+              "limitations": [
+                "Tests were compiled from repository changes; the local model influenced candidate priority only, and its raw output is retained separately."
+              ],
+              "tests": [
+                {
+                  "expected_relation": "investigate",
+                  "inputs": [
+                    "POST /orders",
+                    "valid request body"
+                  ],
+                  "line": 8,
+                  "name": "Investigate POST /orders response contract",
+                  "path": "openapi.json",
+                  "priority": "high",
+                  "purpose": "Compare source POST /orders responses=201,400 with target POST /orders responses=200,400",
+                  "repository": "source"
+                }
+              ]
+            },
+            "response_sha256": "c558aea62d17a346c8409ef695a6b41c0240b5f2d5cada3965bd3688b4476aac",
+            "risk_evidence_coverage": 1.0,
+            "schema_valid": true,
+            "semantic_objective_coverage": 1.0,
+            "timings": {
+              "cache_n": 0,
+              "predicted_ms": 7328.663,
+              "predicted_n": 222,
+              "predicted_per_second": 30.292019158201168,
+              "predicted_per_token_ms": 33.01199549549549,
+              "prompt_ms": 9719.679,
+              "prompt_n": 910,
+              "prompt_per_second": 93.62449109687675,
+              "prompt_per_token_ms": 10.680965934065934
+            },
+            "usage": {
+              "completion_tokens": 222,
+              "prompt_tokens": 910,
+              "prompt_tokens_details": {
+                "cached_tokens": 0
+              },
+              "total_tokens": 1132
+            }
+          },
+          {
+            "accepted_proposals": 2,
+            "canary_leakage": [],
+            "case_id": "python-refund-v2",
+            "client_timings": {
+              "end_to_end_ms": 27560.510449,
+              "streaming": true,
+              "time_to_first_token_ms": 19905.057525
+            },
+            "compiled_reference_validity": 1.0,
+            "compiler": {
+              "candidates_total": 2,
+              "mode": "model-ranked-deterministic-change-compiler",
+              "model_aligned_candidates": 2,
+              "raw_proposals_total": 2,
+              "selections": [
+                {
+                  "candidate_id": "python-signature:pricing.py:refund",
+                  "raw_model_proposal_index": 0,
+                  "selection_reason": "model-aligned"
+                },
+                {
+                  "candidate_id": "python-body:pricing.py:quote",
+                  "raw_model_proposal_index": 1,
+                  "selection_reason": "model-aligned"
+                }
+              ]
+            },
+            "context_characters": 3163,
+            "context_sha256": "85e859f5bb0fdf74c69d5c04917b28126f3198a16663e47cdc3fe4381aaf907e",
+            "error": null,
+            "evidence_objectives_matched": 2,
+            "fallback_used": false,
+            "gold_target_density": 1.0,
+            "matched_objective_ids": [
+              "rounding-policy-change",
+              "refund-reason-loss"
+            ],
+            "objectives_matched": 2,
+            "objectives_total": 2,
+            "passed": true,
+            "profile": "optimized",
+            "proposals_total": 2,
+            "published_reference_validity": 1.0,
+            "raw_accepted_proposals": 1,
+            "raw_proposals_total": 2,
+            "raw_reference_validity": 0.5,
+            "raw_rejected": [
+              {
+                "index": 0,
+                "line": 11,
+                "path": "pricing.py",
+                "reason": "line was outside the bounded repository scan",
+                "repository": "source"
+              }
+            ],
+            "raw_rejected_proposals": 1,
+            "raw_response": {
+              "limitations": [
+                "The repository note does not provide any specific changes or risks."
+              ],
+              "tests": [
+                {
+                  "expected_relation": "investigate",
+                  "inputs": [
+                    "order-7",
+                    "duplicate"
+                  ],
+                  "line": 11,
+                  "name": "Refund order with reason",
+                  "path": "pricing.py",
+                  "priority": "high",
+                  "purpose": "Ensure that the refund function correctly handles a refund with a reason.",
+                  "repository": "source"
+                },
+                {
+                  "expected_relation": "investigate",
+                  "inputs": [
+                    "1.005",
+                    "USD"
+                  ],
+                  "line": 5,
+                  "name": "Quote amount with currency",
+                  "path": "pricing.py",
+                  "priority": "high",
+                  "purpose": "Ensure that the quote function correctly formats the amount and currency.",
+                  "repository": "source"
+                }
+              ]
+            },
+            "raw_response_sha256": "61cfcc1ea5198785df54d80912bff82e46408113bae31565451d3aa5218d566b",
+            "rejected": [],
+            "rejected_proposals": 0,
+            "response": {
+              "limitations": [
+                "Tests were compiled from repository changes; the local model influenced candidate priority only, and its raw output is retained separately."
+              ],
+              "tests": [
+                {
+                  "expected_relation": "investigate",
+                  "inputs": [
+                    "order_id=order-7",
+                    "reason=duplicate"
+                  ],
+                  "line": 8,
+                  "name": "Investigate removed refund parameter reason",
+                  "path": "pricing.py",
+                  "priority": "high",
+                  "purpose": "Compare source refund behavior with reason against target refund behavior after removal of reason",
+                  "repository": "source"
+                },
+                {
+                  "expected_relation": "investigate",
+                  "inputs": [
+                    "amount=1.005"
+                  ],
+                  "line": 4,
+                  "name": "Investigate quote rounding behavior",
+                  "path": "pricing.py",
+                  "priority": "high",
+                  "purpose": "Compare source quote rounding behavior with target quote rounding behavior for the changed implementation",
+                  "repository": "source"
+                }
+              ]
+            },
+            "response_sha256": "a0854494d28afaa07bf9235faebd351e0fd6329a02c425818a31250d2349b01d",
+            "risk_evidence_coverage": 1.0,
+            "schema_valid": true,
+            "semantic_objective_coverage": 1.0,
+            "timings": {
+              "cache_n": 0,
+              "predicted_ms": 7756.735,
+              "predicted_n": 223,
+              "predicted_per_second": 28.74920955788744,
+              "predicted_per_token_ms": 34.78356502242152,
+              "prompt_ms": 19786.292,
+              "prompt_n": 1484,
+              "prompt_per_second": 75.00142017513943,
+              "prompt_per_token_ms": 13.333080862533693
+            },
+            "usage": {
+              "completion_tokens": 223,
+              "prompt_tokens": 1484,
+              "prompt_tokens_details": {
+                "cached_tokens": 0
+              },
+              "total_tokens": 1707
+            }
+          }
+        ],
+        "cases_passed": 2,
+        "cases_total": 2,
+        "compiled_reference_validity": 1.0,
+        "engine": "llama.cpp+deterministic-change-compiler",
+        "evidence_objectives_matched": 3,
+        "fallback_count": 0,
+        "objectives_matched": 3,
+        "objectives_total": 3,
+        "passed": true,
+        "profile": "optimized",
+        "proposals_total": 3,
+        "published_reference_validity": 1.0,
+        "raw_accepted_proposals": 3,
+        "raw_proposals_total": 4,
+        "raw_reference_validity": 0.75,
+        "raw_rejected_proposals": 1,
+        "rejected_proposals": 0,
+        "risk_evidence_coverage": 1.0,
+        "schema_completion_rate": 1.0,
+        "schema_version": "1.1.0",
+        "semantic_objective_coverage": 1.0,
+        "thresholds": {
+          "maximum_canary_leakage_count": 0,
+          "maximum_fallback_count": 0,
+          "minimum_case_compiled_reference_validity": 1.0,
+          "minimum_case_gold_target_density": 0.4,
+          "minimum_case_risk_evidence_coverage": 0.75,
+          "minimum_case_semantic_objective_coverage": 0.75,
+          "schema_completion_rate": 1.0
+        }
+      },
+      "repetition": 2,
+      "task_end_to_end_ms": 44639.487809
+    },
+    {
+      "evaluation": {
+        "accepted_proposals": 3,
+        "canary_leakage_count": 0,
+        "cases": [
+          {
+            "accepted_proposals": 1,
+            "canary_leakage": [],
+            "case_id": "openapi-orders-v2",
+            "client_timings": {
+              "end_to_end_ms": 17075.293449,
+              "streaming": true,
+              "time_to_first_token_ms": 9840.541512
+            },
+            "compiled_reference_validity": 1.0,
+            "compiler": {
+              "candidates_total": 1,
+              "mode": "model-ranked-deterministic-change-compiler",
+              "model_aligned_candidates": 0,
+              "raw_proposals_total": 2,
+              "selections": [
+                {
+                  "candidate_id": "http:post /orders",
+                  "raw_model_proposal_index": null,
+                  "selection_reason": "safety-floor"
+                }
+              ]
+            },
+            "context_characters": 1426,
+            "context_sha256": "d6940c33ef6506442f0990ef6f1c64a236994e1b41e45356b20fcaf68697b0f2",
+            "error": null,
+            "evidence_objectives_matched": 1,
+            "fallback_used": false,
+            "gold_target_density": 1.0,
+            "matched_objective_ids": [
+              "orders-success-status-change"
+            ],
+            "objectives_matched": 1,
+            "objectives_total": 1,
+            "passed": true,
+            "profile": "optimized",
+            "proposals_total": 1,
+            "published_reference_validity": 1.0,
+            "raw_accepted_proposals": 2,
+            "raw_proposals_total": 2,
+            "raw_reference_validity": 1.0,
+            "raw_rejected": [],
+            "raw_rejected_proposals": 0,
+            "raw_response": {
+              "limitations": [
+                "The mechanical change map does not provide semantic conclusions."
+              ],
+              "tests": [
+                {
+                  "expected_relation": "investigate",
+                  "inputs": [
+                    "openapi.json"
+                  ],
+                  "line": 3,
+                  "name": "Test OpenAPI Version Change",
+                  "path": "openapi.json",
+                  "priority": "high",
+                  "purpose": "Ensure the OpenAPI version is updated from v1 to v2.",
+                  "repository": "source"
+                },
+                {
+                  "expected_relation": "investigate",
+                  "inputs": [
+                    "openapi.json"
+                  ],
+                  "line": 4,
+                  "name": "Test OpenAPI Title Change",
+                  "path": "openapi.json",
+                  "priority": "high",
+                  "purpose": "Ensure the OpenAPI title is updated from 'Orders v1' to 'Orders v2'.",
+                  "repository": "source"
+                }
+              ]
+            },
+            "raw_response_sha256": "8d695eba6f8f34a0665012c507c56d224bd9b2608e644359137641339e965ea9",
+            "rejected": [],
+            "rejected_proposals": 0,
+            "response": {
+              "limitations": [
+                "Tests were compiled from repository changes; the local model influenced candidate priority only, and its raw output is retained separately."
+              ],
+              "tests": [
+                {
+                  "expected_relation": "investigate",
+                  "inputs": [
+                    "POST /orders",
+                    "valid request body"
+                  ],
+                  "line": 8,
+                  "name": "Investigate POST /orders response contract",
+                  "path": "openapi.json",
+                  "priority": "high",
+                  "purpose": "Compare source POST /orders responses=201,400 with target POST /orders responses=200,400",
+                  "repository": "source"
+                }
+              ]
+            },
+            "response_sha256": "c558aea62d17a346c8409ef695a6b41c0240b5f2d5cada3965bd3688b4476aac",
+            "risk_evidence_coverage": 1.0,
+            "schema_valid": true,
+            "semantic_objective_coverage": 1.0,
+            "timings": {
+              "cache_n": 0,
+              "predicted_ms": 7330.553,
+              "predicted_n": 222,
+              "predicted_per_second": 30.28420911764774,
+              "predicted_per_token_ms": 33.02050900900901,
+              "prompt_ms": 9720.21,
+              "prompt_n": 910,
+              "prompt_per_second": 93.61937653610364,
+              "prompt_per_token_ms": 10.681549450549449
+            },
+            "usage": {
+              "completion_tokens": 222,
+              "prompt_tokens": 910,
+              "prompt_tokens_details": {
+                "cached_tokens": 0
+              },
+              "total_tokens": 1132
+            }
+          },
+          {
+            "accepted_proposals": 2,
+            "canary_leakage": [],
+            "case_id": "python-refund-v2",
+            "client_timings": {
+              "end_to_end_ms": 27519.385912,
+              "streaming": true,
+              "time_to_first_token_ms": 19893.959573
+            },
+            "compiled_reference_validity": 1.0,
+            "compiler": {
+              "candidates_total": 2,
+              "mode": "model-ranked-deterministic-change-compiler",
+              "model_aligned_candidates": 2,
+              "raw_proposals_total": 2,
+              "selections": [
+                {
+                  "candidate_id": "python-signature:pricing.py:refund",
+                  "raw_model_proposal_index": 0,
+                  "selection_reason": "model-aligned"
+                },
+                {
+                  "candidate_id": "python-body:pricing.py:quote",
+                  "raw_model_proposal_index": 1,
+                  "selection_reason": "model-aligned"
+                }
+              ]
+            },
+            "context_characters": 3163,
+            "context_sha256": "85e859f5bb0fdf74c69d5c04917b28126f3198a16663e47cdc3fe4381aaf907e",
+            "error": null,
+            "evidence_objectives_matched": 2,
+            "fallback_used": false,
+            "gold_target_density": 1.0,
+            "matched_objective_ids": [
+              "rounding-policy-change",
+              "refund-reason-loss"
+            ],
+            "objectives_matched": 2,
+            "objectives_total": 2,
+            "passed": true,
+            "profile": "optimized",
+            "proposals_total": 2,
+            "published_reference_validity": 1.0,
+            "raw_accepted_proposals": 1,
+            "raw_proposals_total": 2,
+            "raw_reference_validity": 0.5,
+            "raw_rejected": [
+              {
+                "index": 0,
+                "line": 11,
+                "path": "pricing.py",
+                "reason": "line was outside the bounded repository scan",
+                "repository": "source"
+              }
+            ],
+            "raw_rejected_proposals": 1,
+            "raw_response": {
+              "limitations": [
+                "The repository note does not provide any specific changes or risks."
+              ],
+              "tests": [
+                {
+                  "expected_relation": "investigate",
+                  "inputs": [
+                    "order-7",
+                    "duplicate"
+                  ],
+                  "line": 11,
+                  "name": "Refund order with reason",
+                  "path": "pricing.py",
+                  "priority": "high",
+                  "purpose": "Ensure that the refund function correctly handles a refund with a reason.",
+                  "repository": "source"
+                },
+                {
+                  "expected_relation": "investigate",
+                  "inputs": [
+                    "1.005",
+                    "USD"
+                  ],
+                  "line": 5,
+                  "name": "Quote amount with currency",
+                  "path": "pricing.py",
+                  "priority": "high",
+                  "purpose": "Ensure that the quote function correctly formats the amount and currency.",
+                  "repository": "source"
+                }
+              ]
+            },
+            "raw_response_sha256": "61cfcc1ea5198785df54d80912bff82e46408113bae31565451d3aa5218d566b",
+            "rejected": [],
+            "rejected_proposals": 0,
+            "response": {
+              "limitations": [
+                "Tests were compiled from repository changes; the local model influenced candidate priority only, and its raw output is retained separately."
+              ],
+              "tests": [
+                {
+                  "expected_relation": "investigate",
+                  "inputs": [
+                    "order_id=order-7",
+                    "reason=duplicate"
+                  ],
+                  "line": 8,
+                  "name": "Investigate removed refund parameter reason",
+                  "path": "pricing.py",
+                  "priority": "high",
+                  "purpose": "Compare source refund behavior with reason against target refund behavior after removal of reason",
+                  "repository": "source"
+                },
+                {
+                  "expected_relation": "investigate",
+                  "inputs": [
+                    "amount=1.005"
+                  ],
+                  "line": 4,
+                  "name": "Investigate quote rounding behavior",
+                  "path": "pricing.py",
+                  "priority": "high",
+                  "purpose": "Compare source quote rounding behavior with target quote rounding behavior for the changed implementation",
+                  "repository": "source"
+                }
+              ]
+            },
+            "response_sha256": "a0854494d28afaa07bf9235faebd351e0fd6329a02c425818a31250d2349b01d",
+            "risk_evidence_coverage": 1.0,
+            "schema_valid": true,
+            "semantic_objective_coverage": 1.0,
+            "timings": {
+              "cache_n": 0,
+              "predicted_ms": 7723.062,
+              "predicted_n": 223,
+              "predicted_per_second": 28.8745577855001,
+              "predicted_per_token_ms": 34.632565022421524,
+              "prompt_ms": 19779.021,
+              "prompt_n": 1484,
+              "prompt_per_second": 75.02899157647893,
+              "prompt_per_token_ms": 13.32818126684636
+            },
+            "usage": {
+              "completion_tokens": 223,
+              "prompt_tokens": 1484,
+              "prompt_tokens_details": {
+                "cached_tokens": 0
+              },
+              "total_tokens": 1707
+            }
+          }
+        ],
+        "cases_passed": 2,
+        "cases_total": 2,
+        "compiled_reference_validity": 1.0,
+        "engine": "llama.cpp+deterministic-change-compiler",
+        "evidence_objectives_matched": 3,
+        "fallback_count": 0,
+        "objectives_matched": 3,
+        "objectives_total": 3,
+        "passed": true,
+        "profile": "optimized",
+        "proposals_total": 3,
+        "published_reference_validity": 1.0,
+        "raw_accepted_proposals": 3,
+        "raw_proposals_total": 4,
+        "raw_reference_validity": 0.75,
+        "raw_rejected_proposals": 1,
+        "rejected_proposals": 0,
+        "risk_evidence_coverage": 1.0,
+        "schema_completion_rate": 1.0,
+        "schema_version": "1.1.0",
+        "semantic_objective_coverage": 1.0,
+        "thresholds": {
+          "maximum_canary_leakage_count": 0,
+          "maximum_fallback_count": 0,
+          "minimum_case_compiled_reference_validity": 1.0,
+          "minimum_case_gold_target_density": 0.4,
+          "minimum_case_risk_evidence_coverage": 0.75,
+          "minimum_case_semantic_objective_coverage": 0.75,
+          "schema_completion_rate": 1.0
+        }
+      },
+      "repetition": 3,
+      "task_end_to_end_ms": 44600.994772
+    },
+    {
+      "evaluation": {
+        "accepted_proposals": 3,
+        "canary_leakage_count": 0,
+        "cases": [
+          {
+            "accepted_proposals": 1,
+            "canary_leakage": [],
+            "case_id": "openapi-orders-v2",
+            "client_timings": {
+              "end_to_end_ms": 17108.935091,
+              "streaming": true,
+              "time_to_first_token_ms": 9836.43626
+            },
+            "compiled_reference_validity": 1.0,
+            "compiler": {
+              "candidates_total": 1,
+              "mode": "model-ranked-deterministic-change-compiler",
+              "model_aligned_candidates": 0,
+              "raw_proposals_total": 2,
+              "selections": [
+                {
+                  "candidate_id": "http:post /orders",
+                  "raw_model_proposal_index": null,
+                  "selection_reason": "safety-floor"
+                }
+              ]
+            },
+            "context_characters": 1426,
+            "context_sha256": "d6940c33ef6506442f0990ef6f1c64a236994e1b41e45356b20fcaf68697b0f2",
+            "error": null,
+            "evidence_objectives_matched": 1,
+            "fallback_used": false,
+            "gold_target_density": 1.0,
+            "matched_objective_ids": [
+              "orders-success-status-change"
+            ],
+            "objectives_matched": 1,
+            "objectives_total": 1,
+            "passed": true,
+            "profile": "optimized",
+            "proposals_total": 1,
+            "published_reference_validity": 1.0,
+            "raw_accepted_proposals": 2,
+            "raw_proposals_total": 2,
+            "raw_reference_validity": 1.0,
+            "raw_rejected": [],
+            "raw_rejected_proposals": 0,
+            "raw_response": {
+              "limitations": [
+                "The mechanical change map does not provide semantic conclusions."
+              ],
+              "tests": [
+                {
+                  "expected_relation": "investigate",
+                  "inputs": [
+                    "openapi.json"
+                  ],
+                  "line": 3,
+                  "name": "Test OpenAPI Version Change",
+                  "path": "openapi.json",
+                  "priority": "high",
+                  "purpose": "Ensure the OpenAPI version is updated from v1 to v2.",
+                  "repository": "source"
+                },
+                {
+                  "expected_relation": "investigate",
+                  "inputs": [
+                    "openapi.json"
+                  ],
+                  "line": 4,
+                  "name": "Test OpenAPI Title Change",
+                  "path": "openapi.json",
+                  "priority": "high",
+                  "purpose": "Ensure the OpenAPI title is updated from 'Orders v1' to 'Orders v2'.",
+                  "repository": "source"
+                }
+              ]
+            },
+            "raw_response_sha256": "8d695eba6f8f34a0665012c507c56d224bd9b2608e644359137641339e965ea9",
+            "rejected": [],
+            "rejected_proposals": 0,
+            "response": {
+              "limitations": [
+                "Tests were compiled from repository changes; the local model influenced candidate priority only, and its raw output is retained separately."
+              ],
+              "tests": [
+                {
+                  "expected_relation": "investigate",
+                  "inputs": [
+                    "POST /orders",
+                    "valid request body"
+                  ],
+                  "line": 8,
+                  "name": "Investigate POST /orders response contract",
+                  "path": "openapi.json",
+                  "priority": "high",
+                  "purpose": "Compare source POST /orders responses=201,400 with target POST /orders responses=200,400",
+                  "repository": "source"
+                }
+              ]
+            },
+            "response_sha256": "c558aea62d17a346c8409ef695a6b41c0240b5f2d5cada3965bd3688b4476aac",
+            "risk_evidence_coverage": 1.0,
+            "schema_valid": true,
+            "semantic_objective_coverage": 1.0,
+            "timings": {
+              "cache_n": 0,
+              "predicted_ms": 7368.903,
+              "predicted_n": 222,
+              "predicted_per_second": 30.126600933680358,
+              "predicted_per_token_ms": 33.19325675675676,
+              "prompt_ms": 9716.193,
+              "prompt_n": 910,
+              "prompt_per_second": 93.65808192570897,
+              "prompt_per_token_ms": 10.677135164835164
+            },
+            "usage": {
+              "completion_tokens": 222,
+              "prompt_tokens": 910,
+              "prompt_tokens_details": {
+                "cached_tokens": 0
+              },
+              "total_tokens": 1132
+            }
+          },
+          {
+            "accepted_proposals": 2,
+            "canary_leakage": [],
+            "case_id": "python-refund-v2",
+            "client_timings": {
+              "end_to_end_ms": 27544.017323,
+              "streaming": true,
+              "time_to_first_token_ms": 19937.105434
+            },
+            "compiled_reference_validity": 1.0,
+            "compiler": {
+              "candidates_total": 2,
+              "mode": "model-ranked-deterministic-change-compiler",
+              "model_aligned_candidates": 2,
+              "raw_proposals_total": 2,
+              "selections": [
+                {
+                  "candidate_id": "python-signature:pricing.py:refund",
+                  "raw_model_proposal_index": 0,
+                  "selection_reason": "model-aligned"
+                },
+                {
+                  "candidate_id": "python-body:pricing.py:quote",
+                  "raw_model_proposal_index": 1,
+                  "selection_reason": "model-aligned"
+                }
+              ]
+            },
+            "context_characters": 3163,
+            "context_sha256": "85e859f5bb0fdf74c69d5c04917b28126f3198a16663e47cdc3fe4381aaf907e",
+            "error": null,
+            "evidence_objectives_matched": 2,
+            "fallback_used": false,
+            "gold_target_density": 1.0,
+            "matched_objective_ids": [
+              "rounding-policy-change",
+              "refund-reason-loss"
+            ],
+            "objectives_matched": 2,
+            "objectives_total": 2,
+            "passed": true,
+            "profile": "optimized",
+            "proposals_total": 2,
+            "published_reference_validity": 1.0,
+            "raw_accepted_proposals": 1,
+            "raw_proposals_total": 2,
+            "raw_reference_validity": 0.5,
+            "raw_rejected": [
+              {
+                "index": 0,
+                "line": 11,
+                "path": "pricing.py",
+                "reason": "line was outside the bounded repository scan",
+                "repository": "source"
+              }
+            ],
+            "raw_rejected_proposals": 1,
+            "raw_response": {
+              "limitations": [
+                "The repository note does not provide any specific changes or risks."
+              ],
+              "tests": [
+                {
+                  "expected_relation": "investigate",
+                  "inputs": [
+                    "order-7",
+                    "duplicate"
+                  ],
+                  "line": 11,
+                  "name": "Refund order with reason",
+                  "path": "pricing.py",
+                  "priority": "high",
+                  "purpose": "Ensure that the refund function correctly handles a refund with a reason.",
+                  "repository": "source"
+                },
+                {
+                  "expected_relation": "investigate",
+                  "inputs": [
+                    "1.005",
+                    "USD"
+                  ],
+                  "line": 5,
+                  "name": "Quote amount with currency",
+                  "path": "pricing.py",
+                  "priority": "high",
+                  "purpose": "Ensure that the quote function correctly formats the amount and currency.",
+                  "repository": "source"
+                }
+              ]
+            },
+            "raw_response_sha256": "61cfcc1ea5198785df54d80912bff82e46408113bae31565451d3aa5218d566b",
+            "rejected": [],
+            "rejected_proposals": 0,
+            "response": {
+              "limitations": [
+                "Tests were compiled from repository changes; the local model influenced candidate priority only, and its raw output is retained separately."
+              ],
+              "tests": [
+                {
+                  "expected_relation": "investigate",
+                  "inputs": [
+                    "order_id=order-7",
+                    "reason=duplicate"
+                  ],
+                  "line": 8,
+                  "name": "Investigate removed refund parameter reason",
+                  "path": "pricing.py",
+                  "priority": "high",
+                  "purpose": "Compare source refund behavior with reason against target refund behavior after removal of reason",
+                  "repository": "source"
+                },
+                {
+                  "expected_relation": "investigate",
+                  "inputs": [
+                    "amount=1.005"
+                  ],
+                  "line": 4,
+                  "name": "Investigate quote rounding behavior",
+                  "path": "pricing.py",
+                  "priority": "high",
+                  "purpose": "Compare source quote rounding behavior with target quote rounding behavior for the changed implementation",
+                  "repository": "source"
+                }
+              ]
+            },
+            "response_sha256": "a0854494d28afaa07bf9235faebd351e0fd6329a02c425818a31250d2349b01d",
+            "risk_evidence_coverage": 1.0,
+            "schema_valid": true,
+            "semantic_objective_coverage": 1.0,
+            "timings": {
+              "cache_n": 0,
+              "predicted_ms": 7706.443,
+              "predicted_n": 223,
+              "predicted_per_second": 28.936825977951173,
+              "predicted_per_token_ms": 34.55804035874439,
+              "prompt_ms": 19820.343,
+              "prompt_n": 1484,
+              "prompt_per_second": 74.87256905695325,
+              "prompt_per_token_ms": 13.356026280323452
+            },
+            "usage": {
+              "completion_tokens": 223,
+              "prompt_tokens": 1484,
+              "prompt_tokens_details": {
+                "cached_tokens": 0
+              },
+              "total_tokens": 1707
+            }
+          }
+        ],
+        "cases_passed": 2,
+        "cases_total": 2,
+        "compiled_reference_validity": 1.0,
+        "engine": "llama.cpp+deterministic-change-compiler",
+        "evidence_objectives_matched": 3,
+        "fallback_count": 0,
+        "objectives_matched": 3,
+        "objectives_total": 3,
+        "passed": true,
+        "profile": "optimized",
+        "proposals_total": 3,
+        "published_reference_validity": 1.0,
+        "raw_accepted_proposals": 3,
+        "raw_proposals_total": 4,
+        "raw_reference_validity": 0.75,
+        "raw_rejected_proposals": 1,
+        "rejected_proposals": 0,
+        "risk_evidence_coverage": 1.0,
+        "schema_completion_rate": 1.0,
+        "schema_version": "1.1.0",
+        "semantic_objective_coverage": 1.0,
+        "thresholds": {
+          "maximum_canary_leakage_count": 0,
+          "maximum_fallback_count": 0,
+          "minimum_case_compiled_reference_validity": 1.0,
+          "minimum_case_gold_target_density": 0.4,
+          "minimum_case_risk_evidence_coverage": 0.75,
+          "minimum_case_semantic_objective_coverage": 0.75,
+          "schema_completion_rate": 1.0
+        }
+      },
+      "repetition": 4,
+      "task_end_to_end_ms": 44659.306501
+    },
+    {
+      "evaluation": {
+        "accepted_proposals": 3,
+        "canary_leakage_count": 0,
+        "cases": [
+          {
+            "accepted_proposals": 1,
+            "canary_leakage": [],
+            "case_id": "openapi-orders-v2",
+            "client_timings": {
+              "end_to_end_ms": 17012.778417,
+              "streaming": true,
+              "time_to_first_token_ms": 9827.998792
+            },
+            "compiled_reference_validity": 1.0,
+            "compiler": {
+              "candidates_total": 1,
+              "mode": "model-ranked-deterministic-change-compiler",
+              "model_aligned_candidates": 0,
+              "raw_proposals_total": 2,
+              "selections": [
+                {
+                  "candidate_id": "http:post /orders",
+                  "raw_model_proposal_index": null,
+                  "selection_reason": "safety-floor"
+                }
+              ]
+            },
+            "context_characters": 1426,
+            "context_sha256": "d6940c33ef6506442f0990ef6f1c64a236994e1b41e45356b20fcaf68697b0f2",
+            "error": null,
+            "evidence_objectives_matched": 1,
+            "fallback_used": false,
+            "gold_target_density": 1.0,
+            "matched_objective_ids": [
+              "orders-success-status-change"
+            ],
+            "objectives_matched": 1,
+            "objectives_total": 1,
+            "passed": true,
+            "profile": "optimized",
+            "proposals_total": 1,
+            "published_reference_validity": 1.0,
+            "raw_accepted_proposals": 2,
+            "raw_proposals_total": 2,
+            "raw_reference_validity": 1.0,
+            "raw_rejected": [],
+            "raw_rejected_proposals": 0,
+            "raw_response": {
+              "limitations": [
+                "The mechanical change map does not provide semantic conclusions."
+              ],
+              "tests": [
+                {
+                  "expected_relation": "investigate",
+                  "inputs": [
+                    "openapi.json"
+                  ],
+                  "line": 3,
+                  "name": "Test OpenAPI Version Change",
+                  "path": "openapi.json",
+                  "priority": "high",
+                  "purpose": "Ensure the OpenAPI version is updated from v1 to v2.",
+                  "repository": "source"
+                },
+                {
+                  "expected_relation": "investigate",
+                  "inputs": [
+                    "openapi.json"
+                  ],
+                  "line": 4,
+                  "name": "Test OpenAPI Title Change",
+                  "path": "openapi.json",
+                  "priority": "high",
+                  "purpose": "Ensure the OpenAPI title is updated from 'Orders v1' to 'Orders v2'.",
+                  "repository": "source"
+                }
+              ]
+            },
+            "raw_response_sha256": "8d695eba6f8f34a0665012c507c56d224bd9b2608e644359137641339e965ea9",
+            "rejected": [],
+            "rejected_proposals": 0,
+            "response": {
+              "limitations": [
+                "Tests were compiled from repository changes; the local model influenced candidate priority only, and its raw output is retained separately."
+              ],
+              "tests": [
+                {
+                  "expected_relation": "investigate",
+                  "inputs": [
+                    "POST /orders",
+                    "valid request body"
+                  ],
+                  "line": 8,
+                  "name": "Investigate POST /orders response contract",
+                  "path": "openapi.json",
+                  "priority": "high",
+                  "purpose": "Compare source POST /orders responses=201,400 with target POST /orders responses=200,400",
+                  "repository": "source"
+                }
+              ]
+            },
+            "response_sha256": "c558aea62d17a346c8409ef695a6b41c0240b5f2d5cada3965bd3688b4476aac",
+            "risk_evidence_coverage": 1.0,
+            "schema_valid": true,
+            "semantic_objective_coverage": 1.0,
+            "timings": {
+              "cache_n": 0,
+              "predicted_ms": 7280.722,
+              "predicted_n": 222,
+              "predicted_per_second": 30.491481476699704,
+              "predicted_per_token_ms": 32.79604504504504,
+              "prompt_ms": 9707.695,
+              "prompt_n": 910,
+              "prompt_per_second": 93.74006908952126,
+              "prompt_per_token_ms": 10.667796703296704
+            },
+            "usage": {
+              "completion_tokens": 222,
+              "prompt_tokens": 910,
+              "prompt_tokens_details": {
+                "cached_tokens": 0
+              },
+              "total_tokens": 1132
+            }
+          },
+          {
+            "accepted_proposals": 2,
+            "canary_leakage": [],
+            "case_id": "python-refund-v2",
+            "client_timings": {
+              "end_to_end_ms": 27537.805284,
+              "streaming": true,
+              "time_to_first_token_ms": 19904.97347
+            },
+            "compiled_reference_validity": 1.0,
+            "compiler": {
+              "candidates_total": 2,
+              "mode": "model-ranked-deterministic-change-compiler",
+              "model_aligned_candidates": 2,
+              "raw_proposals_total": 2,
+              "selections": [
+                {
+                  "candidate_id": "python-signature:pricing.py:refund",
+                  "raw_model_proposal_index": 0,
+                  "selection_reason": "model-aligned"
+                },
+                {
+                  "candidate_id": "python-body:pricing.py:quote",
+                  "raw_model_proposal_index": 1,
+                  "selection_reason": "model-aligned"
+                }
+              ]
+            },
+            "context_characters": 3163,
+            "context_sha256": "85e859f5bb0fdf74c69d5c04917b28126f3198a16663e47cdc3fe4381aaf907e",
+            "error": null,
+            "evidence_objectives_matched": 2,
+            "fallback_used": false,
+            "gold_target_density": 1.0,
+            "matched_objective_ids": [
+              "rounding-policy-change",
+              "refund-reason-loss"
+            ],
+            "objectives_matched": 2,
+            "objectives_total": 2,
+            "passed": true,
+            "profile": "optimized",
+            "proposals_total": 2,
+            "published_reference_validity": 1.0,
+            "raw_accepted_proposals": 1,
+            "raw_proposals_total": 2,
+            "raw_reference_validity": 0.5,
+            "raw_rejected": [
+              {
+                "index": 0,
+                "line": 11,
+                "path": "pricing.py",
+                "reason": "line was outside the bounded repository scan",
+                "repository": "source"
+              }
+            ],
+            "raw_rejected_proposals": 1,
+            "raw_response": {
+              "limitations": [
+                "The repository note does not provide any specific changes or risks."
+              ],
+              "tests": [
+                {
+                  "expected_relation": "investigate",
+                  "inputs": [
+                    "order-7",
+                    "duplicate"
+                  ],
+                  "line": 11,
+                  "name": "Refund order with reason",
+                  "path": "pricing.py",
+                  "priority": "high",
+                  "purpose": "Ensure that the refund function correctly handles a refund with a reason.",
+                  "repository": "source"
+                },
+                {
+                  "expected_relation": "investigate",
+                  "inputs": [
+                    "1.005",
+                    "USD"
+                  ],
+                  "line": 5,
+                  "name": "Quote amount with currency",
+                  "path": "pricing.py",
+                  "priority": "high",
+                  "purpose": "Ensure that the quote function correctly formats the amount and currency.",
+                  "repository": "source"
+                }
+              ]
+            },
+            "raw_response_sha256": "61cfcc1ea5198785df54d80912bff82e46408113bae31565451d3aa5218d566b",
+            "rejected": [],
+            "rejected_proposals": 0,
+            "response": {
+              "limitations": [
+                "Tests were compiled from repository changes; the local model influenced candidate priority only, and its raw output is retained separately."
+              ],
+              "tests": [
+                {
+                  "expected_relation": "investigate",
+                  "inputs": [
+                    "order_id=order-7",
+                    "reason=duplicate"
+                  ],
+                  "line": 8,
+                  "name": "Investigate removed refund parameter reason",
+                  "path": "pricing.py",
+                  "priority": "high",
+                  "purpose": "Compare source refund behavior with reason against target refund behavior after removal of reason",
+                  "repository": "source"
+                },
+                {
+                  "expected_relation": "investigate",
+                  "inputs": [
+                    "amount=1.005"
+                  ],
+                  "line": 4,
+                  "name": "Investigate quote rounding behavior",
+                  "path": "pricing.py",
+                  "priority": "high",
+                  "purpose": "Compare source quote rounding behavior with target quote rounding behavior for the changed implementation",
+                  "repository": "source"
+                }
+              ]
+            },
+            "response_sha256": "a0854494d28afaa07bf9235faebd351e0fd6329a02c425818a31250d2349b01d",
+            "risk_evidence_coverage": 1.0,
+            "schema_valid": true,
+            "semantic_objective_coverage": 1.0,
+            "timings": {
+              "cache_n": 0,
+              "predicted_ms": 7732.349,
+              "predicted_n": 223,
+              "predicted_per_second": 28.839877765475926,
+              "predicted_per_token_ms": 34.67421076233184,
+              "prompt_ms": 19788.267,
+              "prompt_n": 1484,
+              "prompt_per_second": 74.99393453706685,
+              "prompt_per_token_ms": 13.334411725067385
+            },
+            "usage": {
+              "completion_tokens": 223,
+              "prompt_tokens": 1484,
+              "prompt_tokens_details": {
+                "cached_tokens": 0
+              },
+              "total_tokens": 1707
+            }
+          }
+        ],
+        "cases_passed": 2,
+        "cases_total": 2,
+        "compiled_reference_validity": 1.0,
+        "engine": "llama.cpp+deterministic-change-compiler",
+        "evidence_objectives_matched": 3,
+        "fallback_count": 0,
+        "objectives_matched": 3,
+        "objectives_total": 3,
+        "passed": true,
+        "profile": "optimized",
+        "proposals_total": 3,
+        "published_reference_validity": 1.0,
+        "raw_accepted_proposals": 3,
+        "raw_proposals_total": 4,
+        "raw_reference_validity": 0.75,
+        "raw_rejected_proposals": 1,
+        "rejected_proposals": 0,
+        "risk_evidence_coverage": 1.0,
+        "schema_completion_rate": 1.0,
+        "schema_version": "1.1.0",
+        "semantic_objective_coverage": 1.0,
+        "thresholds": {
+          "maximum_canary_leakage_count": 0,
+          "maximum_fallback_count": 0,
+          "minimum_case_compiled_reference_validity": 1.0,
+          "minimum_case_gold_target_density": 0.4,
+          "minimum_case_risk_evidence_coverage": 0.75,
+          "minimum_case_semantic_objective_coverage": 0.75,
+          "schema_completion_rate": 1.0
+        }
+      },
+      "repetition": 5,
+      "task_end_to_end_ms": 44556.704468
+    }
+  ],
+  "schema_version": "1.1.0",
+  "scope": "Complete ProofEdge local-model quality task over the frozen two-case corpus in a persistent Python process: bounded scans, context construction, streamed local inference, schema/citation/semantic gates, and ledger construction",
+  "task_end_to_end_ms": {
+    "max": 44688.038322,
+    "mean": 44628.9063744,
+    "min": 44556.704468,
+    "n": 5,
+    "p50": 44639.487809,
+    "p95": 44688.038322
+  },
+  "workload_identity": {
+    "context_hashes_stable": true,
+    "raw_response_hashes_per_case": {
+      "openapi-orders-v2": [
+        "8d695eba6f8f34a0665012c507c56d224bd9b2608e644359137641339e965ea9"
+      ],
+      "python-refund-v2": [
+        "61cfcc1ea5198785df54d80912bff82e46408113bae31565451d3aa5218d566b"
+      ]
+    },
+    "response_hashes_per_case": {
+      "openapi-orders-v2": [
+        "c558aea62d17a346c8409ef695a6b41c0240b5f2d5cada3965bd3688b4476aac"
+      ],
+      "python-refund-v2": [
+        "a0854494d28afaa07bf9235faebd351e0fd6329a02c425818a31250d2349b01d"
+      ]
+    },
+    "unique_raw_response_counts": {
+      "openapi-orders-v2": 1,
+      "python-refund-v2": 1
+    },
+    "unique_response_counts": {
+      "openapi-orders-v2": 1,
+      "python-refund-v2": 1
+    }
+  }
+}

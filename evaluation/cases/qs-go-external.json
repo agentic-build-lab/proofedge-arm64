@@ -1,0 +1,15 @@
+{
+  "case_id": "qs-go-external",
+  "kind": "external_public_migration",
+  "status": "adapter_pending",
+  "target": {
+    "url": "https://github.com/agentic-build-lab/qs-go",
+    "commit": "85ac30cc5dc87ccdeb2f54fef24010660bc2573a"
+  },
+  "source_oracle": {
+    "url": "https://github.com/ljharb/qs",
+    "commit": "3a890d4ecd3deb72a45d90be36f4f8c5970467c7"
+  },
+  "provenance": "The target is pre-existing Port Mortem 2026 work and is not copied into ProofEdge."
+}
+

@@ -1,0 +1,895 @@
+<template>
+  <style>
+    @font-face {
+      font-family: "Geist";
+      src: url("assets/fonts/Geist-Variable.woff2") format("woff2");
+      font-weight: 100 900;
+      font-style: normal;
+    }
+
+    @font-face {
+      font-family: "Geist Mono";
+      src: url("assets/fonts/GeistMono-Variable.woff2") format("woff2");
+      font-weight: 100 900;
+      font-style: normal;
+    }
+
+    #root {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      container-type: size;
+      font-family: "Geist", sans-serif;
+      color: #f3efe7;
+    }
+
+    .f06-ground {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: #0e1319;
+    }
+
+    .f06-source-plate {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.17;
+      filter: saturate(0.7) brightness(0.78);
+      mask-image: linear-gradient(to bottom, black 0%, black 53%, transparent 86%);
+    }
+
+    .f06-ground-wash {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(to bottom, rgba(14, 19, 25, 0.16), rgba(14, 19, 25, 0.78) 70%),
+        radial-gradient(circle at 50% 46%, rgba(243, 167, 18, 0.07), transparent 43%);
+    }
+
+    .f06-stage {
+      position: absolute;
+      inset: 0;
+      perspective: 1280px;
+    }
+
+    .f06-control-strip {
+      position: absolute;
+      z-index: 10;
+      left: 5cqw;
+      top: 3.6cqh;
+      width: 90cqw;
+      height: 16.8cqh;
+      padding: 17px 22px 18px;
+      border: 1.5px solid rgba(243, 167, 18, 0.2);
+      border-radius: 14px;
+      background: rgba(14, 19, 25, 0.9);
+    }
+
+    .f06-control-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 13px;
+    }
+
+    .f06-control-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.76cqw;
+      font-weight: 650;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #f3a712;
+    }
+
+    .f06-control-eyebrow::before {
+      content: "";
+      width: 46px;
+      height: 4px;
+      border-radius: 6px;
+      background: #f3a712;
+    }
+
+    .f06-control-lock {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-family: "Geist Mono", monospace;
+      font-size: 12px;
+      letter-spacing: 0.06em;
+      color: #63d6c5;
+    }
+
+    .f06-control-lock::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #63d6c5;
+    }
+
+    .f06-condition-grid {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .f06-condition {
+      min-width: 0;
+      padding: 12px 10px;
+      overflow: hidden;
+      border: 1px solid rgba(243, 167, 18, 0.2);
+      border-radius: 100px;
+      background: rgba(243, 167, 18, 0.06);
+      font-family: "Geist Mono", monospace;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.045em;
+      text-align: center;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      color: #f3efe7;
+    }
+
+    .f06-split-stage {
+      position: absolute;
+      z-index: 5;
+      left: 5cqw;
+      top: 23.2cqh;
+      display: flex;
+      width: 90cqw;
+      height: 48.5cqh;
+      gap: 4.4cqw;
+      transform-style: preserve-3d;
+    }
+
+    .f06-card {
+      position: relative;
+      width: 42.8cqw;
+      height: 100%;
+      overflow: hidden;
+      border: 1.5px solid rgba(243, 167, 18, 0.2);
+      border-radius: 14px;
+      background: rgba(14, 19, 25, 0.94);
+      transform-style: preserve-3d;
+      will-change: transform;
+    }
+
+    .f06-card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 74px;
+      padding: 0 27px;
+      border-bottom: 1px solid rgba(243, 167, 18, 0.16);
+    }
+
+    .f06-card-name {
+      font-size: 1.35cqw;
+      font-weight: 650;
+      letter-spacing: -0.02em;
+      color: #f3efe7;
+    }
+
+    .f06-card-right .f06-card-name {
+      color: #f3a712;
+    }
+
+    .f06-card-tag {
+      padding: 8px 12px;
+      border-radius: 100px;
+      background: rgba(243, 167, 18, 0.08);
+      font-family: "Geist Mono", monospace;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #63d6c5;
+    }
+
+    .f06-card-right .f06-card-tag {
+      color: #f3a712;
+    }
+
+    .f06-card-body {
+      position: relative;
+      height: calc(100% - 74px);
+      padding: 28px 28px 24px;
+    }
+
+    .f06-card-hero {
+      font-family: "Geist Mono", monospace;
+      font-size: 3.0cqw;
+      font-weight: 680;
+      letter-spacing: -0.035em;
+      line-height: 1;
+      color: #f3efe7;
+    }
+
+    .f06-card-right .f06-card-hero {
+      color: #f3a712;
+    }
+
+    .f06-card-caption {
+      margin-top: 10px;
+      font-size: 0.78cqw;
+      line-height: 1.45;
+      color: #63d6c5;
+    }
+
+    .f06-static-lines {
+      position: absolute;
+      left: 28px;
+      right: 28px;
+      bottom: 24px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .f06-static-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 11px;
+      border-top: 1px solid rgba(99, 214, 197, 0.13);
+      font-family: "Geist Mono", monospace;
+      font-size: 12px;
+      color: #63d6c5;
+    }
+
+    .f06-static-row strong {
+      font-weight: 620;
+      color: #f3efe7;
+    }
+
+    .f06-card-right .f06-static-row strong {
+      color: #f3a712;
+    }
+
+    .f06-seam-badge {
+      position: absolute;
+      z-index: 16;
+      left: 50%;
+      top: 25.4cqh;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 17px;
+      border: 1.5px solid rgba(243, 167, 18, 0.38);
+      border-radius: 100px;
+      background: rgba(14, 19, 25, 0.98);
+      font-family: "Geist Mono", monospace;
+      font-size: 12px;
+      font-weight: 680;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      color: #f3a712;
+    }
+
+    .f06-seam-badge::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #f3a712;
+    }
+
+    .f06-exploratory {
+      position: absolute;
+      z-index: 18;
+      left: 7.7cqw;
+      top: 47.5cqh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      width: 84.6cqw;
+      height: 21.2cqh;
+      gap: 13px;
+      padding: 15px;
+      border: 1.5px solid rgba(243, 167, 18, 0.26);
+      border-radius: 14px;
+      background: rgba(14, 19, 25, 0.97);
+    }
+
+    .f06-explore-half {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 11px;
+    }
+
+    .f06-explore-cell {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-width: 0;
+      padding: 13px 16px;
+      border: 1px solid rgba(243, 167, 18, 0.16);
+      border-radius: 10px;
+      background: rgba(243, 167, 18, 0.04);
+    }
+
+    .f06-explore-key {
+      font-family: "Geist Mono", monospace;
+      font-size: 11px;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: #63d6c5;
+    }
+
+    .f06-explore-value {
+      margin-top: 7px;
+      font-family: "Geist Mono", monospace;
+      font-size: 2.0cqw;
+      font-weight: 680;
+      line-height: 1;
+      color: #f3a712;
+    }
+
+    .f06-retained {
+      margin-top: 10px;
+      width: max-content;
+      max-width: 100%;
+      padding: 7px 10px;
+      border: 1px solid rgba(220, 38, 38, 0.62);
+      border-radius: 100px;
+      font-family: "Geist Mono", monospace;
+      font-size: 10px;
+      font-weight: 650;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      color: #dc2626;
+    }
+
+    .f06-confirmation {
+      position: absolute;
+      z-index: 25;
+      left: 12.5cqw;
+      top: 27cqh;
+      width: 75cqw;
+      height: 43.8cqh;
+      overflow: hidden;
+      border: 1.5px solid rgba(243, 167, 18, 0.38);
+      border-radius: 14px;
+      background: rgba(14, 19, 25, 0.985);
+      transform-origin: 50% 50%;
+    }
+
+    .f06-confirm-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 72px;
+      padding: 0 28px;
+      border-bottom: 1px solid rgba(243, 167, 18, 0.2);
+    }
+
+    .f06-confirm-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.8cqw;
+      font-weight: 680;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      color: #f3a712;
+    }
+
+    .f06-confirm-title::before {
+      content: "";
+      width: 48px;
+      height: 4px;
+      border-radius: 6px;
+      background: #f3a712;
+    }
+
+    .f06-confirm-chip {
+      padding: 8px 12px;
+      border-radius: 100px;
+      background: rgba(243, 167, 18, 0.08);
+      font-family: "Geist Mono", monospace;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #63d6c5;
+    }
+
+    .f06-confirm-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      height: calc(100% - 72px);
+    }
+
+    .f06-confirm-metric {
+      padding: 24px 29px 22px;
+    }
+
+    .f06-confirm-metric + .f06-confirm-metric {
+      border-left: 1px solid rgba(243, 167, 18, 0.17);
+    }
+
+    .f06-confirm-label {
+      font-family: "Geist Mono", monospace;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #63d6c5;
+    }
+
+    .f06-confirm-value {
+      margin-top: 9px;
+      font-family: "Geist Mono", monospace;
+      font-size: 3.0cqw;
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      line-height: 1;
+      color: #f3a712;
+    }
+
+    .f06-means {
+      margin-top: 9px;
+      font-family: "Geist Mono", monospace;
+      font-size: 13px;
+      color: #f3efe7;
+    }
+
+    .f06-bars {
+      display: grid;
+      gap: 10px;
+      margin-top: 22px;
+    }
+
+    .f06-bar-row {
+      display: grid;
+      grid-template-columns: 74px 1fr;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .f06-bar-label {
+      font-family: "Geist Mono", monospace;
+      font-size: 11px;
+      color: #63d6c5;
+    }
+
+    .f06-track {
+      width: 100%;
+      height: 14px;
+      overflow: hidden;
+      border-radius: 6px;
+      background: rgba(243, 167, 18, 0.08);
+    }
+
+    .f06-fill {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border-radius: 6px;
+      transform-origin: left center;
+    }
+
+    .f06-fill-baseline {
+      background: rgba(243, 239, 231, 0.62);
+    }
+
+    .f06-fill-optimized {
+      background: #f3a712;
+    }
+
+    .f06-quality-strip {
+      position: absolute;
+      z-index: 30;
+      left: 7.5cqw;
+      top: 73.8cqh;
+      display: grid;
+      grid-template-columns: 2.1fr repeat(4, 1fr);
+      width: 85cqw;
+      height: 8.1cqh;
+      overflow: hidden;
+      border: 1.5px solid rgba(243, 167, 18, 0.32);
+      border-radius: 14px;
+      background: rgba(14, 19, 25, 0.98);
+    }
+
+    .f06-quality-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      border-left: 1px solid rgba(243, 167, 18, 0.15);
+      font-family: "Geist Mono", monospace;
+    }
+
+    .f06-quality-item:first-child {
+      border-left: 0;
+      align-items: flex-start;
+      padding-left: 24px;
+      background: rgba(243, 167, 18, 0.055);
+    }
+
+    .f06-quality-key {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: #63d6c5;
+    }
+
+    .f06-quality-value {
+      font-size: 1.22cqw;
+      font-weight: 680;
+      line-height: 1;
+      color: #f3efe7;
+    }
+
+    .f06-quality-item:first-child .f06-quality-value {
+      color: #f3a712;
+    }
+
+    .f06-progress {
+      position: absolute;
+      z-index: 31;
+      left: 5cqw;
+      top: 82.6cqh;
+      width: 90cqw;
+      height: 3px;
+      background: rgba(243, 167, 18, 0.08);
+    }
+
+    .f06-progress-fill {
+      display: block;
+      width: 100%;
+      height: 100%;
+      background: #f3a712;
+      transform-origin: left center;
+    }
+  </style>
+
+  <div id="root" data-composition-id="06-same-task-one-switch" data-width="1920" data-height="1080" data-start="0" data-duration="29.321">
+    <div class="clip f06-ground" data-start="0" data-duration="29.321" data-track-index="0">
+      <img class="f06-source-plate" src="assets/scroll-080.png" alt="Captured baseline versus KleidiAI benchmark evidence" />
+      <div class="f06-ground-wash"></div>
+    </div>
+
+    <div class="clip f06-stage" data-start="0" data-duration="29.321" data-track-index="1">
+      <section class="f06-control-strip" id="f06-control-strip">
+        <div class="f06-control-head">
+          <div class="f06-control-eyebrow">Causal control</div>
+          <div class="f06-control-lock">locked inputs</div>
+        </div>
+        <div class="f06-condition-grid">
+          <div class="f06-condition">NEOVERSE N2</div>
+          <div class="f06-condition">SAME COMMIT</div>
+          <div class="f06-condition">SAME QWEN BYTES</div>
+          <div class="f06-condition">Q4_0</div>
+          <div class="f06-condition">SAME WORKLOAD</div>
+          <div class="f06-condition">SAME THREADS</div>
+        </div>
+      </section>
+
+      <div class="f06-split-stage" id="f06-split-stage">
+        <article class="f06-card f06-card-left" id="f06-card-left">
+          <div class="f06-card-top">
+            <div class="f06-card-name">BASELINE</div>
+            <div class="f06-card-tag">Control</div>
+          </div>
+          <div class="f06-card-body">
+            <div class="f06-card-hero">UNCHANGED</div>
+            <div class="f06-card-caption">Same task · same model · same runtime envelope</div>
+            <div class="f06-static-lines">
+              <div class="f06-static-row"><span>Profile</span><strong>standard path</strong></div>
+              <div class="f06-static-row"><span>Evidence</span><strong>ABBA retained</strong></div>
+            </div>
+          </div>
+        </article>
+
+        <article class="f06-card f06-card-right" id="f06-card-right">
+          <div class="f06-card-top">
+            <div class="f06-card-name">KLEIDIAI</div>
+            <div class="f06-card-tag">Selected profile</div>
+          </div>
+          <div class="f06-card-body">
+            <div class="f06-card-hero">ENABLED</div>
+            <div class="f06-card-caption">One isolated switch · identical benchmark conditions</div>
+            <div class="f06-static-lines">
+              <div class="f06-static-row"><span>Profile</span><strong>optimized path</strong></div>
+              <div class="f06-static-row"><span>Evidence</span><strong>ABBA retained</strong></div>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <div class="f06-seam-badge" id="f06-seam-badge">Only KleidiAI changes</div>
+
+      <section class="f06-exploratory" id="f06-exploratory">
+        <div class="f06-explore-half">
+          <div class="f06-explore-cell" id="f06-explore-prefill-a">
+            <div class="f06-explore-key">Exploratory · PP512</div>
+            <div class="f06-explore-value" id="f06-explore-value-a">+0.00%</div>
+          </div>
+          <div class="f06-explore-cell" id="f06-explore-prefill-b">
+            <div class="f06-explore-key">Exploratory · PP1024</div>
+            <div class="f06-explore-value" id="f06-explore-value-b">+0.00%</div>
+          </div>
+        </div>
+        <div class="f06-explore-half">
+          <div class="f06-explore-cell" id="f06-explore-decode-a">
+            <div class="f06-explore-key">Decode · TG128</div>
+            <div class="f06-retained">No claim · retained</div>
+          </div>
+          <div class="f06-explore-cell" id="f06-explore-decode-b">
+            <div class="f06-explore-key">Decode · mixed</div>
+            <div class="f06-retained">No claim · retained</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="f06-confirmation" id="f06-confirmation">
+        <div class="f06-confirm-head">
+          <div class="f06-confirm-title">Precommitted confirmation</div>
+          <div class="f06-confirm-chip">Selected profile</div>
+        </div>
+        <div class="f06-confirm-grid">
+          <div class="f06-confirm-metric" id="f06-confirm-prompt">
+            <div class="f06-confirm-label">PP1024 · prompt processing</div>
+            <div class="f06-confirm-value" id="f06-confirm-value-a">+0.00%</div>
+            <div class="f06-means">96.74 → 97.28 tok/s</div>
+            <div class="f06-bars">
+              <div class="f06-bar-row">
+                <span class="f06-bar-label">Baseline</span>
+                <span class="f06-track"><span class="f06-fill f06-fill-baseline" id="f06-prompt-baseline"></span></span>
+              </div>
+              <div class="f06-bar-row">
+                <span class="f06-bar-label">KleidiAI</span>
+                <span class="f06-track"><span class="f06-fill f06-fill-optimized" id="f06-prompt-optimized"></span></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="f06-confirm-metric" id="f06-confirm-generation">
+            <div class="f06-confirm-label">TG128 · token generation</div>
+            <div class="f06-confirm-value" id="f06-confirm-value-b">+0.00%</div>
+            <div class="f06-means">35.24 → 36.75 tok/s</div>
+            <div class="f06-bars">
+              <div class="f06-bar-row">
+                <span class="f06-bar-label">Baseline</span>
+                <span class="f06-track"><span class="f06-fill f06-fill-baseline" id="f06-generation-baseline"></span></span>
+              </div>
+              <div class="f06-bar-row">
+                <span class="f06-bar-label">KleidiAI</span>
+                <span class="f06-track"><span class="f06-fill f06-fill-optimized" id="f06-generation-optimized"></span></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="f06-quality-strip" id="f06-quality-strip">
+        <div class="f06-quality-item">
+          <span class="f06-quality-key">Quality gates</span>
+          <strong class="f06-quality-value">2/2 PASSED</strong>
+        </div>
+        <div class="f06-quality-item">
+          <span class="f06-quality-key">Validity</span>
+          <strong class="f06-quality-value">1.0</strong>
+        </div>
+        <div class="f06-quality-item">
+          <span class="f06-quality-key">Coverage</span>
+          <strong class="f06-quality-value">1.0</strong>
+        </div>
+        <div class="f06-quality-item">
+          <span class="f06-quality-key">Canary</span>
+          <strong class="f06-quality-value">0</strong>
+        </div>
+        <div class="f06-quality-item">
+          <span class="f06-quality-key">Fallback</span>
+          <strong class="f06-quality-value">0</strong>
+        </div>
+      </section>
+
+      <div class="f06-progress">
+        <span class="f06-progress-fill" id="f06-progress-fill"></span>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script>
+    (() => {
+      const tl = gsap.timeline({ paused: true });
+      window.__timelines = window.__timelines || {};
+      window.__timelines["06-same-task-one-switch"] = tl;
+
+      tl.fromTo(
+        "#f06-control-strip",
+        { opacity: 0, y: -18 },
+        { opacity: 1, y: 0, duration: 0.46, ease: "power3.out" },
+        0
+      );
+      tl.fromTo(
+        ".f06-condition",
+        { opacity: 0, y: 11 },
+        { opacity: 1, y: 0, duration: 0.34, stagger: 0.68, ease: "power2.out" },
+        0.38
+      );
+      tl.fromTo(
+        "#f06-progress-fill",
+        { scaleX: 0 },
+        { scaleX: 1, duration: 28.3, ease: "none" },
+        0.2
+      );
+
+      tl.fromTo(
+        "#f06-card-left",
+        { x: -360, rotateY: 25, opacity: 0 },
+        { x: 0, rotateY: 12, opacity: 1, duration: 1.05, ease: "power3.out" },
+        5.02
+      );
+      tl.fromTo(
+        "#f06-card-right",
+        { x: 360, rotateY: -25, opacity: 0 },
+        { x: 0, rotateY: -12, opacity: 1, duration: 1.05, ease: "power3.out" },
+        5.18
+      );
+      tl.fromTo(
+        ".f06-card-top, .f06-card-body",
+        { opacity: 0, y: 13 },
+        { opacity: 1, y: 0, duration: 0.46, stagger: 0.09, ease: "power2.out" },
+        5.62
+      );
+      tl.fromTo(
+        "#f06-seam-badge",
+        { opacity: 0, scale: 0.86, xPercent: -50 },
+        { opacity: 1, scale: 1, xPercent: -50, duration: 0.52, ease: "back.out(1.35)" },
+        6.18
+      );
+      tl.to("#f06-card-left", { y: -4, duration: 0.6, ease: "sine.inOut" }, 7.08);
+      tl.to("#f06-card-right", { y: 4, duration: 0.6, ease: "sine.inOut" }, 7.08);
+      tl.to("#f06-card-left", { y: 0, duration: 0.6, ease: "sine.inOut" }, 7.68);
+      tl.to("#f06-card-right", { y: 0, duration: 0.6, ease: "sine.inOut" }, 7.68);
+
+      tl.fromTo(
+        "#f06-exploratory",
+        { opacity: 0, y: 18 },
+        { opacity: 1, y: 0, duration: 0.52, ease: "power3.out" },
+        10.52
+      );
+
+      const exploratoryA = { value: 0 };
+      const exploratoryB = { value: 0 };
+      tl.fromTo(
+        exploratoryA,
+        { value: 0 },
+        {
+          value: 0.53,
+          duration: 0.9,
+          ease: "power2.out",
+          onUpdate: () => {
+            document.querySelector("#f06-explore-value-a").textContent = `+${exploratoryA.value.toFixed(2)}%`;
+          }
+        },
+        11.15
+      );
+      tl.fromTo(
+        exploratoryB,
+        { value: 0 },
+        {
+          value: 0.84,
+          duration: 0.9,
+          ease: "power2.out",
+          onUpdate: () => {
+            document.querySelector("#f06-explore-value-b").textContent = `+${exploratoryB.value.toFixed(2)}%`;
+          }
+        },
+        12.42
+      );
+      tl.fromTo(
+        "#f06-explore-decode-a, #f06-explore-decode-b",
+        { opacity: 0, x: 16 },
+        { opacity: 1, x: 0, duration: 0.42, stagger: 0.48, ease: "power2.out" },
+        13.72
+      );
+
+      tl.to(
+        "#f06-split-stage, #f06-seam-badge, #f06-exploratory",
+        { autoAlpha: 0, y: -10, duration: 0.32, ease: "power2.in" },
+        15.6
+      );
+
+      tl.fromTo(
+        "#f06-confirmation",
+        { opacity: 0, scale: 0.94 },
+        { opacity: 1, scale: 1, duration: 0.62, ease: "power3.out" },
+        16.02
+      );
+      tl.fromTo(
+        "#f06-confirm-prompt",
+        { opacity: 0, x: -18 },
+        { opacity: 1, x: 0, duration: 0.48, ease: "power2.out" },
+        16.72
+      );
+
+      const confirmationA = { value: 0 };
+      const confirmationB = { value: 0 };
+      tl.fromTo(
+        confirmationA,
+        { value: 0 },
+        {
+          value: 0.56,
+          duration: 1.05,
+          ease: "power2.out",
+          onUpdate: () => {
+            document.querySelector("#f06-confirm-value-a").textContent = `+${confirmationA.value.toFixed(2)}%`;
+          }
+        },
+        17.35
+      );
+      tl.fromTo(
+        "#f06-prompt-baseline",
+        { scaleX: 0 },
+        { scaleX: 96.74 / 97.28, duration: 1.05, ease: "power2.out" },
+        17.35
+      );
+      tl.fromTo(
+        "#f06-prompt-optimized",
+        { scaleX: 0 },
+        { scaleX: 1, duration: 1.05, ease: "power2.out" },
+        17.35
+      );
+
+      tl.fromTo(
+        "#f06-confirm-generation",
+        { opacity: 0, x: 18 },
+        { opacity: 1, x: 0, duration: 0.48, ease: "power2.out" },
+        19.82
+      );
+      tl.fromTo(
+        confirmationB,
+        { value: 0 },
+        {
+          value: 4.28,
+          duration: 1.12,
+          ease: "power2.out",
+          onUpdate: () => {
+            document.querySelector("#f06-confirm-value-b").textContent = `+${confirmationB.value.toFixed(2)}%`;
+          }
+        },
+        20.45
+      );
+      tl.fromTo(
+        "#f06-generation-baseline",
+        { scaleX: 0 },
+        { scaleX: 35.24 / 36.75, duration: 1.12, ease: "power2.out" },
+        20.45
+      );
+      tl.fromTo(
+        "#f06-generation-optimized",
+        { scaleX: 0 },
+        { scaleX: 1, duration: 1.12, ease: "power2.out" },
+        20.45
+      );
+
+      tl.to("#f06-card-left", { rotateY: 0, duration: 0.7, ease: "power2.out" }, 24.52);
+      tl.to("#f06-card-right", { rotateY: 0, duration: 0.7, ease: "power2.out" }, 24.52);
+      tl.fromTo(
+        "#f06-quality-strip",
+        { opacity: 0, y: 15 },
+        { opacity: 1, y: 0, duration: 0.48, ease: "power3.out" },
+        24.55
+      );
+      tl.fromTo(
+        ".f06-quality-item",
+        { opacity: 0, y: 10 },
+        { opacity: 1, y: 0, duration: 0.34, stagger: 0.48, ease: "power2.out" },
+        25.02
+      );
+    })();
+  </script>
+</template>

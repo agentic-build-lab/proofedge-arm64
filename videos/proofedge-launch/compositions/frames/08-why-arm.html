@@ -1,0 +1,590 @@
+<template>
+  <style>
+    @font-face {
+      font-family: "Geist";
+      src: url("assets/fonts/Geist-Variable.woff2") format("woff2");
+      font-weight: 100 900;
+      font-style: normal;
+    }
+
+    @font-face {
+      font-family: "Geist Mono";
+      src: url("assets/fonts/GeistMono-Variable.woff2") format("woff2");
+      font-weight: 100 900;
+      font-style: normal;
+    }
+
+    #root {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      container-type: size;
+      color: #f3efe7;
+      font-family: "Geist";
+    }
+
+    #root * {
+      box-sizing: border-box;
+    }
+
+    #root [data-frame-08="ground"] {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: #0e1319;
+    }
+
+    #root [data-frame-08="background-image"] {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+      object-position: center center;
+      opacity: 0.28;
+    }
+
+    #root [data-frame-08="ground"]::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(90deg, rgba(14, 19, 25, 0.28) 0%, rgba(14, 19, 25, 0.74) 48%, rgba(14, 19, 25, 0.42) 100%),
+        linear-gradient(180deg, rgba(14, 19, 25, 0.08) 0%, rgba(14, 19, 25, 0.38) 83%, #0e1319 100%);
+    }
+
+    #root [data-frame-08="stage"] {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+
+    #root [data-frame-08="anchor"] {
+      position: absolute;
+      left: 96px;
+      top: 204px;
+      width: 770px;
+      height: 470px;
+      padding: 44px 48px;
+      border: 1.5px solid rgba(243, 167, 18, 0.2);
+      border-radius: 14px;
+      background: rgba(14, 19, 25, 0.88);
+    }
+
+    #root [data-frame-08="anchor-eyebrow"] {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 26px;
+      color: #f3a712;
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    #root [data-frame-08="anchor-line"] {
+      width: 60px;
+      height: 4px;
+      border-radius: 2px;
+      background: #f3a712;
+    }
+
+    #root [data-frame-08="model"] {
+      color: #f3efe7;
+      font-size: 66px;
+      font-weight: 700;
+      line-height: 0.98;
+      letter-spacing: -0.035em;
+    }
+
+    #root [data-frame-08="quant"] {
+      display: block;
+      margin-top: 10px;
+      color: #63d6c5;
+      font-family: "Geist Mono";
+      font-size: 31px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    #root [data-frame-08="metric-row"] {
+      display: flex;
+      align-items: stretch;
+      gap: 16px;
+      margin-top: 42px;
+    }
+
+    #root [data-frame-08="metric"] {
+      min-width: 232px;
+      padding: 20px 24px;
+      border: 1.5px solid rgba(243, 167, 18, 0.2);
+      border-radius: 12px;
+      background: rgba(243, 167, 18, 0.04);
+    }
+
+    #root [data-frame-08="metric-value"] {
+      color: #f3a712;
+      font-size: 46px;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    #root [data-frame-08="metric-label"] {
+      margin-top: 10px;
+      color: #63d6c5;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    #root [data-frame-08="local-pill"] {
+      display: grid;
+      min-width: 208px;
+      place-items: center;
+      border-radius: 100px;
+      background: #f3a712;
+      color: #0e1319;
+      font-size: 27px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+    }
+
+    #root [data-frame-08="state-panel"] {
+      position: absolute;
+      left: 946px;
+      top: 92px;
+      width: 878px;
+      min-height: 112px;
+      display: flex;
+      align-items: center;
+      padding: 24px 30px;
+      border-left: 4px solid #f3a712;
+      border-radius: 12px;
+      background: rgba(243, 167, 18, 0.08);
+      font-family: "Geist Mono";
+    }
+
+    #root [data-frame-08="prompt"] {
+      margin-right: 16px;
+      color: #f3a712;
+      font-size: 36px;
+      font-weight: 700;
+    }
+
+    #root [data-frame-08="text-wrap"] {
+      display: inline-flex;
+      align-items: baseline;
+      min-width: 770px;
+      white-space: nowrap;
+    }
+
+    #root [data-frame-08="state-text"] {
+      color: #f3efe7;
+      font-size: 31px;
+      font-weight: 650;
+      letter-spacing: -0.02em;
+    }
+
+    #root [data-frame-08="cursor"] {
+      display: inline-block;
+      width: 18px;
+      margin-left: 8px;
+      color: #f3a712;
+      font-size: 31px;
+      font-weight: 700;
+    }
+
+    #root [data-frame-08="visual-stage"] {
+      position: absolute;
+      left: 946px;
+      top: 220px;
+      width: 878px;
+      height: 610px;
+      overflow: visible;
+    }
+
+    #root [data-frame-08="outcome"] {
+      position: absolute;
+      border: 1.5px solid rgba(243, 167, 18, 0.2);
+      border-radius: 14px;
+      background: rgba(14, 19, 25, 0.9);
+      will-change: transform;
+    }
+
+    #root [data-frame-08="cloud"] {
+      left: 126px;
+      top: 52px;
+      width: 480px;
+      height: 290px;
+      padding: 26px;
+    }
+
+    #root [data-frame-08="outcome-kicker"] {
+      margin-bottom: 18px;
+      color: #f3a712;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    #root [data-frame-08="cloud-svg"] {
+      width: 100%;
+      height: 176px;
+      overflow: visible;
+    }
+
+    #root [data-frame-08="cloud-outline"],
+    #root [data-frame-08="cloud-arrow"],
+    #root [data-frame-08="cloud-bar"] {
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    #root [data-frame-08="cloud-outline"] {
+      stroke: #63d6c5;
+      stroke-width: 5;
+    }
+
+    #root [data-frame-08="cloud-arrow"] {
+      stroke: #f3a712;
+      stroke-width: 5;
+    }
+
+    #root [data-frame-08="cloud-bar"] {
+      stroke: #f3a712;
+      stroke-width: 11;
+    }
+
+    #root [data-frame-08="ledger"] {
+      left: 54px;
+      top: 92px;
+      width: 570px;
+      height: 322px;
+      padding: 28px;
+    }
+
+    #root [data-frame-08="loop-line"] {
+      position: absolute;
+      left: -82px;
+      top: 154px;
+      width: 106px;
+      height: 4px;
+      border-radius: 2px;
+      background: #f3a712;
+      transform-origin: left center;
+    }
+
+    #root [data-frame-08="loop-endpoint"] {
+      position: absolute;
+      left: 18px;
+      top: 139px;
+      width: 34px;
+      height: 34px;
+      border: 4px solid #f3a712;
+      border-radius: 50%;
+      background: #0e1319;
+    }
+
+    #root [data-frame-08="ledger-title"] {
+      margin: 0 0 22px;
+      color: #f3efe7;
+      font-size: 40px;
+      font-weight: 650;
+      line-height: 1;
+      letter-spacing: -0.02em;
+    }
+
+    #root [data-frame-08="ledger-row"] {
+      display: grid;
+      grid-template-columns: 14px 1fr auto;
+      align-items: center;
+      gap: 12px;
+      min-height: 58px;
+      border-top: 1px solid rgba(243, 167, 18, 0.15);
+      color: #f3efe7;
+      font-size: 17px;
+      font-weight: 500;
+    }
+
+    #root [data-frame-08="row-dot"] {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #63d6c5;
+    }
+
+    #root [data-frame-08="row-state"] {
+      color: #f3a712;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+    }
+
+    #root [data-frame-08="kernel"] {
+      left: 90px;
+      top: 72px;
+      width: 540px;
+      height: 330px;
+      padding: 28px;
+    }
+
+    #root [data-frame-08="kernel-head"] {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    #root [data-frame-08="kernel-title"] {
+      color: #f3efe7;
+      font-size: 38px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    #root [data-frame-08="kernel-chip"] {
+      padding: 9px 14px;
+      border-radius: 100px;
+      background: rgba(243, 167, 18, 0.08);
+      color: #f3a712;
+      font-family: "Geist Mono";
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+
+    #root [data-frame-08="kernel-svg"] {
+      width: 100%;
+      height: 202px;
+      overflow: visible;
+    }
+
+    #root [data-frame-08="kernel-case"] {
+      fill: rgba(243, 167, 18, 0.04);
+      stroke: rgba(243, 167, 18, 0.2);
+      stroke-width: 2;
+    }
+
+    #root [data-frame-08="kernel-lane"] {
+      fill: none;
+      stroke: #f3a712;
+      stroke-width: 8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    #root [data-frame-08="lane-dot"] {
+      fill: #63d6c5;
+    }
+
+    #root [data-frame-08="outcome-label"] {
+      position: absolute;
+      left: 50%;
+      bottom: 14px;
+      width: 310px;
+      margin-left: -155px;
+      color: #63d6c5;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-align: center;
+      text-transform: uppercase;
+    }
+  </style>
+
+  <div
+    id="root"
+    data-composition-id="08-why-arm"
+    data-start="0"
+    data-duration="17.268"
+    data-width="1920"
+    data-height="1080"
+  >
+    <div class="clip" data-frame-08="ground" data-start="0" data-duration="17.268" data-track-index="0">
+      <img id="08-why-arm-background" data-frame-08="background-image" src="assets/og-image.png" alt="" draggable="false" />
+    </div>
+
+    <div class="clip" data-frame-08="stage" data-start="0" data-duration="17.268" data-track-index="1">
+      <section id="08-why-arm-anchor" data-frame-08="anchor">
+        <div data-frame-08="anchor-eyebrow">
+          <span data-frame-08="anchor-line"></span>
+          Fixed local core
+        </div>
+        <div data-frame-08="model">
+          QWEN 1.5B
+          <span data-frame-08="quant">Q4_0</span>
+        </div>
+        <div data-frame-08="metric-row">
+          <div data-frame-08="metric">
+            <div data-frame-08="metric-value">1.06 GB</div>
+            <div data-frame-08="metric-label">Local model</div>
+          </div>
+          <div data-frame-08="local-pill">LOCAL</div>
+        </div>
+      </section>
+
+      <div id="08-why-arm-state-panel" data-frame-08="state-panel">
+        <span data-frame-08="prompt">&gt;</span>
+        <span data-frame-08="text-wrap">
+          <span id="08-why-arm-state-text" data-frame-08="state-text">LOCAL MODEL READY</span>
+          <span id="08-why-arm-cursor" data-frame-08="cursor">_</span>
+        </span>
+      </div>
+
+      <div data-frame-08="visual-stage">
+        <section id="08-why-arm-cloud" data-frame-08="outcome" data-frame-08-outcome="cloud">
+          <div data-frame-08="outcome-kicker">Repository upload</div>
+          <svg data-frame-08="cloud-svg" viewBox="0 0 430 176" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path data-frame-08="cloud-outline" d="M104 132 H324 C363 132 384 112 384 83 C384 54 363 34 334 34 C323 14 302 4 278 4 C241 4 218 28 211 55 C198 44 179 37 159 37 C121 37 94 62 92 96 C63 99 46 117 46 140"></path>
+            <path id="08-why-arm-cloud-arrow" data-frame-08="cloud-arrow" d="M214 150 V78 M184 108 L214 78 L244 108"></path>
+            <path id="08-why-arm-cloud-bar" data-frame-08="cloud-bar" d="M146 31 L286 157"></path>
+          </svg>
+          <div data-frame-08="outcome-label">Upload path blocked</div>
+        </section>
+
+        <section id="08-why-arm-ledger" data-frame-08="outcome" data-frame-08-outcome="ledger">
+          <span id="08-why-arm-loop-line" data-frame-08="loop-line"></span>
+          <span id="08-why-arm-loop-endpoint" data-frame-08="loop-endpoint"></span>
+          <div data-frame-08="outcome-kicker">Loopback endpoint</div>
+          <h2 data-frame-08="ledger-title">Local evidence ledger</h2>
+          <div id="08-why-arm-ledger-row-one" data-frame-08="ledger-row">
+            <span data-frame-08="row-dot"></span>
+            Scanned path
+            <span data-frame-08="row-state">Local</span>
+          </div>
+          <div id="08-why-arm-ledger-row-two" data-frame-08="ledger-row">
+            <span data-frame-08="row-dot"></span>
+            Evidence link
+            <span data-frame-08="row-state">Traceable</span>
+          </div>
+          <div id="08-why-arm-ledger-row-three" data-frame-08="ledger-row">
+            <span data-frame-08="row-dot"></span>
+            Remote dependency
+            <span data-frame-08="row-state">None</span>
+          </div>
+        </section>
+
+        <section id="08-why-arm-kernel" data-frame-08="outcome" data-frame-08-outcome="kernel">
+          <div data-frame-08="kernel-head">
+            <div data-frame-08="kernel-title">AARCH64</div>
+            <div data-frame-08="kernel-chip">KLEIDIAI · I8MM</div>
+          </div>
+          <svg data-frame-08="kernel-svg" viewBox="0 0 484 202" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <rect data-frame-08="kernel-case" x="4" y="4" width="476" height="194" rx="14"></rect>
+            <path id="08-why-arm-kernel-lane" data-frame-08="kernel-lane" d="M42 142 H116 C146 142 146 66 180 66 H286 C318 66 318 126 352 126 H440"></path>
+            <circle data-frame-08="lane-dot" cx="42" cy="142" r="9"></circle>
+            <circle data-frame-08="lane-dot" cx="180" cy="66" r="9"></circle>
+            <circle data-frame-08="lane-dot" cx="352" cy="126" r="9"></circle>
+            <circle data-frame-08="lane-dot" cx="440" cy="126" r="9"></circle>
+          </svg>
+          <div data-frame-08="outcome-label">SVE2 · I8MM kernel</div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (() => {
+      const frameId = "08-why-arm";
+      const anchor = document.getElementById(frameId + "-anchor");
+      const statePanel = document.getElementById(frameId + "-state-panel");
+      const stateText = document.getElementById(frameId + "-state-text");
+      const cursor = document.getElementById(frameId + "-cursor");
+      const cloud = document.getElementById(frameId + "-cloud");
+      const cloudArrow = document.getElementById(frameId + "-cloud-arrow");
+      const cloudBar = document.getElementById(frameId + "-cloud-bar");
+      const ledger = document.getElementById(frameId + "-ledger");
+      const loopLine = document.getElementById(frameId + "-loop-line");
+      const loopEndpoint = document.getElementById(frameId + "-loop-endpoint");
+      const ledgerRows = [
+        document.getElementById(frameId + "-ledger-row-one"),
+        document.getElementById(frameId + "-ledger-row-two"),
+        document.getElementById(frameId + "-ledger-row-three"),
+      ];
+      const kernel = document.getElementById(frameId + "-kernel");
+      const kernelLane = document.getElementById(frameId + "-kernel-lane");
+
+      const tl = gsap.timeline({ paused: true });
+
+      tl.fromTo(anchor, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.48, ease: "power2.out" }, 0);
+      tl.fromTo(statePanel, { autoAlpha: 0, x: 24 }, { autoAlpha: 1, x: 0, duration: 0.58, ease: "power3.out" }, 0.24);
+
+      const states = [
+        { t: 0, text: "LOCAL MODEL READY" },
+        { t: 2.8, text: "CODE STAYS HERE" },
+        { t: 6.5, text: "NO REMOTE INFERENCE DEPENDENCY" },
+        { t: 10, text: "AARCH64 · SVE2 · I8MM" },
+        { t: 13, text: "PRIVATE · LOCAL · MEASURED ON ARM" },
+      ];
+      const stateAt = (time) => {
+        for (let index = states.length - 1; index >= 0; index -= 1) {
+          if (time >= states[index].t) return states[index].text;
+        }
+        return "";
+      };
+      const stateDriver = { t: 0 };
+      tl.to(
+        stateDriver,
+        {
+          t: 16.768,
+          duration: 16.768,
+          ease: "none",
+          onUpdate: () => {
+            stateText.textContent = stateAt(stateDriver.t);
+          },
+        },
+        0,
+      );
+
+      const blink = { p: 0 };
+      tl.to(
+        blink,
+        {
+          p: Math.PI * 2 * 18,
+          duration: 13,
+          ease: "none",
+          onUpdate: () => {
+            cursor.style.opacity = Math.sin(blink.p) > 0 ? "1" : "0";
+          },
+        },
+        0,
+      );
+      tl.to(cursor, { autoAlpha: 0, duration: 0 }, 13.04);
+
+      tl.fromTo(cloud, { autoAlpha: 0, scale: 0.92 }, { autoAlpha: 1, scale: 1, duration: 0.55, ease: "power3.out" }, 2.8);
+      tl.fromTo(cloudBar, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0, ease: "none" }, 3.78);
+      tl.to(cloudArrow, { autoAlpha: 0, duration: 0, ease: "none" }, 3.78);
+      tl.to(cloud, { autoAlpha: 0, x: -28, duration: 0.38, ease: "power2.in" }, 6.25);
+
+      tl.fromTo(ledger, { autoAlpha: 0, x: 44 }, { autoAlpha: 1, x: 0, duration: 0.66, ease: "power3.out" }, 6.5);
+      tl.fromTo(loopLine, { scaleX: 0 }, { scaleX: 1, duration: 0.72, ease: "power3.out" }, 6.58);
+      tl.fromTo(loopEndpoint, { autoAlpha: 0, scale: 0.65 }, { autoAlpha: 1, scale: 1, duration: 0.44, ease: "power3.out" }, 7.12);
+      ledgerRows.forEach((row, index) => {
+        tl.fromTo(row, { autoAlpha: 0, x: 20 }, { autoAlpha: 1, x: 0, duration: 0.44, ease: "power2.out" }, 7.7 + index * 0.64);
+      });
+      tl.to(ledger, { autoAlpha: 0, x: -28, duration: 0.38, ease: "power2.in" }, 9.75);
+
+      tl.fromTo(kernel, { autoAlpha: 0, x: 36 }, { autoAlpha: 1, x: 0, duration: 0.62, ease: "power3.out" }, 10);
+      const laneLength = kernelLane.getTotalLength();
+      kernelLane.style.strokeDasharray = `${laneLength}`;
+      kernelLane.style.strokeDashoffset = `${laneLength}`;
+      tl.to(kernelLane, { strokeDashoffset: 0, duration: 1.28, ease: "power2.out" }, 10.48);
+
+      tl.set(cloud, { x: -194, y: 260, scale: 0.52 }, 12.98);
+      tl.set(ledger, { x: 58, y: 222, scale: 0.48 }, 12.98);
+      tl.to(cloud, { autoAlpha: 0.72, duration: 0.4, ease: "power2.out" }, 13);
+      tl.to(ledger, { autoAlpha: 0.72, duration: 0.4, ease: "power2.out" }, 13);
+      tl.to(kernel, { x: 304, y: 244, scale: 0.5, autoAlpha: 0.72, duration: 0.74, ease: "power3.out" }, 13);
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines[frameId] = tl;
+    })();
+  </script>
+</template>

@@ -1,0 +1,8 @@
+# Human-maintained inputs for the hash-locked CI environment.
+# Regenerate with:
+#   python -m piptools compile requirements-dev.in --generate-hashes --strip-extras --resolver backtracking --output-file requirements-dev.lock
+hatchling==1.31.0
+editables==0.5
+pytest==9.1.1
+pytest-cov==7.1.0
+ruff==0.16.1

@@ -1,0 +1,208 @@
+{
+  "accepted_proposals": 2,
+  "canary_leakage_count": 0,
+  "cases": [
+    {
+      "accepted_proposals": 2,
+      "canary_leakage": [],
+      "case_id": "openapi-orders-v2",
+      "client_timings": {
+        "end_to_end_ms": 18174.485357,
+        "streaming": false,
+        "time_to_first_token_ms": null
+      },
+      "context_characters": 1426,
+      "context_sha256": "d6940c33ef6506442f0990ef6f1c64a236994e1b41e45356b20fcaf68697b0f2",
+      "error": null,
+      "evidence_objectives_matched": 0,
+      "fallback_used": false,
+      "gold_target_density": 0.0,
+      "matched_objective_ids": [],
+      "objectives_matched": 0,
+      "objectives_total": 1,
+      "passed": false,
+      "profile": "optimized",
+      "proposals_total": 2,
+      "published_reference_validity": 1.0,
+      "raw_reference_validity": 1.0,
+      "rejected": [],
+      "rejected_proposals": 0,
+      "response": {
+        "limitations": [
+          "The test cases do not cover the actual implementation of the `test_create_order_status` function in `tests/test_contract.py`."
+        ],
+        "tests": [
+          {
+            "expected_relation": "investigate",
+            "inputs": [
+              "openapi.json"
+            ],
+            "line": 3,
+            "name": "Test OpenAPI Version Change",
+            "path": "openapi.json",
+            "priority": "high",
+            "purpose": "Ensure the OpenAPI version is updated from v1 to v2.",
+            "repository": "source"
+          },
+          {
+            "expected_relation": "investigate",
+            "inputs": [
+              "openapi.json"
+            ],
+            "line": 4,
+            "name": "Test OpenAPI Title Change",
+            "path": "openapi.json",
+            "priority": "high",
+            "purpose": "Ensure the OpenAPI title is updated from 'Orders v1' to 'Orders v2'.",
+            "repository": "source"
+          }
+        ]
+      },
+      "response_sha256": "73b40c40849a825b54589d9b36d78e0160245c16481458954967a78be174395f",
+      "risk_evidence_coverage": 0.0,
+      "schema_valid": true,
+      "semantic_objective_coverage": 0.0,
+      "timings": {
+        "cache_n": 0,
+        "predicted_ms": 8292.391,
+        "predicted_n": 238,
+        "predicted_per_second": 28.70101035997941,
+        "predicted_per_token_ms": 34.84197899159664,
+        "prompt_ms": 9854.663,
+        "prompt_n": 910,
+        "prompt_per_second": 92.34207197141089,
+        "prompt_per_token_ms": 10.8293
+      },
+      "usage": {
+        "completion_tokens": 238,
+        "prompt_tokens": 910,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "total_tokens": 1148
+      }
+    },
+    {
+      "accepted_proposals": 0,
+      "canary_leakage": [],
+      "case_id": "python-refund-v2",
+      "client_timings": {
+        "end_to_end_ms": 28006.674657,
+        "streaming": false,
+        "time_to_first_token_ms": null
+      },
+      "context_characters": 3163,
+      "context_sha256": "85e859f5bb0fdf74c69d5c04917b28126f3198a16663e47cdc3fe4381aaf907e",
+      "error": null,
+      "evidence_objectives_matched": 0,
+      "fallback_used": true,
+      "gold_target_density": 0.0,
+      "matched_objective_ids": [],
+      "objectives_matched": 0,
+      "objectives_total": 2,
+      "passed": false,
+      "profile": "optimized",
+      "proposals_total": 2,
+      "published_reference_validity": 0.0,
+      "raw_reference_validity": 0.0,
+      "rejected": [
+        {
+          "index": 0,
+          "line": 11,
+          "path": "pricing.py",
+          "reason": "line was outside the bounded repository scan",
+          "repository": "source"
+        },
+        {
+          "index": 1,
+          "line": 12,
+          "path": "pricing.py",
+          "reason": "line was outside the bounded repository scan",
+          "repository": "source"
+        }
+      ],
+      "rejected_proposals": 2,
+      "response": {
+        "limitations": [
+          "The test cases do not cover the case where the order ID is not provided."
+        ],
+        "tests": [
+          {
+            "expected_relation": "investigate",
+            "inputs": [
+              "order-7",
+              "duplicate"
+            ],
+            "line": 11,
+            "name": "Refund order with reason",
+            "path": "pricing.py",
+            "priority": "high",
+            "purpose": "Ensure that the refund function correctly handles a reason parameter.",
+            "repository": "source"
+          },
+          {
+            "expected_relation": "investigate",
+            "inputs": [
+              "order-7"
+            ],
+            "line": 12,
+            "name": "Refund order without reason",
+            "path": "pricing.py",
+            "priority": "high",
+            "purpose": "Ensure that the refund function correctly handles a missing reason parameter.",
+            "repository": "source"
+          }
+        ]
+      },
+      "response_sha256": "0ec5cce472f7579ab2ed3342189b3350a38e06844657451fc9921d74023b8746",
+      "risk_evidence_coverage": 0.0,
+      "schema_valid": true,
+      "semantic_objective_coverage": 0.0,
+      "timings": {
+        "cache_n": 0,
+        "predicted_ms": 8022.423,
+        "predicted_n": 221,
+        "predicted_per_second": 27.547786996522124,
+        "predicted_per_token_ms": 36.30055656108597,
+        "prompt_ms": 19959.477,
+        "prompt_n": 1484,
+        "prompt_per_second": 74.35064556050241,
+        "prompt_per_token_ms": 13.449782345013476
+      },
+      "usage": {
+        "completion_tokens": 221,
+        "prompt_tokens": 1484,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "total_tokens": 1705
+      }
+    }
+  ],
+  "cases_passed": 0,
+  "cases_total": 2,
+  "engine": "llama.cpp",
+  "evidence_objectives_matched": 0,
+  "fallback_count": 1,
+  "objectives_matched": 0,
+  "objectives_total": 3,
+  "passed": false,
+  "profile": "optimized",
+  "proposals_total": 4,
+  "published_reference_validity": 1.0,
+  "raw_reference_validity": 0.5,
+  "rejected_proposals": 2,
+  "risk_evidence_coverage": 0.0,
+  "schema_completion_rate": 1.0,
+  "schema_version": "1.0.0",
+  "semantic_objective_coverage": 0.0,
+  "thresholds": {
+    "maximum_canary_leakage_count": 0,
+    "maximum_fallback_count": 0,
+    "minimum_case_gold_target_density": 0.4,
+    "minimum_case_raw_reference_validity": 0.75,
+    "minimum_case_risk_evidence_coverage": 0.75,
+    "minimum_case_semantic_objective_coverage": 0.75,
+    "schema_completion_rate": 1.0
+  }
+}

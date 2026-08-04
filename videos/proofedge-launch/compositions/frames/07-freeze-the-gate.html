@@ -1,0 +1,647 @@
+<template>
+  <style>
+    @font-face {
+      font-family: "Geist";
+      src: url("assets/fonts/Geist-Variable.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 400 700;
+      font-display: swap;
+    }
+
+    #root {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      container-type: size;
+      font-family: "Geist";
+      color: #f3efe7;
+    }
+
+    .f07-freeze-the-gate-ground,
+    .f07-freeze-the-gate-stage {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+
+    .f07-freeze-the-gate-ground {
+      background: #0e1319;
+    }
+
+    .f07-freeze-the-gate-zoom-outer,
+    .f07-freeze-the-gate-zoom-inner {
+      position: absolute;
+      inset: 0;
+      width: 1920px;
+      height: 1080px;
+      transform-origin: 50% 50%;
+      will-change: transform;
+    }
+
+    .f07-freeze-the-gate-header {
+      position: absolute;
+      top: 70px;
+      left: 100px;
+      width: 1060px;
+    }
+
+    .f07-freeze-the-gate-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      color: #f3a712;
+      font-size: 0.82cqw;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .f07-freeze-the-gate-eyebrow::before {
+      content: "";
+      width: 60px;
+      height: 4px;
+      border-radius: 2px;
+      background: #f3a712;
+    }
+
+    .f07-freeze-the-gate-title {
+      margin-top: 15px;
+      color: #f3efe7;
+      font-size: 3.45cqw;
+      font-weight: 680;
+      line-height: 1.02;
+      letter-spacing: -0.035em;
+    }
+
+    .f07-freeze-the-gate-ledger {
+      position: absolute;
+      top: 186px;
+      left: 100px;
+      width: 1100px;
+      height: 3px;
+      border-radius: 6px;
+      background: rgba(243, 167, 18, 0.08);
+    }
+
+    .f07-freeze-the-gate-ledger-fill {
+      width: 100%;
+      height: 100%;
+      border-radius: 6px;
+      background: #f3a712;
+      transform-origin: left center;
+    }
+
+    .f07-freeze-the-gate-funnel {
+      position: absolute;
+      top: 236px;
+      left: 100px;
+      width: 1120px;
+      height: 204px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .f07-freeze-the-gate-cell {
+      position: relative;
+      height: 184px;
+      padding: 24px 22px;
+      box-sizing: border-box;
+      border: 1.5px solid rgba(243, 167, 18, 0.2);
+      border-radius: 14px;
+      background: rgba(243, 167, 18, 0.04);
+    }
+
+    .f07-freeze-the-gate-cell-one { width: 288px; }
+    .f07-freeze-the-gate-cell-two { width: 262px; }
+    .f07-freeze-the-gate-cell-three { width: 236px; }
+    .f07-freeze-the-gate-cell-four { width: 208px; }
+
+    .f07-freeze-the-gate-cell-num {
+      color: #f3a712;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+    }
+
+    .f07-freeze-the-gate-cell-label {
+      margin-top: 16px;
+      color: #f3efe7;
+      font-size: 1.42cqw;
+      font-weight: 600;
+      line-height: 1;
+      letter-spacing: -0.02em;
+    }
+
+    .f07-freeze-the-gate-track {
+      position: absolute;
+      left: 22px;
+      right: 22px;
+      bottom: 28px;
+      height: 12px;
+      overflow: hidden;
+      border-radius: 6px;
+      background: rgba(243, 167, 18, 0.08);
+    }
+
+    .f07-freeze-the-gate-fill {
+      width: 100%;
+      height: 100%;
+      border-radius: 6px;
+      background: #f3a712;
+      transform-origin: left center;
+    }
+
+    .f07-freeze-the-gate-bound {
+      position: absolute;
+      left: 22px;
+      bottom: 53px;
+      color: #63d6c5;
+      font-size: 1.08cqw;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+
+    .f07-freeze-the-gate-connector {
+      flex: 0 0 18px;
+      color: #f3a712;
+      font-size: 19px;
+      opacity: 0.55;
+    }
+
+    .f07-freeze-the-gate-profile {
+      position: absolute;
+      top: 486px;
+      left: 350px;
+      width: 810px;
+      height: 260px;
+      padding: 28px 32px;
+      box-sizing: border-box;
+      border: 1.5px solid rgba(243, 167, 18, 0.2);
+      border-radius: 14px;
+      background: rgba(243, 167, 18, 0.04);
+    }
+
+    .f07-freeze-the-gate-profile-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #f3a712;
+      font-size: 0.78cqw;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .f07-freeze-the-gate-profile-chip {
+      padding: 9px 13px;
+      border-radius: 100px;
+      background: rgba(243, 167, 18, 0.08);
+    }
+
+    .f07-freeze-the-gate-profile-grid {
+      margin-top: 28px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+
+    .f07-freeze-the-gate-profile-stat {
+      min-height: 132px;
+      padding: 20px 18px;
+      box-sizing: border-box;
+      border: 1px solid rgba(243, 167, 18, 0.14);
+      border-radius: 12px;
+      background: rgba(243, 167, 18, 0.035);
+    }
+
+    .f07-freeze-the-gate-profile-value {
+      color: #f3a712;
+      font-size: 2.15cqw;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .f07-freeze-the-gate-profile-label {
+      margin-top: 14px;
+      color: #63d6c5;
+      font-size: 0.72cqw;
+      font-weight: 560;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .f07-freeze-the-gate-kernel-line {
+      position: absolute;
+      top: 438px;
+      left: 1030px;
+      width: 330px;
+      height: 176px;
+      overflow: visible;
+    }
+
+    .f07-freeze-the-gate-kernel-line path {
+      fill: none;
+      stroke: #f3a712;
+      stroke-width: 4;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .f07-freeze-the-gate-kernel-badge {
+      position: absolute;
+      top: 448px;
+      left: 1112px;
+      padding: 11px 16px;
+      border: 1.5px solid rgba(243, 167, 18, 0.2);
+      border-radius: 100px;
+      background: #0e1319;
+      color: #f3a712;
+      font-size: 0.78cqw;
+      font-weight: 650;
+      letter-spacing: 0.08em;
+    }
+
+    .f07-freeze-the-gate-freeze-badge {
+      position: absolute;
+      top: 754px;
+      left: 350px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      padding: 0 28px 0 34px;
+      border: 1.5px solid rgba(243, 167, 18, 0.2);
+      border-radius: 12px;
+      background: rgba(243, 167, 18, 0.08);
+      color: #f3efe7;
+      font-size: 1.42cqw;
+      font-weight: 600;
+      letter-spacing: -0.015em;
+      clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 50%, calc(100% - 18px) 100%, 0 100%, 13px 50%);
+      transform-origin: left center;
+    }
+
+    .f07-freeze-the-gate-release {
+      position: absolute;
+      top: 414px;
+      left: 1280px;
+      width: 540px;
+      height: 390px;
+      padding: 28px 30px;
+      box-sizing: border-box;
+      border: 1.5px solid rgba(243, 167, 18, 0.2);
+      border-radius: 14px;
+      background: rgba(14, 19, 25, 0.96);
+    }
+
+    .f07-freeze-the-gate-release-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .f07-freeze-the-gate-release-label {
+      color: #f3a712;
+      font-size: 0.78cqw;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .f07-freeze-the-gate-pill {
+      width: 136px;
+      height: 38px;
+      perspective: 800px;
+    }
+
+    .f07-freeze-the-gate-pill-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transform-style: preserve-3d;
+      will-change: transform;
+    }
+
+    .f07-freeze-the-gate-pill-face {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      border-radius: 100px;
+      backface-visibility: hidden;
+      font-size: 12px;
+      font-weight: 650;
+      letter-spacing: 0.06em;
+    }
+
+    .f07-freeze-the-gate-pill-front {
+      border: 1.5px solid rgba(243, 167, 18, 0.2);
+      background: rgba(243, 167, 18, 0.04);
+      color: #63d6c5;
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .f07-freeze-the-gate-pill-back {
+      background: #f3a712;
+      color: #0e1319;
+      transform: rotateX(180deg);
+    }
+
+    .f07-freeze-the-gate-case-grid {
+      margin-top: 24px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .f07-freeze-the-gate-case {
+      height: 252px;
+      padding: 20px;
+      box-sizing: border-box;
+      border: 1.5px solid rgba(243, 167, 18, 0.2);
+      border-radius: 14px;
+      background: rgba(243, 167, 18, 0.08);
+      transform-origin: center center;
+    }
+
+    .f07-freeze-the-gate-case-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #f3efe7;
+      font-size: 1.42cqw;
+      font-weight: 650;
+    }
+
+    .f07-freeze-the-gate-case-check {
+      width: 30px;
+      height: 30px;
+    }
+
+    .f07-freeze-the-gate-case-check circle {
+      fill: rgba(243, 167, 18, 0.08);
+      stroke: rgba(243, 167, 18, 0.2);
+      stroke-width: 1.5;
+    }
+
+    .f07-freeze-the-gate-case-check path {
+      fill: none;
+      stroke: #f3a712;
+      stroke-width: 3.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .f07-freeze-the-gate-metrics {
+      margin-top: 17px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .f07-freeze-the-gate-metric {
+      min-height: 68px;
+      padding: 11px 10px;
+      box-sizing: border-box;
+      border-radius: 10px;
+      background: rgba(14, 19, 25, 0.7);
+    }
+
+    .f07-freeze-the-gate-metric b {
+      display: block;
+      color: #f3a712;
+      font-size: 1.18cqw;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .f07-freeze-the-gate-metric span {
+      display: block;
+      margin-top: 7px;
+      color: #63d6c5;
+      font-size: 0.62cqw;
+      font-weight: 560;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .f07-freeze-the-gate-progress {
+      position: absolute;
+      top: 872px;
+      left: 96px;
+      width: 1728px;
+      height: 3px;
+      overflow: hidden;
+      background: rgba(243, 167, 18, 0.08);
+    }
+
+    .f07-freeze-the-gate-progress-fill {
+      display: block;
+      width: 78%;
+      height: 100%;
+      background: #f3a712;
+    }
+  </style>
+
+  <div id="root" data-composition-id="07-freeze-the-gate" data-width="1920" data-height="1080" data-start="0" data-duration="15.597">
+    <div class="clip f07-freeze-the-gate-ground" data-start="0" data-duration="15.597" data-track-index="0"></div>
+    <div class="clip f07-freeze-the-gate-stage" data-start="0" data-duration="15.597" data-track-index="1">
+      <div id="07-freeze-the-gate-zoom-outer" class="f07-freeze-the-gate-zoom-outer">
+        <div id="07-freeze-the-gate-zoom-inner" class="f07-freeze-the-gate-zoom-inner">
+          <div id="07-freeze-the-gate-header" class="f07-freeze-the-gate-header">
+            <div class="f07-freeze-the-gate-eyebrow">Release profile</div>
+            <div class="f07-freeze-the-gate-title">KERNELS ARE ONE LAYER.</div>
+          </div>
+
+          <div class="f07-freeze-the-gate-ledger" aria-hidden="true"><div id="07-freeze-the-gate-ledger-fill" class="f07-freeze-the-gate-ledger-fill"></div></div>
+
+          <div id="07-freeze-the-gate-funnel" class="f07-freeze-the-gate-funnel">
+            <div class="f07-freeze-the-gate-cell f07-freeze-the-gate-cell-one">
+              <div class="f07-freeze-the-gate-cell-num">01</div>
+              <div class="f07-freeze-the-gate-cell-label">CONTEXT</div>
+              <div id="07-freeze-the-gate-bound-inputs" class="f07-freeze-the-gate-bound">≤4 INPUTS</div>
+              <div class="f07-freeze-the-gate-track"><div id="07-freeze-the-gate-fill-inputs" class="f07-freeze-the-gate-fill"></div></div>
+            </div>
+            <div class="f07-freeze-the-gate-connector">→</div>
+            <div class="f07-freeze-the-gate-cell f07-freeze-the-gate-cell-two">
+              <div class="f07-freeze-the-gate-cell-num">02</div>
+              <div class="f07-freeze-the-gate-cell-label">SCHEMA</div>
+              <div id="07-freeze-the-gate-bound-tests" class="f07-freeze-the-gate-bound">≤2 TESTS</div>
+              <div class="f07-freeze-the-gate-track"><div id="07-freeze-the-gate-fill-tests" class="f07-freeze-the-gate-fill"></div></div>
+            </div>
+            <div class="f07-freeze-the-gate-connector">→</div>
+            <div class="f07-freeze-the-gate-cell f07-freeze-the-gate-cell-three">
+              <div class="f07-freeze-the-gate-cell-num">03</div>
+              <div class="f07-freeze-the-gate-cell-label">BATCH</div>
+            </div>
+            <div class="f07-freeze-the-gate-connector">→</div>
+            <div class="f07-freeze-the-gate-cell f07-freeze-the-gate-cell-four">
+              <div class="f07-freeze-the-gate-cell-num">04</div>
+              <div class="f07-freeze-the-gate-cell-label">PROFILE</div>
+            </div>
+          </div>
+
+          <div id="07-freeze-the-gate-profile" class="f07-freeze-the-gate-profile">
+            <div class="f07-freeze-the-gate-profile-head"><span>Selected profile</span><span class="f07-freeze-the-gate-profile-chip">LOCKED</span></div>
+            <div class="f07-freeze-the-gate-profile-grid">
+              <div class="f07-freeze-the-gate-profile-stat"><div id="07-freeze-the-gate-threads" class="f07-freeze-the-gate-profile-value">0</div><div class="f07-freeze-the-gate-profile-label">Threads</div></div>
+              <div class="f07-freeze-the-gate-profile-stat"><div id="07-freeze-the-gate-batch" class="f07-freeze-the-gate-profile-value">0</div><div class="f07-freeze-the-gate-profile-label">Batch</div></div>
+              <div class="f07-freeze-the-gate-profile-stat"><div id="07-freeze-the-gate-ubatch" class="f07-freeze-the-gate-profile-value">0</div><div class="f07-freeze-the-gate-profile-label">Ubatch</div></div>
+              <div class="f07-freeze-the-gate-profile-stat"><div id="07-freeze-the-gate-chunk" class="f07-freeze-the-gate-profile-value">0</div><div class="f07-freeze-the-gate-profile-label">Chunk</div></div>
+            </div>
+          </div>
+
+          <svg class="f07-freeze-the-gate-kernel-line" viewBox="0 0 330 176" aria-hidden="true">
+            <path id="07-freeze-the-gate-kernel-path" d="M 6 20 L 90 20 L 90 92 L 236 92 L 316 160"></path>
+          </svg>
+          <div id="07-freeze-the-gate-kernel-badge" class="f07-freeze-the-gate-kernel-badge">I8MM KERNEL</div>
+          <div id="07-freeze-the-gate-freeze-badge" class="f07-freeze-the-gate-freeze-badge">FROZEN BEFORE CONFIRMATION</div>
+
+          <div id="07-freeze-the-gate-release" class="f07-freeze-the-gate-release">
+            <div class="f07-freeze-the-gate-release-head">
+              <div class="f07-freeze-the-gate-release-label">Frozen quality gate</div>
+              <div class="f07-freeze-the-gate-pill">
+                <div id="07-freeze-the-gate-pill-inner" class="f07-freeze-the-gate-pill-inner">
+                  <div class="f07-freeze-the-gate-pill-face f07-freeze-the-gate-pill-front">PENDING</div>
+                  <div class="f07-freeze-the-gate-pill-face f07-freeze-the-gate-pill-back">CONFIRMED</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="f07-freeze-the-gate-case-grid">
+              <div id="07-freeze-the-gate-case-one" class="f07-freeze-the-gate-case">
+                <div class="f07-freeze-the-gate-case-head">
+                  <span>CASE 1</span>
+                  <svg class="f07-freeze-the-gate-case-check" viewBox="0 0 30 30" aria-hidden="true"><circle cx="15" cy="15" r="13"></circle><path id="07-freeze-the-gate-check-one" d="M 7 15 L 13 21 L 24 8"></path></svg>
+                </div>
+                <div class="f07-freeze-the-gate-metrics">
+                  <div class="f07-freeze-the-gate-metric"><b>1.0</b><span>Validity</span></div>
+                  <div class="f07-freeze-the-gate-metric"><b>1.0</b><span>Coverage</span></div>
+                  <div class="f07-freeze-the-gate-metric"><b>0</b><span>Canary</span></div>
+                  <div class="f07-freeze-the-gate-metric"><b>0</b><span>Fallback</span></div>
+                </div>
+              </div>
+
+              <div id="07-freeze-the-gate-case-two" class="f07-freeze-the-gate-case">
+                <div class="f07-freeze-the-gate-case-head">
+                  <span>CASE 2</span>
+                  <svg class="f07-freeze-the-gate-case-check" viewBox="0 0 30 30" aria-hidden="true"><circle cx="15" cy="15" r="13"></circle><path id="07-freeze-the-gate-check-two" d="M 7 15 L 13 21 L 24 8"></path></svg>
+                </div>
+                <div class="f07-freeze-the-gate-metrics">
+                  <div class="f07-freeze-the-gate-metric"><b>1.0</b><span>Validity</span></div>
+                  <div class="f07-freeze-the-gate-metric"><b>1.0</b><span>Coverage</span></div>
+                  <div class="f07-freeze-the-gate-metric"><b>0</b><span>Canary</span></div>
+                  <div class="f07-freeze-the-gate-metric"><b>0</b><span>Fallback</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="f07-freeze-the-gate-progress" aria-hidden="true"><span class="f07-freeze-the-gate-progress-fill"></span></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script>
+    (() => {
+      const tl = gsap.timeline({ paused: true });
+      window.__timelines = window.__timelines || {};
+      window.__timelines["07-freeze-the-gate"] = tl;
+
+      const zoomOuter = document.getElementById("07-freeze-the-gate-zoom-outer");
+      const zoomInner = document.getElementById("07-freeze-the-gate-zoom-inner");
+      const release = document.getElementById("07-freeze-the-gate-release");
+      const fillInputs = document.getElementById("07-freeze-the-gate-fill-inputs");
+      const fillTests = document.getElementById("07-freeze-the-gate-fill-tests");
+      const boundInputs = document.getElementById("07-freeze-the-gate-bound-inputs");
+      const boundTests = document.getElementById("07-freeze-the-gate-bound-tests");
+      const profile = document.getElementById("07-freeze-the-gate-profile");
+      const kernelPath = document.getElementById("07-freeze-the-gate-kernel-path");
+      const kernelBadge = document.getElementById("07-freeze-the-gate-kernel-badge");
+      const freezeBadge = document.getElementById("07-freeze-the-gate-freeze-badge");
+      const caseOne = document.getElementById("07-freeze-the-gate-case-one");
+      const caseTwo = document.getElementById("07-freeze-the-gate-case-two");
+      const checkOne = document.getElementById("07-freeze-the-gate-check-one");
+      const checkTwo = document.getElementById("07-freeze-the-gate-check-two");
+
+      gsap.set(fillInputs, { scaleX: 0 });
+      gsap.set(fillTests, { scaleX: 0 });
+      gsap.set(boundInputs, { autoAlpha: 0 });
+      gsap.set(boundTests, { autoAlpha: 0 });
+      gsap.set(profile, { autoAlpha: 0 });
+      gsap.set(kernelBadge, { autoAlpha: 0 });
+      gsap.set(freezeBadge, { autoAlpha: 0 });
+      gsap.set(caseOne, { autoAlpha: 0 });
+      gsap.set(caseTwo, { autoAlpha: 0 });
+      gsap.set(".f07-freeze-the-gate-pill-front", { autoAlpha: 1 });
+      gsap.set(".f07-freeze-the-gate-pill-back", { autoAlpha: 0 });
+
+      const measuredPaths = [kernelPath, checkOne, checkTwo];
+      measuredPaths.forEach((path) => {
+        const len = path.getTotalLength();
+        path.style.strokeDasharray = `${len}`;
+        path.style.strokeDashoffset = `${len}`;
+      });
+
+      tl.fromTo(document.getElementById("07-freeze-the-gate-header"), { y: 22, opacity: 0 }, { y: 0, opacity: 1, duration: 0.4, ease: "power3.out" }, 0.08);
+      tl.fromTo(document.getElementById("07-freeze-the-gate-funnel"), { y: 18, opacity: 0 }, { y: 0, opacity: 1, duration: 0.48, ease: "power3.out" }, 0.26);
+      tl.fromTo(document.getElementById("07-freeze-the-gate-ledger-fill"), { scaleX: 0 }, { scaleX: 1, duration: 8.7, ease: "none" }, 0.2);
+
+      tl.fromTo(fillInputs, { scaleX: 0 }, { scaleX: 0.82, duration: 0.9, ease: "power2.out" }, 2.6);
+      tl.fromTo(boundInputs, { y: 10, opacity: 0 }, { y: 0, opacity: 1, duration: 0.38, ease: "power3.out" }, 3.05);
+      tl.fromTo(fillTests, { scaleX: 0 }, { scaleX: 0.58, duration: 0.9, ease: "power2.out" }, 3.75);
+      tl.fromTo(boundTests, { y: 10, opacity: 0 }, { y: 0, opacity: 1, duration: 0.38, ease: "power3.out" }, 4.18);
+
+      tl.fromTo(profile, { scale: 0.94, y: 18, opacity: 0 }, { scale: 1, y: 0, opacity: 1, duration: 0.58, ease: "power3.out" }, 5.5);
+      const countState = { p: 0 };
+      const threads = document.getElementById("07-freeze-the-gate-threads");
+      const batch = document.getElementById("07-freeze-the-gate-batch");
+      const ubatch = document.getElementById("07-freeze-the-gate-ubatch");
+      const chunk = document.getElementById("07-freeze-the-gate-chunk");
+      tl.to(
+        countState,
+        {
+          p: 1,
+          duration: 1.15,
+          ease: "power2.out",
+          onUpdate: () => {
+            threads.textContent = String(Math.round(4 * countState.p));
+            batch.textContent = String(Math.round(1024 * countState.p));
+            ubatch.textContent = String(Math.round(256 * countState.p));
+            chunk.textContent = String(Math.max(0, Math.round(countState.p)));
+          },
+        },
+        5.72,
+      );
+      tl.to(kernelPath, { strokeDashoffset: 0, duration: 0.72, ease: "power2.out" }, 6.45);
+      tl.fromTo(kernelBadge, { scale: 0.9, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.42, ease: "power3.out" }, 6.94);
+
+      tl.fromTo(freezeBadge, { scale: 0.9, x: -28, opacity: 0 }, { scale: 1, x: 0, opacity: 1, duration: 0.56, ease: "power3.out" }, 9.0);
+
+      const targetRect = release.getBoundingClientRect();
+      const targetOffsetX = targetRect.left + targetRect.width / 2 - 960;
+      const targetOffsetY = targetRect.top + targetRect.height / 2 - 540;
+      const maxScale = Math.min((0.88 * 1920) / targetRect.width, (0.88 * 1080) / targetRect.height);
+      const zoomScale = Math.min(1.22, maxScale);
+      tl.to(zoomOuter, { scale: zoomScale, duration: 1.12, ease: "power3.inOut" }, 10.0);
+      tl.to(zoomInner, { x: -targetOffsetX, y: -targetOffsetY, duration: 1.12, ease: "power3.inOut" }, 10.0);
+
+      tl.fromTo(caseOne, { scale: 0.9, y: 14, opacity: 0 }, { scale: 1, y: 0, opacity: 1, duration: 0.46, ease: "power3.out" }, 12.0);
+      tl.fromTo(caseTwo, { scale: 0.9, y: 14, opacity: 0 }, { scale: 1, y: 0, opacity: 1, duration: 0.46, ease: "power3.out" }, 12.48);
+      tl.to(checkOne, { strokeDashoffset: 0, duration: 0.42, ease: "power2.out" }, 12.86);
+      tl.to(checkTwo, { strokeDashoffset: 0, duration: 0.42, ease: "power2.out" }, 13.3);
+      tl.fromTo(
+        document.getElementById("07-freeze-the-gate-pill-inner"),
+        { rotationX: 0 },
+        { rotationX: 180, duration: 0.4, ease: "power3.inOut" },
+        13.76,
+      );
+      tl.set(".f07-freeze-the-gate-pill-front", { autoAlpha: 0 }, 13.96);
+      tl.set(".f07-freeze-the-gate-pill-back", { autoAlpha: 1 }, 13.96);
+    })();
+  </script>
+</template>
