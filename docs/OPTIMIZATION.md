@@ -76,6 +76,14 @@ validity, and risk coverage, plus zero canary leakage and zero fallback. This su
 reproducible same-model runtime-throughput claim; it does not support an energy or end-to-end
 latency claim.
 
+Those same ledgers recorded prompt and generation timings for two complete optimized-context
+quality requests. Both configurations saw identical context hashes, prompt/completion token
+counts, and response hashes. Aggregate model compute decreased from 26.7348 to 26.2351 seconds
+(**−1.8693%**), with per-case changes of −2.3286% and −1.4807%. Because each case was captured
+once and server timings exclude non-model product stages, this is descriptive product-task
+evidence rather than a repeated full end-to-end claim. The derivation is reproducible in
+`benchmarks/results/gha-30830782393-product-quality-summary.json`.
+
 ## Workflow optimization boundary
 
 The current fixtures produce only modest context reduction, including one case with no reduction.

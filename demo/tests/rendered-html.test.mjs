@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
+import { access, readFile } from "node:fs/promises";
 import test from "node:test";
 
 async function render() {
@@ -42,6 +42,8 @@ test("server-renders the complete public ProofEdge narrative", async () => {
   assert.match(html, /Confirmation summary \+ evidence link/);
   assert.match(html, /github\.com\/agentic-build-lab\/proofedge-arm64/);
   assert.doesNotMatch(html, /codex-preview|react-loading-skeleton|starter loading/i);
+  assert.doesNotMatch(html, /\b[A-Z]:[\\/]/);
+  assert.doesNotMatch(html, /Administrator|New project 8/i);
 });
 
 test("keeps benchmark claims qualified and production dependencies audited", async () => {
@@ -65,4 +67,17 @@ test("keeps benchmark claims qualified and production dependencies audited", asy
   assert.match(packageJson, /"postcss": "8\.5\.25"/);
   assert.match(packageJson, /"sharp": "0\.35\.3"/);
   assert.match(packageJson, /"undici": "7\.29\.0"/);
+});
+
+test("self-hosts fonts without leaking build-machine paths", async () => {
+  const [styles] = await Promise.all([
+    readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
+    access(new URL("../public/fonts/Geist-Variable.woff2", import.meta.url)),
+    access(new URL("../public/fonts/GeistMono-Variable.woff2", import.meta.url)),
+  ]);
+
+  assert.match(styles, /url\("\/fonts\/Geist-Variable\.woff2"\)/);
+  assert.match(styles, /url\("\/fonts\/GeistMono-Variable\.woff2"\)/);
+  assert.doesNotMatch(styles, /\b[A-Z]:[\\/]/);
+  assert.doesNotMatch(styles, /Administrator|New project 8/i);
 });

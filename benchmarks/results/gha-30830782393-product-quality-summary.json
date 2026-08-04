@@ -1,0 +1,142 @@
+{
+  "benchmark": "proofedge-native-model-quality-request-comparison",
+  "cases": [
+    {
+      "baseline_model_compute_ms": 12251.414999999999,
+      "byte_identical_response": true,
+      "case_id": "openapi-orders-v2",
+      "completion_tokens": 264,
+      "kleidiai_model_compute_ms": 11966.125,
+      "model_compute_latency_change_percent": -2.3286289787750936,
+      "prompt_tokens": 472,
+      "quality_gate_passed": true,
+      "response_sha256": "cb1d3a149450f6c81f3086d6e4bf40db693af656540b91065597c1bd82aaee5d"
+    },
+    {
+      "baseline_model_compute_ms": 14483.427,
+      "byte_identical_response": true,
+      "case_id": "python-refund-v2",
+      "completion_tokens": 215,
+      "kleidiai_model_compute_ms": 14268.971000000001,
+      "model_compute_latency_change_percent": -1.4806992847756106,
+      "prompt_tokens": 759,
+      "quality_gate_passed": true,
+      "response_sha256": "0479bbc7609374c03521e6bc232b12da5d75e9f1042655c64af9801dc6d7f9d7"
+    }
+  ],
+  "explicitly_unmeasured": {
+    "energy_or_power": "Not measured because the hosted VM exposes no calibrated power telemetry.",
+    "full_product_end_to_end_latency": "Not claimed for the local-model path: server timings exclude scanning, HTTP, validation, and report rendering.",
+    "server_startup_time": "Not timestamped in this confirmation run.",
+    "time_to_first_token": "Not observed: the safety-gated ProofEdge client uses non-streaming responses."
+  },
+  "limitations": [
+    "Only one response per frozen case and configuration was captured; per-case latency is descriptive rather than a repeated-trial estimate.",
+    "The two-case quality corpus is intentionally small and is not a claim of broad migration accuracy.",
+    "Runtime process resource measurements come from llama-bench, not the full product path."
+  ],
+  "model": {
+    "quantization": "Q4_0",
+    "size_bytes": 1066227264
+  },
+  "model_compute_latency_ms": {
+    "aggregate_change_percent": -1.8692685746936388,
+    "baseline": {
+      "max": 14483.427,
+      "mean": 13367.420999999998,
+      "min": 12251.414999999999,
+      "n": 2,
+      "p50": 13367.420999999998,
+      "p95": 14483.427
+    },
+    "kleidiai": {
+      "max": 14268.971000000001,
+      "mean": 13117.548,
+      "min": 11966.125,
+      "n": 2,
+      "p50": 13117.548,
+      "p95": 14268.971000000001
+    }
+  },
+  "quality_gate": {
+    "baseline_passed": true,
+    "cases_per_configuration": 2,
+    "kleidiai_passed": true
+  },
+  "run_id": 30830782393,
+  "runtime_process_measurements": {
+    "baseline": {
+      "cpu_utilization_percent": {
+        "max": 387.0,
+        "mean": 387.0,
+        "min": 387.0,
+        "n": 2,
+        "p50": 387.0,
+        "p95": 387.0
+      },
+      "elapsed_seconds": {
+        "max": 111.17,
+        "mean": 111.1,
+        "min": 111.03,
+        "n": 2,
+        "p50": 111.1,
+        "p95": 111.17
+      },
+      "peak_rss_kib": {
+        "max": 2011996.0,
+        "mean": 2011996.0,
+        "min": 2011996.0,
+        "n": 2,
+        "p50": 2011996.0,
+        "p95": 2011996.0
+      },
+      "processes": 2
+    },
+    "kleidiai": {
+      "cpu_utilization_percent": {
+        "max": 387.0,
+        "mean": 387.0,
+        "min": 387.0,
+        "n": 2,
+        "p50": 387.0,
+        "p95": 387.0
+      },
+      "elapsed_seconds": {
+        "max": 109.52000000000001,
+        "mean": 109.48,
+        "min": 109.44,
+        "n": 2,
+        "p50": 109.48,
+        "p95": 109.52000000000001
+      },
+      "peak_rss_kib": {
+        "max": 2012040.0,
+        "mean": 2012040.0,
+        "min": 2012040.0,
+        "n": 2,
+        "p50": 2012040.0,
+        "p95": 2012040.0
+      },
+      "processes": 2
+    }
+  },
+  "schema_version": "1.0.0",
+  "scope": "llama-server model compute inside complete frozen ProofEdge quality requests",
+  "weighted_throughput_tokens_per_second": {
+    "prompt_processing": {
+      "baseline": 111.3762164639743,
+      "kleidiai": 112.18157996683036
+    },
+    "token_generation": {
+      "baseline": 30.54415853170723,
+      "kleidiai": 31.385520005320473
+    }
+  },
+  "workload_identity": {
+    "byte_identical_responses": true,
+    "same_case_ids": true,
+    "same_completion_token_counts": true,
+    "same_context_hashes": true,
+    "same_prompt_token_counts": true
+  }
+}

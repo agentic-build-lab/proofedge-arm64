@@ -20,6 +20,12 @@ context depth under rules committed before results were inspected. The independe
 then measured +0.5604% pp1024 and +4.2808% tg128 with the runtime log proving I8MM Q4 kernel
 selection. Both runtimes independently passed the frozen local-model evidence gate.
 
+The same confirmation ledgers contain the prompt and generation timings for two complete frozen
+quality requests. With identical context, token counts, and response hashes, aggregate model
+compute decreased by 1.8693% (26.7348 to 26.2351 seconds). This is a descriptive n=2 bridge from
+the runtime microbenchmark to the product workload; it is not full CLI latency and is not used as
+a repeated-trial estimate.
+
 This is deliberately a narrow throughput claim. ProofEdge does not relabel `llama-bench` as
 end-to-end latency, does not infer quality from identical model bytes, and does not report energy
 without calibrated power telemetry. Full design and causal boundaries are documented in

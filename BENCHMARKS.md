@@ -22,6 +22,39 @@ and zero fallback. See the
 [machine-readable summary](benchmarks/results/gha-30830782393-summary.json) and
 [complete raw bundle](benchmarks/raw/gha-30830782393).
 
+## Product-task timing already present in the confirmation evidence
+
+The quality ledgers also contain `llama-server` timings for the same two optimized-context
+ProofEdge requests. Baseline and KleidiAI received identical context hashes and token counts and
+returned byte-identical response hashes. Aggregate model compute fell from 26.7348 to 26.2351
+seconds, a **1.8693% reduction**. Per-case changes were −2.3286% for `openapi-orders-v2` and
+−1.4807% for `python-refund-v2`; every deterministic evidence gate still passed.
+
+This is the prompt-plus-generation compute reported by `llama-server` inside complete frozen
+quality requests. It excludes repository scanning, HTTP overhead, schema validation, evidence
+gating, and report rendering, and each case was captured once per configuration. It is therefore
+descriptive product-task evidence, not a repeated full end-to-end latency claim. The derivation is
+reproducible with `scripts/analyze_model_quality.py`; see the
+[machine-readable product-task summary](benchmarks/results/gha-30830782393-product-quality-summary.json).
+
+## Measurement inventory
+
+| Requested measure | Reported evidence | Scope or reason unavailable |
+| --- | --- | --- |
+| Time to first token | Not observed | ProofEdge deliberately uses non-streaming responses so a complete JSON object can be validated before publication. Non-streaming latency is not relabeled as TTFT. |
+| Tokens per second | pp1024 +0.5604%; tg128 +4.2808% | 14 observations per configuration in the independent ABBA runtime comparison. |
+| Product-task latency | Model compute 13.367 s mean → 13.118 s mean (−1.8693%) | Two frozen requests, byte-identical outputs; excludes non-model product stages. |
+| Deterministic function latency | Warm p50 2.397 ms, p95 2.539 ms, cold 3.034 ms on latest main | Direct `evaluate_cases` static path; excludes interpreter/CLI startup, report I/O, and local-model inference. |
+| p50 and p95 | Published for runtime throughput and deterministic CLI latency | The two product requests are reported individually; their descriptive p50/p95 are machine-readable but not treated as population estimates. |
+| Peak RSS | Baseline 2,011,996 KiB; KleidiAI 2,012,040 KiB | `llama-bench` process peak; latest deterministic function benchmark peak is 24,516 KiB. |
+| Model size | 1,066,227,264 bytes | Pinned Qwen2.5-Coder-1.5B-Instruct Q4_0 artifact. |
+| Startup time | Not timestamped in the confirmation run | No startup claim is made. |
+| CPU utilization | 387% mean for both builds | Four-thread `llama-bench` processes measured by `/usr/bin/time -v`. |
+| Energy or power | Not measured | The hosted runner exposes no calibrated power telemetry. |
+| Output quality | Both builds passed 2/2 cases; schema/reference/coverage 1.00 | Frozen golden objectives, raw responses, and byte-identical hashes retained. |
+| Task success | Deterministic 2/2; model gate 2/2 per runtime | Small, disclosed challenge-created corpus. |
+| Unsupported claims | Recall 1.00; false unsupported rate 0.00 | Deterministic golden evaluation, not broad real-world accuracy. |
+
 ## Honest evidence chain
 
 The first ABBA profile was mixed: +0.5322% pp512 and −0.6967% tg128. It remains published in
