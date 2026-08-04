@@ -12,6 +12,8 @@ _MODEL_SIZE_PATTERN = re.compile(r"\s(\d+) bytes\s*$")
 _RSS_PATTERN = re.compile(r"Maximum resident set size \(kbytes\):\s+(\d+)")
 _CPU_PATTERN = re.compile(r"Percent of CPU this job got:\s+(\d+)%")
 _ELAPSED_PATTERN = re.compile(r"Elapsed \(wall clock\) time \(h:mm:ss or m:ss\):\s+([0-9:.]+)")
+_VM_HWM_PATTERN = re.compile(r"^VmHWM:\s+(\d+)\s+kB$", re.MULTILINE)
+_VM_RSS_PATTERN = re.compile(r"^VmRSS:\s+(\d+)\s+kB$", re.MULTILINE)
 
 
 def _percentile(values: list[float], fraction: float) -> float:
@@ -214,6 +216,30 @@ def parse_startup_measurements(path: Path) -> dict[str, float | int]:
     return _describe(values)
 
 
+def parse_server_process_measurements(status_path: Path, ps_path: Path) -> dict[str, Any]:
+    status = status_path.read_text(encoding="utf-8")
+    high_water = _VM_HWM_PATTERN.search(status)
+    resident = _VM_RSS_PATTERN.search(status)
+    if not high_water or not resident:
+        raise ValueError(f"Incomplete server /proc status evidence in {status_path}")
+    ps_lines = [line for line in ps_path.read_text(encoding="utf-8").splitlines() if line.strip()]
+    if len(ps_lines) != 2:
+        raise ValueError(f"Expected one server process row in {ps_path}")
+    fields = ps_lines[1].split()
+    if len(fields) < 8:
+        raise ValueError(f"Incomplete server ps evidence in {ps_path}")
+    return {
+        "peak_rss_kib": int(high_water.group(1)),
+        "rss_at_capture_kib": int(resident.group(1)),
+        "elapsed_seconds_at_capture": int(fields[1]),
+        "cpu_time_at_capture": fields[2],
+        "average_cpu_utilization_percent_at_capture": float(fields[3]),
+        "ps_rss_kib": int(fields[5]),
+        "ps_vsz_kib": int(fields[6]),
+        "process": fields[7],
+    }
+
+
 def _parse_elapsed_seconds(value: str) -> float:
     pieces = [float(piece) for piece in value.split(":")]
     if len(pieces) == 2:
@@ -275,6 +301,18 @@ def analyze_native_evidence(evidence_dir: Path) -> dict[str, Any]:
         )
         product["server_startup_ms"] = {
             label: parse_startup_measurements(quality_dir / f"{label}-startup.jsonl")
+            for label in ("baseline", "kleidiai")
+        }
+        product["product_resource_measurements"] = {
+            label: {
+                "server": parse_server_process_measurements(
+                    quality_dir / f"{label}-server-proc-status.txt",
+                    quality_dir / f"{label}-server-ps.txt",
+                ),
+                "client": parse_process_measurements(
+                    [quality_dir / f"{label}-product-client-time.txt"]
+                ),
+            }
             for label in ("baseline", "kleidiai")
         }
         product["explicitly_unmeasured"] = {

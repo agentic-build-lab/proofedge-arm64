@@ -64,6 +64,26 @@ Exploratory run
 then selected a profile using predeclared rules. Only the later, separately launched run above is
 used for the confirmed claim.
 
+An independent usefulness audit later found that the revision-1 model gate validated citations
+and objective anchors but did not reject a semantically wrong `equal` relation. Revision-2 canary
+run [`30874565788`](https://github.com/agentic-build-lab/proofedge-arm64/actions/runs/30874565788)
+therefore added purpose, input, and relation checks. It rejected all four model configurations
+because the Python case cited valid lines but proposed unchanged behavior. Its attractive runtime
+result (+0.9021% prompt processing, +6.1295% generation) is preserved but explicitly ineligible
+for the product claim. See the
+[canary summary](benchmarks/results/gha-30874565788-semantic-canary-summary.json) and
+[complete raw evidence](benchmarks/raw/gha-30874565788).
+
+Instrumented canary
+[`30875555758`](https://github.com/agentic-build-lab/proofedge-arm64/actions/runs/30875555758)
+then proved that repeated client TTFT, task latency, startup, and resource capture worked, but all
+quality runs still failed because the compact model tried to infer equality or intent from code
+alone. That run is also excluded and retained in its
+[canary summary](benchmarks/results/gha-30875555758-semantic-canary-summary.json) and
+[raw evidence](benchmarks/raw/gha-30875555758). The next frozen revision removes that unsafe
+freedom: code-only proposals are `investigate`, and the optimized prompt receives a bounded,
+prompt-injection-redacted source/target diff.
+
 The bootstrap ranges in the summary resample observations within processes and are descriptive;
 they are not confidence intervals across independent hosts. `llama-bench` is not end-to-end
 product latency, and no energy claim is made. Full protocol, artifacts, and qualifications are in
