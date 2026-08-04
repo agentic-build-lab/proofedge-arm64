@@ -1,0 +1,237 @@
+{
+  "benchmark": "deterministic-pipeline",
+  "configuration": {
+    "cases": "evaluation/cases",
+    "runs": 30
+  },
+  "disclosure": "This measures static ProofEdge processing, not LLM inference.",
+  "environment": {
+    "architecture": "aarch64",
+    "cpu_count": 4,
+    "github_run_id": "30882095544",
+    "github_sha": "05ebd42c4ae2efe534ba8f1d23efe47d86085996",
+    "platform": "Linux-6.17.0-1020-azure-aarch64-with-glibc2.39",
+    "python": "3.12.13"
+  },
+  "schema_version": "1.0.0",
+  "summary": {
+    "cold_latency_ms": 2.788321,
+    "mean_latency_ms": 2.3780613666666666,
+    "peak_rss_kib": 25176,
+    "task_success_rate": 1.0,
+    "warm_p50_latency_ms": 2.357042,
+    "warm_p95_latency_ms": 2.419052
+  },
+  "trials": [
+    {
+      "cases_passed": 2,
+      "cases_total": 2,
+      "category_recall": 1.0,
+      "latency_ms": 2.788321,
+      "run": 1
+    },
+    {
+      "cases_passed": 2,
+      "cases_total": 2,
+      "category_recall": 1.0,
+      "latency_ms": 2.419052,
+      "run": 2
+    },
+    {
+      "cases_passed": 2,
+      "cases_total": 2,
+      "category_recall": 1.0,
+      "latency_ms": 2.357042,
+      "run": 3
+    },
+    {
+      "cases_passed": 2,
+      "cases_total": 2,
+      "category_recall": 1.0,
+      "latency_ms": 2.369546,
+      "run": 4
+    },
+    {
+      "cases_passed": 2,
+      "cases_total": 2,
+      "category_recall": 1.0,
+      "latency_ms": 2.336257,
+      "run": 5
+    },
+    {
+      "cases_passed": 2,
+      "cases_total": 2,
+      "category_recall": 1.0,
+      "latency_ms": 2.357794,
+      "run": 6
+    },
+    {
+      "cases_passed": 2,
+      "cases_total": 2,
+      "category_recall": 1.0,
+      "latency_ms": 2.344489,
+      "run": 7
+    },
+    {
+      "cases_passed": 2,
+      "cases_total": 2,
+      "category_recall": 1.0,
+      "latency_ms": 2.363946,
+      "run": 8
+    },
+    {
+      "cases_passed": 2,
+      "cases_total": 2,
+      "category_recall": 1.0,
+      "latency_ms": 2.328953,
+      "run": 9
+    },
+    {
+      "cases_passed": 2,
+      "cases_total": 2,
+      "category_recall": 1.0,
+      "latency_ms": 2.315776,
+      "run": 10
+    },
+    {
+      "cases_passed": 2,
+      "cases_total": 2,
+      "category_recall": 1.0,
+      "latency_ms": 2.342033,
+      "run": 11
+    },
+    {
+      "cases_passed": 2,
+      "cases_total": 2,
+      "category_recall": 1.0,
+      "latency_ms": 2.316953,
+      "run": 12
+    },
+    {
+      "cases_passed": 2,
+      "cases_total": 2,
+      "category_recall": 1.0,
+      "latency_ms": 2.338905,
+      "run": 13
+    },
+    {
+      "cases_passed": 2,
+      "cases_total": 2,
+      "category_recall": 1.0,
+      "latency_ms": 2.344297,
+      "run": 14
+    },
+    {
+      "cases_passed": 2,
+      "cases_total": 2,
+      "category_recall": 1.0,
+      "latency_ms": 2.368162,
+      "run": 15
+    },
+    {
+      "cases_passed": 2,
+      "cases_total": 2,
+      "category_recall": 1.0,
+      "latency_ms": 2.378563,
+      "run": 16
+    },
+    {
+      "cases_passed": 2,
+      "cases_total": 2,
+      "category_recall": 1.0,
+      "latency_ms": 2.335177,
+      "run": 17
+    },
+    {
+      "cases_passed": 2,
+      "cases_total": 2,
+      "category_recall": 1.0,
+      "latency_ms": 2.360914,
+      "run": 18
+    },
+    {
+      "cases_passed": 2,
+      "cases_total": 2,
+      "category_recall": 1.0,
+      "latency_ms": 2.36753,
+      "run": 19
+    },
+    {
+      "cases_passed": 2,
+      "cases_total": 2,
+      "category_recall": 1.0,
+      "latency_ms": 2.324608,
+      "run": 20
+    },
+    {
+      "cases_passed": 2,
+      "cases_total": 2,
+      "category_recall": 1.0,
+      "latency_ms": 2.342201,
+      "run": 21
+    },
+    {
+      "cases_passed": 2,
+      "cases_total": 2,
+      "category_recall": 1.0,
+      "latency_ms": 2.368154,
+      "run": 22
+    },
+    {
+      "cases_passed": 2,
+      "cases_total": 2,
+      "category_recall": 1.0,
+      "latency_ms": 2.351137,
+      "run": 23
+    },
+    {
+      "cases_passed": 2,
+      "cases_total": 2,
+      "category_recall": 1.0,
+      "latency_ms": 2.341914,
+      "run": 24
+    },
+    {
+      "cases_passed": 2,
+      "cases_total": 2,
+      "category_recall": 1.0,
+      "latency_ms": 2.639123,
+      "run": 25
+    },
+    {
+      "cases_passed": 2,
+      "cases_total": 2,
+      "category_recall": 1.0,
+      "latency_ms": 2.37161,
+      "run": 26
+    },
+    {
+      "cases_passed": 2,
+      "cases_total": 2,
+      "category_recall": 1.0,
+      "latency_ms": 2.364859,
+      "run": 27
+    },
+    {
+      "cases_passed": 2,
+      "cases_total": 2,
+      "category_recall": 1.0,
+      "latency_ms": 2.364521,
+      "run": 28
+    },
+    {
+      "cases_passed": 2,
+      "cases_total": 2,
+      "category_recall": 1.0,
+      "latency_ms": 2.388186,
+      "run": 29
+    },
+    {
+      "cases_passed": 2,
+      "cases_total": 2,
+      "category_recall": 1.0,
+      "latency_ms": 2.351818,
+      "run": 30
+    }
+  ]
+}

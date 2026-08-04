@@ -55,7 +55,7 @@ machine-readable derivation is in
 | Time to first token | p50 14.960 → 14.867 s; p95 20.025 → 19.969 s | Client-observed first non-empty streamed content, 10 requests per build. |
 | Tokens per second | pp1024 +0.6029%; tg128 +6.3783% | 14 observations per build in the same-host ABBA runtime comparison. |
 | Product-task latency | p50 45.387 → 44.639 s; p95 45.464 → 44.688 s | Five complete two-case trials per build; descriptive because raw outputs differed. |
-| Deterministic function latency | Warm p50 2.397 ms, p95 2.539 ms, cold 3.034 ms | Direct static path from the latest lightweight native evidence; excludes local inference. |
+| Deterministic function latency | Warm p50 2.357 ms, p95 2.419 ms, cold 2.788 ms | 30/30 passes in main run `30882095544`; direct static path excludes local inference. |
 | Peak RSS | Runtime: 2,011,996 vs 2,012,040 KiB; server: 2,094,936 vs 2,091,712 KiB | Process-level maxima; client and server are not falsely summed into a whole-system peak. |
 | Model size | 1,066,227,264 bytes | Pinned Qwen2.5-Coder-1.5B-Instruct Q4_0 artifact. |
 | Startup time | Baseline mean 2,026.7 ms; KleidiAI mean 2,020.0 ms | Three server startups per build on one hosted VM. |

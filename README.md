@@ -67,7 +67,7 @@ results are retained.
 | Layer | Result | Scope |
 | --- | --- | --- |
 | Deterministic quality | 2/2 cases; 5/5 expected categories; unsupported-claim recall 1.00; false unsupported rate 0.00 | Frozen synthetic controls; not local-model accuracy |
-| Native deterministic function path | 30/30 task passes; warm p50 2.397 ms; warm p95 2.539 ms; cold 3.034 ms; peak RSS 24,516 KiB | Latest main commit on native `aarch64` Neoverse N2; direct static evaluation, excluding CLI startup and report I/O |
+| Native deterministic function path | 30/30 task passes; warm p50 2.357 ms; warm p95 2.419 ms; cold 2.788 ms; peak RSS 25,176 KiB | Main merge `05ebd42c` on native `aarch64` Neoverse N2; direct static evaluation, excluding CLI startup and report I/O |
 | Final same-model runtime A/B | pp1024 96.604 → 97.186 tok/s (**+0.603%**); tg128 34.773 → 36.991 tok/s (**+6.378%**) | Four-process ABBA confirmation of the frozen profile; 14 observations per build on the same native Neoverse N2 VM |
 | Repeated full product task | p50 45.387 → 44.639 s (**−1.648%**); p95 45.464 → 44.688 s (**−1.706%**); 5/5 runs passed per build | Complete two-case task in a persistent client; descriptive because raw model responses differed |
 | Streaming request timing | TTFT p50 14.960 → 14.867 s (**−0.622%**); request p50 22.674 → 22.314 s (**−1.587%**) | Ten requests per build; same prompts before response divergence, not an isolated kernel-effect claim |

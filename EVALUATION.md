@@ -9,7 +9,7 @@ quality or product correctness.
 | Local-model evidence | Strict schema, compiled-reference validity, predeclared risk objectives, injection canaries, fallback | Four configurations pass 2/2 cases; compiled references, semantics, and risk coverage 1.00; canary and fallback 0 |
 | Runtime throughput | Same model/runtime workload, native Arm64 ABBA | +0.6029% pp1024 and +6.3783% tg128 in final run `30880259094` |
 | Repeated product task | Five complete two-case trials and ten streamed requests per build | Task p50 45.387 → 44.639 s; TTFT p50 14.960 → 14.867 s; all runs passed; descriptive because raw outputs differed |
-| Deterministic function latency | Direct static evaluation of both frozen cases | Latest-main native warm p50 2.397 ms and p95 2.539 ms; excludes interpreter/CLI startup, report I/O, and local-model inference |
+| Deterministic function latency | Direct static evaluation of both frozen cases | Main run `30882095544`: 30/30 passes, warm p50 2.357 ms and p95 2.419 ms; excludes interpreter/CLI startup, report I/O, and local-model inference |
 
 The corpus is intentionally small and auditable; 2/2 is not a claim of broad migration accuracy.
 Model objectives were frozen before the selected profile's confirmation run. Gate revisions and
