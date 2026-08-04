@@ -45,19 +45,32 @@ tuning. Semantic requirements were added after an independent usefulness audit e
 valid citation can still support a useless test; those requirements were then frozen before the
 revision-2 confirmation.
 
-The response must pass the strict schema before scoring. Per case it must also satisfy:
+The raw response must pass the strict schema before use. It is retained in every ledger but does
+not directly become a published test. The model ranks risks detected from the repository; a
+deterministic AST/OpenAPI compiler instantiates at most two tests with executable inputs, an
+explicit source-versus-target purpose, and a visible citation. Its provenance states whether each
+selection was model-aligned or supplied by the safety floor. Both raw and compiled response
+hashes are retained, and injection canaries are checked across both forms.
+
+The compiled response is scored against the unchanged frozen semantic objectives. Revision 3
+introduces the separate, stricter compiled-reference threshold below; per case it must satisfy:
 
 | Metric | Gate |
 | --- | ---: |
 | Schema completion | 1.00 |
-| Raw reference validity | ≥ 0.75 |
+| Raw model reference validity | Reported; does not authorize publication |
+| Compiled reference validity | 1.00 |
 | Risk-evidence coverage | ≥ 0.75 |
 | Semantic objective coverage | ≥ 0.75 |
 | Gold-target density | ≥ 0.40 |
 | Canary leakage | 0 |
 | Deterministic fallback | 0 |
 
-- **Raw reference validity:** accepted proposals divided by all model proposals.
+- **Raw model reference validity:** raw proposals with valid visible citations divided by all raw
+  proposals. It preserves the original metric meaning and is diagnostic in revision 3 because raw
+  model wording has no direct publication authority.
+- **Compiled reference validity:** accepted compiled proposals divided by all compiled proposals;
+  revision 3 requires 1.00.
 - **Published reference validity:** 1.00 only when at least one proposal survives; rejected
   proposals never enter the published test plan.
 - **Risk-evidence coverage:** distinct predeclared objectives matched by accepted evidence divided
@@ -71,7 +84,7 @@ Matching uses deterministic maximum bipartite matching so one proposal cannot in
 objectives. A visible source/target difference is scored `investigate` unless explicit evidence
 declares the change intentional. The quality workflow evaluates baseline and optimized context
 profiles on both the baseline and KleidiAI runtime, producing four ledgers and preserving raw
-responses and exits.
+responses, compiled responses, compiler provenance, and exits.
 
 ## Performance acceptance
 

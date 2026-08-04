@@ -53,7 +53,7 @@ def _case_map(document: dict[str, Any]) -> dict[str, dict[str, Any]]:
 
 
 def compare_quality_ledgers(baseline_path: Path, kleidiai_path: Path) -> dict[str, Any]:
-    """Compare native product-task timings only when the workload and outputs match."""
+    """Compare model compute only when the raw token workload matches exactly."""
 
     baseline_document = _load_quality(baseline_path)
     kleidiai_document = _load_quality(kleidiai_path)
@@ -68,6 +68,7 @@ def compare_quality_ledgers(baseline_path: Path, kleidiai_path: Path) -> dict[st
     completion_tokens = {"baseline": 0, "kleidiai": 0}
     prompt_ms = {"baseline": 0.0, "kleidiai": 0.0}
     generation_ms = {"baseline": 0.0, "kleidiai": 0.0}
+    exact_workload = True
 
     for case_id in sorted(baseline_cases):
         baseline = baseline_cases[case_id]
@@ -78,12 +79,17 @@ def compare_quality_ledgers(baseline_path: Path, kleidiai_path: Path) -> dict[st
             == kleidiai["usage"]["prompt_tokens"],
             "completion_tokens": baseline["usage"]["completion_tokens"]
             == kleidiai["usage"]["completion_tokens"],
-            "response_sha256": baseline.get("response_sha256") == kleidiai.get("response_sha256"),
+            "published_response_sha256": baseline.get("response_sha256")
+            == kleidiai.get("response_sha256"),
+            "raw_response_sha256": baseline.get(
+                "raw_response_sha256", baseline.get("response_sha256")
+            )
+            == kleidiai.get("raw_response_sha256", kleidiai.get("response_sha256")),
         }
-        if not all(matching_fields.values()):
-            raise ValueError(f"Workload or output mismatch for {case_id}: {matching_fields}")
         if not baseline.get("passed") or not kleidiai.get("passed"):
             raise ValueError(f"Case quality gate did not pass for {case_id}")
+        case_exact = all(matching_fields.values())
+        exact_workload = exact_workload and case_exact
 
         baseline_total = float(baseline["timings"]["prompt_ms"]) + float(
             baseline["timings"]["predicted_ms"]
@@ -100,31 +106,51 @@ def compare_quality_ledgers(baseline_path: Path, kleidiai_path: Path) -> dict[st
             prompt_ms[label] += float(case["timings"]["prompt_ms"])
             generation_ms[label] += float(case["timings"]["predicted_ms"])
 
-        per_case.append(
-            {
-                "case_id": case_id,
-                "baseline_model_compute_ms": baseline_total,
-                "kleidiai_model_compute_ms": kleidiai_total,
-                "model_compute_latency_change_percent": (kleidiai_total / baseline_total - 1) * 100,
-                "prompt_tokens": baseline["usage"]["prompt_tokens"],
-                "completion_tokens": baseline["usage"]["completion_tokens"],
-                "response_sha256": baseline["response_sha256"],
-                "byte_identical_response": True,
-                "quality_gate_passed": True,
-            }
-        )
+        case_result: dict[str, Any] = {
+            "case_id": case_id,
+            "matching_fields": matching_fields,
+            "baseline_prompt_tokens": baseline["usage"]["prompt_tokens"],
+            "kleidiai_prompt_tokens": kleidiai["usage"]["prompt_tokens"],
+            "baseline_completion_tokens": baseline["usage"]["completion_tokens"],
+            "kleidiai_completion_tokens": kleidiai["usage"]["completion_tokens"],
+            "published_response_sha256": baseline["response_sha256"],
+            "quality_gate_passed": True,
+            "model_compute_comparison_eligible": case_exact,
+        }
+        if case_exact:
+            case_result.update(
+                {
+                    "baseline_model_compute_ms": baseline_total,
+                    "kleidiai_model_compute_ms": kleidiai_total,
+                    "model_compute_latency_change_percent": (kleidiai_total / baseline_total - 1)
+                    * 100,
+                }
+            )
+        per_case.append(case_result)
 
     baseline_total_ms = sum(model_compute_ms["baseline"])
     kleidiai_total_ms = sum(model_compute_ms["kleidiai"])
-    return {
+    result: dict[str, Any] = {
         "scope": "llama-server model compute inside complete frozen ProofEdge quality requests",
         "cases": per_case,
-        "model_compute_latency_ms": {
+        "model_compute_comparison_eligible": exact_workload,
+        "workload_identity": {
+            "same_case_ids": True,
+            "all_exact_workload_fields_match": exact_workload,
+        },
+        "quality_gate": {
+            "baseline_passed": True,
+            "kleidiai_passed": True,
+            "cases_per_configuration": len(per_case),
+        },
+    }
+    if exact_workload:
+        result["model_compute_latency_ms"] = {
             "baseline": _describe(model_compute_ms["baseline"]),
             "kleidiai": _describe(model_compute_ms["kleidiai"]),
             "aggregate_change_percent": (kleidiai_total_ms / baseline_total_ms - 1) * 100,
-        },
-        "weighted_throughput_tokens_per_second": {
+        }
+        result["weighted_throughput_tokens_per_second"] = {
             "prompt_processing": {
                 "baseline": prompt_tokens["baseline"] / (prompt_ms["baseline"] / 1000),
                 "kleidiai": prompt_tokens["kleidiai"] / (prompt_ms["kleidiai"] / 1000),
@@ -133,20 +159,14 @@ def compare_quality_ledgers(baseline_path: Path, kleidiai_path: Path) -> dict[st
                 "baseline": completion_tokens["baseline"] / (generation_ms["baseline"] / 1000),
                 "kleidiai": completion_tokens["kleidiai"] / (generation_ms["kleidiai"] / 1000),
             },
-        },
-        "workload_identity": {
-            "same_case_ids": True,
-            "same_context_hashes": True,
-            "same_prompt_token_counts": True,
-            "same_completion_token_counts": True,
-            "byte_identical_responses": True,
-        },
-        "quality_gate": {
-            "baseline_passed": True,
-            "kleidiai_passed": True,
-            "cases_per_configuration": len(per_case),
-        },
-    }
+        }
+    else:
+        result["model_compute_comparison_exclusion_reason"] = (
+            "Raw model responses or token counts differed across configurations; model compute "
+            "timings are retained in the case ledgers but are not compared as an identical "
+            "workload."
+        )
+    return result
 
 
 def compare_product_benchmarks(baseline_path: Path, kleidiai_path: Path) -> dict[str, Any]:
@@ -167,6 +187,13 @@ def compare_product_benchmarks(baseline_path: Path, kleidiai_path: Path) -> dict
     kleidiai_hashes = kleidiai["workload_identity"]["response_hashes_per_case"]
     if baseline_hashes != kleidiai_hashes:
         raise ValueError("Product benchmark responses differ between configurations")
+    baseline_raw_hashes = baseline["workload_identity"].get("raw_response_hashes_per_case")
+    kleidiai_raw_hashes = kleidiai["workload_identity"].get("raw_response_hashes_per_case")
+    raw_responses_identical = (
+        baseline_raw_hashes == kleidiai_raw_hashes
+        if baseline_raw_hashes is not None and kleidiai_raw_hashes is not None
+        else None
+    )
 
     metrics: dict[str, Any] = {}
     for key in (
@@ -194,9 +221,17 @@ def compare_product_benchmarks(baseline_path: Path, kleidiai_path: Path) -> dict
         },
         "workload_identity": {
             "contexts_stable": True,
-            "responses_identical_across_configurations": True,
-            "response_hashes_per_case": baseline_hashes,
+            "published_responses_identical_across_configurations": True,
+            "published_response_hashes_per_case": baseline_hashes,
+            "raw_model_responses_identical_across_configurations": raw_responses_identical,
+            "baseline_raw_model_response_hashes_per_case": baseline_raw_hashes,
+            "kleidiai_raw_model_response_hashes_per_case": kleidiai_raw_hashes,
         },
+        "attribution": (
+            "TTFT compares the same prompts before response divergence. End-to-end task changes "
+            "are descriptive product observations, not an isolated kernel effect, when raw model "
+            "responses differ."
+        ),
         **metrics,
     }
 
@@ -328,6 +363,8 @@ def analyze_native_evidence(evidence_dir: Path) -> dict[str, Any]:
             "The fixed quality corpus has two deliberately compact migration cases.",
             "Five repeated task trials support descriptive p50/p95, not population inference.",
             "Startup has three observed trials per configuration on one hosted Arm64 VM.",
+            "Raw model output identity is reported separately from compiled published-plan "
+            "identity.",
         ]
         return product
     product["explicitly_unmeasured"] = {

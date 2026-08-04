@@ -38,9 +38,10 @@ flowchart LR
     B --> D["Evidence-selected, injection-neutralized context"]
     D --> E["Local llama.cpp model on Arm64"]
     E --> F["Strict JSON schema"]
-    F --> G["Visible file-and-line evidence gate"]
+    F --> G["Model-ranked deterministic change compiler"]
+    G --> I["Visible file-and-line evidence gate"]
     C --> H["Markdown report + JSON ledger"]
-    G --> H
+    I --> H
 ```
 
 - Repository code is treated as hostile data and is never executed by the analyzer.
@@ -50,6 +51,10 @@ flowchart LR
   context.
 - Model output has a closed schema. Unknown fields, bad types, invalid enums, missing tests, and
   nonexistent or invisible evidence references are rejected.
+- The raw model plan is retained but is not authoritative. It ranks mechanically detected risks;
+  an AST/OpenAPI compiler creates the executable stimuli, explicit source-versus-target purpose,
+  and citation used by the published plan. Compiler provenance records whether each candidate was
+  model-aligned or restored by the deterministic safety floor.
 - If the loopback model server is unavailable or every model proposal fails the gate, the CLI
   still writes an explicit `deterministic-fallback` report and exits with status 2. It never
   presents fallback output as model success.

@@ -35,14 +35,16 @@ def _write_ledger(path: Path, prompt_ms: float, generation_ms: float, response_h
     )
 
 
-def test_compare_quality_ledgers_requires_identical_outputs(tmp_path: Path) -> None:
+def test_compare_quality_ledgers_excludes_nonidentical_outputs(tmp_path: Path) -> None:
     baseline = tmp_path / "baseline.json"
     kleidiai = tmp_path / "kleidiai.json"
     _write_ledger(baseline, 1000, 1000, "same")
     _write_ledger(kleidiai, 900, 900, "different")
 
-    with pytest.raises(ValueError, match="Workload or output mismatch"):
-        compare_quality_ledgers(baseline, kleidiai)
+    result = compare_quality_ledgers(baseline, kleidiai)
+
+    assert result["model_compute_comparison_eligible"] is False
+    assert "model_compute_latency_ms" not in result
 
 
 def test_compare_quality_ledgers_reports_latency_and_throughput(tmp_path: Path) -> None:
@@ -57,7 +59,7 @@ def test_compare_quality_ledgers_reports_latency_and_throughput(tmp_path: Path) 
     assert result["weighted_throughput_tokens_per_second"]["prompt_processing"][
         "kleidiai"
     ] == pytest.approx(111.111111)
-    assert result["workload_identity"]["byte_identical_responses"] is True
+    assert result["workload_identity"]["all_exact_workload_fields_match"] is True
 
 
 def test_parse_process_measurements(tmp_path: Path) -> None:
@@ -91,6 +93,7 @@ def _write_product(path: Path, scale: float) -> None:
                 "workload_identity": {
                     "context_hashes_stable": True,
                     "response_hashes_per_case": {"case-a": ["same"]},
+                    "raw_response_hashes_per_case": {"case-a": ["raw"]},
                 },
             }
         ),
@@ -107,7 +110,10 @@ def test_compare_product_benchmarks_requires_identical_quality_outputs(tmp_path:
     result = compare_product_benchmarks(baseline, kleidiai)
 
     assert result["task_end_to_end_ms"]["mean_change_percent"] == pytest.approx(-10)
-    assert result["workload_identity"]["responses_identical_across_configurations"] is True
+    assert (
+        result["workload_identity"]["published_responses_identical_across_configurations"] is True
+    )
+    assert result["workload_identity"]["raw_model_responses_identical_across_configurations"]
 
 
 def test_parse_startup_measurements(tmp_path: Path) -> None:

@@ -1,0 +1,6 @@
+build/baseline/bin/llama-bench:    ELF 64-bit LSB pie executable, ARM aarch64, version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux-aarch64.so.1, BuildID[sha1]=8ab480ef589a654ef89730f0f40e6840e84ea6cd, for GNU/Linux 3.7.0, not stripped
+build/kleidiai/bin/llama-bench:    ELF 64-bit LSB pie executable, ARM aarch64, version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux-aarch64.so.1, BuildID[sha1]=b04d461cbdb06e9d629e2664bc5d73b7ebca1a3f, for GNU/Linux 3.7.0, not stripped
+build/baseline/bin/llama-server:   ELF 64-bit LSB pie executable, ARM aarch64, version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux-aarch64.so.1, BuildID[sha1]=0c93a15b06db691c3138edabc8b7745a03a75780, for GNU/Linux 3.7.0, not stripped
+build/kleidiai/bin/llama-server:   ELF 64-bit LSB pie executable, ARM aarch64, version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux-aarch64.so.1, BuildID[sha1]=526c6867f8f7192206ac31c572bedb0f5bcee7a6, for GNU/Linux 3.7.0, not stripped
+build/baseline/bin/libggml-cpu.so: symbolic link to libggml-cpu.so.0
+build/kleidiai/bin/libggml-cpu.so: symbolic link to libggml-cpu.so.0

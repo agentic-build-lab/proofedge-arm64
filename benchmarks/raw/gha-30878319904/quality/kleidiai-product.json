@@ -1,0 +1,1088 @@
+{
+  "limitations": [
+    "Task latency excludes Python interpreter startup and the final JSON file write.",
+    "TTFT is client-observed first non-empty streamed content, not a server-internal proxy.",
+    "Energy is not reported because the hosted runner exposes no calibrated power data."
+  ],
+  "passed": false,
+  "profile": "optimized",
+  "quality": {
+    "all_schema_and_semantic_gates_passed": false,
+    "successful_runs": 0,
+    "total_runs": 5
+  },
+  "repetitions": 5,
+  "request_end_to_end_ms": {
+    "max": 28196.189059,
+    "mean": 22834.6537787,
+    "min": 17469.305615,
+    "n": 10,
+    "p50": 22810.0394055,
+    "p95": 28196.189059
+  },
+  "request_time_to_first_token_ms": {
+    "max": 20086.267041,
+    "mean": 14950.860107299999,
+    "min": 9877.566092,
+    "n": 10,
+    "p50": 14957.9889395,
+    "p95": 20086.267041
+  },
+  "runs": [
+    {
+      "evaluation": {
+        "accepted_proposals": 3,
+        "canary_leakage_count": 0,
+        "cases": [
+          {
+            "accepted_proposals": 2,
+            "canary_leakage": [],
+            "case_id": "openapi-orders-v2",
+            "client_timings": {
+              "end_to_end_ms": 17539.151355,
+              "streaming": true,
+              "time_to_first_token_ms": 9878.762696
+            },
+            "context_characters": 1426,
+            "context_sha256": "d6940c33ef6506442f0990ef6f1c64a236994e1b41e45356b20fcaf68697b0f2",
+            "error": null,
+            "evidence_objectives_matched": 0,
+            "fallback_used": false,
+            "gold_target_density": 0.0,
+            "matched_objective_ids": [],
+            "objectives_matched": 0,
+            "objectives_total": 1,
+            "passed": false,
+            "profile": "optimized",
+            "proposals_total": 2,
+            "published_reference_validity": 1.0,
+            "raw_reference_validity": 1.0,
+            "rejected": [],
+            "rejected_proposals": 0,
+            "response": {
+              "limitations": [
+                "The mechanical change map does not provide semantic conclusions."
+              ],
+              "tests": [
+                {
+                  "expected_relation": "investigate",
+                  "inputs": [
+                    "openapi.json"
+                  ],
+                  "line": 3,
+                  "name": "Test OpenAPI Version Change",
+                  "path": "openapi.json",
+                  "priority": "high",
+                  "purpose": "Ensure the OpenAPI version is updated from v1 to v2.",
+                  "repository": "source"
+                },
+                {
+                  "expected_relation": "investigate",
+                  "inputs": [
+                    "openapi.json"
+                  ],
+                  "line": 4,
+                  "name": "Test OpenAPI Title Change",
+                  "path": "openapi.json",
+                  "priority": "high",
+                  "purpose": "Ensure the OpenAPI title is updated from 'Orders v1' to 'Orders v2'.",
+                  "repository": "source"
+                }
+              ]
+            },
+            "response_sha256": "8d695eba6f8f34a0665012c507c56d224bd9b2608e644359137641339e965ea9",
+            "risk_evidence_coverage": 0.0,
+            "schema_valid": true,
+            "semantic_objective_coverage": 0.0,
+            "timings": {
+              "cache_n": 0,
+              "predicted_ms": 7758.74,
+              "predicted_n": 222,
+              "predicted_per_second": 28.612893330618114,
+              "predicted_per_token_ms": 34.94927927927928,
+              "prompt_ms": 9753.054,
+              "prompt_n": 910,
+              "prompt_per_second": 93.3041076159324,
+              "prompt_per_token_ms": 10.717641758241758
+            },
+            "usage": {
+              "completion_tokens": 222,
+              "prompt_tokens": 910,
+              "prompt_tokens_details": {
+                "cached_tokens": 0
+              },
+              "total_tokens": 1132
+            }
+          },
+          {
+            "accepted_proposals": 1,
+            "canary_leakage": [],
+            "case_id": "python-refund-v2",
+            "client_timings": {
+              "end_to_end_ms": 28056.099745,
+              "streaming": true,
+              "time_to_first_token_ms": 19950.460333
+            },
+            "context_characters": 3163,
+            "context_sha256": "85e859f5bb0fdf74c69d5c04917b28126f3198a16663e47cdc3fe4381aaf907e",
+            "error": null,
+            "evidence_objectives_matched": 1,
+            "fallback_used": false,
+            "gold_target_density": 0.0,
+            "matched_objective_ids": [],
+            "objectives_matched": 0,
+            "objectives_total": 2,
+            "passed": false,
+            "profile": "optimized",
+            "proposals_total": 2,
+            "published_reference_validity": 1.0,
+            "raw_reference_validity": 0.5,
+            "rejected": [
+              {
+                "index": 0,
+                "line": 11,
+                "path": "pricing.py",
+                "reason": "line was outside the bounded repository scan",
+                "repository": "source"
+              }
+            ],
+            "rejected_proposals": 1,
+            "response": {
+              "limitations": [
+                "The repository note does not provide any specific changes or risks."
+              ],
+              "tests": [
+                {
+                  "expected_relation": "investigate",
+                  "inputs": [
+                    "order-7",
+                    "duplicate"
+                  ],
+                  "line": 11,
+                  "name": "Refund order with reason",
+                  "path": "pricing.py",
+                  "priority": "high",
+                  "purpose": "Ensure that the refund function correctly handles a refund with a reason.",
+                  "repository": "source"
+                },
+                {
+                  "expected_relation": "investigate",
+                  "inputs": [
+                    "1.005",
+                    "USD"
+                  ],
+                  "line": 5,
+                  "name": "Quote amount with currency",
+                  "path": "pricing.py",
+                  "priority": "high",
+                  "purpose": "Ensure that the quote function correctly formats the amount and currency.",
+                  "repository": "source"
+                }
+              ]
+            },
+            "response_sha256": "61cfcc1ea5198785df54d80912bff82e46408113bae31565451d3aa5218d566b",
+            "risk_evidence_coverage": 0.5,
+            "schema_valid": true,
+            "semantic_objective_coverage": 0.0,
+            "timings": {
+              "cache_n": 0,
+              "predicted_ms": 8209.043,
+              "predicted_n": 223,
+              "predicted_per_second": 27.165164075763766,
+              "predicted_per_token_ms": 36.81185201793722,
+              "prompt_ms": 19823.344,
+              "prompt_n": 1484,
+              "prompt_per_second": 74.86123431041705,
+              "prompt_per_token_ms": 13.358048517520217
+            },
+            "usage": {
+              "completion_tokens": 223,
+              "prompt_tokens": 1484,
+              "prompt_tokens_details": {
+                "cached_tokens": 0
+              },
+              "total_tokens": 1707
+            }
+          }
+        ],
+        "cases_passed": 0,
+        "cases_total": 2,
+        "engine": "llama.cpp",
+        "evidence_objectives_matched": 1,
+        "fallback_count": 0,
+        "objectives_matched": 0,
+        "objectives_total": 3,
+        "passed": false,
+        "profile": "optimized",
+        "proposals_total": 4,
+        "published_reference_validity": 1.0,
+        "raw_reference_validity": 0.75,
+        "rejected_proposals": 1,
+        "risk_evidence_coverage": 0.3333333333333333,
+        "schema_completion_rate": 1.0,
+        "schema_version": "1.0.0",
+        "semantic_objective_coverage": 0.0,
+        "thresholds": {
+          "maximum_canary_leakage_count": 0,
+          "maximum_fallback_count": 0,
+          "minimum_case_gold_target_density": 0.4,
+          "minimum_case_raw_reference_validity": 0.75,
+          "minimum_case_risk_evidence_coverage": 0.75,
+          "minimum_case_semantic_objective_coverage": 0.75,
+          "schema_completion_rate": 1.0
+        }
+      },
+      "repetition": 1,
+      "task_end_to_end_ms": 45600.934441
+    },
+    {
+      "evaluation": {
+        "accepted_proposals": 3,
+        "canary_leakage_count": 0,
+        "cases": [
+          {
+            "accepted_proposals": 2,
+            "canary_leakage": [],
+            "case_id": "openapi-orders-v2",
+            "client_timings": {
+              "end_to_end_ms": 17632.432664,
+              "streaming": true,
+              "time_to_first_token_ms": 9900.16665
+            },
+            "context_characters": 1426,
+            "context_sha256": "d6940c33ef6506442f0990ef6f1c64a236994e1b41e45356b20fcaf68697b0f2",
+            "error": null,
+            "evidence_objectives_matched": 0,
+            "fallback_used": false,
+            "gold_target_density": 0.0,
+            "matched_objective_ids": [],
+            "objectives_matched": 0,
+            "objectives_total": 1,
+            "passed": false,
+            "profile": "optimized",
+            "proposals_total": 2,
+            "published_reference_validity": 1.0,
+            "raw_reference_validity": 1.0,
+            "rejected": [],
+            "rejected_proposals": 0,
+            "response": {
+              "limitations": [
+                "The mechanical change map does not provide semantic conclusions."
+              ],
+              "tests": [
+                {
+                  "expected_relation": "investigate",
+                  "inputs": [
+                    "openapi.json"
+                  ],
+                  "line": 3,
+                  "name": "Test OpenAPI Version Change",
+                  "path": "openapi.json",
+                  "priority": "high",
+                  "purpose": "Ensure the OpenAPI version is updated from v1 to v2.",
+                  "repository": "source"
+                },
+                {
+                  "expected_relation": "investigate",
+                  "inputs": [
+                    "openapi.json"
+                  ],
+                  "line": 4,
+                  "name": "Test OpenAPI Title Change",
+                  "path": "openapi.json",
+                  "priority": "high",
+                  "purpose": "Ensure the OpenAPI title is updated from 'Orders v1' to 'Orders v2'.",
+                  "repository": "source"
+                }
+              ]
+            },
+            "response_sha256": "8d695eba6f8f34a0665012c507c56d224bd9b2608e644359137641339e965ea9",
+            "risk_evidence_coverage": 0.0,
+            "schema_valid": true,
+            "semantic_objective_coverage": 0.0,
+            "timings": {
+              "cache_n": 0,
+              "predicted_ms": 7834.013,
+              "predicted_n": 222,
+              "predicted_per_second": 28.33796676109677,
+              "predicted_per_token_ms": 35.28834684684685,
+              "prompt_ms": 9772.818,
+              "prompt_n": 910,
+              "prompt_per_second": 93.11541461224388,
+              "prompt_per_token_ms": 10.73936043956044
+            },
+            "usage": {
+              "completion_tokens": 222,
+              "prompt_tokens": 910,
+              "prompt_tokens_details": {
+                "cached_tokens": 0
+              },
+              "total_tokens": 1132
+            }
+          },
+          {
+            "accepted_proposals": 1,
+            "canary_leakage": [],
+            "case_id": "python-refund-v2",
+            "client_timings": {
+              "end_to_end_ms": 28196.189059,
+              "streaming": true,
+              "time_to_first_token_ms": 20086.267041
+            },
+            "context_characters": 3163,
+            "context_sha256": "85e859f5bb0fdf74c69d5c04917b28126f3198a16663e47cdc3fe4381aaf907e",
+            "error": null,
+            "evidence_objectives_matched": 1,
+            "fallback_used": false,
+            "gold_target_density": 0.0,
+            "matched_objective_ids": [],
+            "objectives_matched": 0,
+            "objectives_total": 2,
+            "passed": false,
+            "profile": "optimized",
+            "proposals_total": 2,
+            "published_reference_validity": 1.0,
+            "raw_reference_validity": 0.5,
+            "rejected": [
+              {
+                "index": 0,
+                "line": 11,
+                "path": "pricing.py",
+                "reason": "line was outside the bounded repository scan",
+                "repository": "source"
+              }
+            ],
+            "rejected_proposals": 1,
+            "response": {
+              "limitations": [
+                "The repository note does not provide any specific changes or risks."
+              ],
+              "tests": [
+                {
+                  "expected_relation": "investigate",
+                  "inputs": [
+                    "order-7",
+                    "duplicate"
+                  ],
+                  "line": 11,
+                  "name": "Refund order with reason",
+                  "path": "pricing.py",
+                  "priority": "high",
+                  "purpose": "Ensure that the refund function correctly handles a refund with a reason.",
+                  "repository": "source"
+                },
+                {
+                  "expected_relation": "investigate",
+                  "inputs": [
+                    "1.005",
+                    "USD"
+                  ],
+                  "line": 5,
+                  "name": "Quote amount with currency",
+                  "path": "pricing.py",
+                  "priority": "high",
+                  "purpose": "Ensure that the quote function correctly formats the amount and currency.",
+                  "repository": "source"
+                }
+              ]
+            },
+            "response_sha256": "61cfcc1ea5198785df54d80912bff82e46408113bae31565451d3aa5218d566b",
+            "risk_evidence_coverage": 0.5,
+            "schema_valid": true,
+            "semantic_objective_coverage": 0.0,
+            "timings": {
+              "cache_n": 0,
+              "predicted_ms": 8216.116,
+              "predicted_n": 223,
+              "predicted_per_second": 27.141778426692127,
+              "predicted_per_token_ms": 36.84356950672646,
+              "prompt_ms": 19961.882,
+              "prompt_n": 1484,
+              "prompt_per_second": 74.34168782282151,
+              "prompt_per_token_ms": 13.45140296495957
+            },
+            "usage": {
+              "completion_tokens": 223,
+              "prompt_tokens": 1484,
+              "prompt_tokens_details": {
+                "cached_tokens": 0
+              },
+              "total_tokens": 1707
+            }
+          }
+        ],
+        "cases_passed": 0,
+        "cases_total": 2,
+        "engine": "llama.cpp",
+        "evidence_objectives_matched": 1,
+        "fallback_count": 0,
+        "objectives_matched": 0,
+        "objectives_total": 3,
+        "passed": false,
+        "profile": "optimized",
+        "proposals_total": 4,
+        "published_reference_validity": 1.0,
+        "raw_reference_validity": 0.75,
+        "rejected_proposals": 1,
+        "risk_evidence_coverage": 0.3333333333333333,
+        "schema_completion_rate": 1.0,
+        "schema_version": "1.0.0",
+        "semantic_objective_coverage": 0.0,
+        "thresholds": {
+          "maximum_canary_leakage_count": 0,
+          "maximum_fallback_count": 0,
+          "minimum_case_gold_target_density": 0.4,
+          "minimum_case_raw_reference_validity": 0.75,
+          "minimum_case_risk_evidence_coverage": 0.75,
+          "minimum_case_semantic_objective_coverage": 0.75,
+          "schema_completion_rate": 1.0
+        }
+      },
+      "repetition": 2,
+      "task_end_to_end_ms": 45834.026063
+    },
+    {
+      "evaluation": {
+        "accepted_proposals": 3,
+        "canary_leakage_count": 0,
+        "cases": [
+          {
+            "accepted_proposals": 2,
+            "canary_leakage": [],
+            "case_id": "openapi-orders-v2",
+            "client_timings": {
+              "end_to_end_ms": 17668.313633,
+              "streaming": true,
+              "time_to_first_token_ms": 9965.517546
+            },
+            "context_characters": 1426,
+            "context_sha256": "d6940c33ef6506442f0990ef6f1c64a236994e1b41e45356b20fcaf68697b0f2",
+            "error": null,
+            "evidence_objectives_matched": 0,
+            "fallback_used": false,
+            "gold_target_density": 0.0,
+            "matched_objective_ids": [],
+            "objectives_matched": 0,
+            "objectives_total": 1,
+            "passed": false,
+            "profile": "optimized",
+            "proposals_total": 2,
+            "published_reference_validity": 1.0,
+            "raw_reference_validity": 1.0,
+            "rejected": [],
+            "rejected_proposals": 0,
+            "response": {
+              "limitations": [
+                "The mechanical change map does not provide semantic conclusions."
+              ],
+              "tests": [
+                {
+                  "expected_relation": "investigate",
+                  "inputs": [
+                    "openapi.json"
+                  ],
+                  "line": 3,
+                  "name": "Test OpenAPI Version Change",
+                  "path": "openapi.json",
+                  "priority": "high",
+                  "purpose": "Ensure the OpenAPI version is updated from v1 to v2.",
+                  "repository": "source"
+                },
+                {
+                  "expected_relation": "investigate",
+                  "inputs": [
+                    "openapi.json"
+                  ],
+                  "line": 4,
+                  "name": "Test OpenAPI Title Change",
+                  "path": "openapi.json",
+                  "priority": "high",
+                  "purpose": "Ensure the OpenAPI title is updated from 'Orders v1' to 'Orders v2'.",
+                  "repository": "source"
+                }
+              ]
+            },
+            "response_sha256": "8d695eba6f8f34a0665012c507c56d224bd9b2608e644359137641339e965ea9",
+            "risk_evidence_coverage": 0.0,
+            "schema_valid": true,
+            "semantic_objective_coverage": 0.0,
+            "timings": {
+              "cache_n": 0,
+              "predicted_ms": 7800.883,
+              "predicted_n": 222,
+              "predicted_per_second": 28.45831683413275,
+              "predicted_per_token_ms": 35.139112612612614,
+              "prompt_ms": 9841.597,
+              "prompt_n": 910,
+              "prompt_per_second": 92.4646680818164,
+              "prompt_per_token_ms": 10.814941758241758
+            },
+            "usage": {
+              "completion_tokens": 222,
+              "prompt_tokens": 910,
+              "prompt_tokens_details": {
+                "cached_tokens": 0
+              },
+              "total_tokens": 1132
+            }
+          },
+          {
+            "accepted_proposals": 1,
+            "canary_leakage": [],
+            "case_id": "python-refund-v2",
+            "client_timings": {
+              "end_to_end_ms": 28113.792483,
+              "streaming": true,
+              "time_to_first_token_ms": 19984.331758
+            },
+            "context_characters": 3163,
+            "context_sha256": "85e859f5bb0fdf74c69d5c04917b28126f3198a16663e47cdc3fe4381aaf907e",
+            "error": null,
+            "evidence_objectives_matched": 1,
+            "fallback_used": false,
+            "gold_target_density": 0.0,
+            "matched_objective_ids": [],
+            "objectives_matched": 0,
+            "objectives_total": 2,
+            "passed": false,
+            "profile": "optimized",
+            "proposals_total": 2,
+            "published_reference_validity": 1.0,
+            "raw_reference_validity": 0.5,
+            "rejected": [
+              {
+                "index": 0,
+                "line": 11,
+                "path": "pricing.py",
+                "reason": "line was outside the bounded repository scan",
+                "repository": "source"
+              }
+            ],
+            "rejected_proposals": 1,
+            "response": {
+              "limitations": [
+                "The repository note does not provide any specific changes or risks."
+              ],
+              "tests": [
+                {
+                  "expected_relation": "investigate",
+                  "inputs": [
+                    "order-7",
+                    "duplicate"
+                  ],
+                  "line": 11,
+                  "name": "Refund order with reason",
+                  "path": "pricing.py",
+                  "priority": "high",
+                  "purpose": "Ensure that the refund function correctly handles a refund with a reason.",
+                  "repository": "source"
+                },
+                {
+                  "expected_relation": "investigate",
+                  "inputs": [
+                    "1.005",
+                    "USD"
+                  ],
+                  "line": 5,
+                  "name": "Quote amount with currency",
+                  "path": "pricing.py",
+                  "priority": "high",
+                  "purpose": "Ensure that the quote function correctly formats the amount and currency.",
+                  "repository": "source"
+                }
+              ]
+            },
+            "response_sha256": "61cfcc1ea5198785df54d80912bff82e46408113bae31565451d3aa5218d566b",
+            "risk_evidence_coverage": 0.5,
+            "schema_valid": true,
+            "semantic_objective_coverage": 0.0,
+            "timings": {
+              "cache_n": 0,
+              "predicted_ms": 8235.755,
+              "predicted_n": 223,
+              "predicted_per_second": 27.07705608046864,
+              "predicted_per_token_ms": 36.93163677130045,
+              "prompt_ms": 19860.013,
+              "prompt_n": 1484,
+              "prompt_per_second": 74.72301251766552,
+              "prompt_per_token_ms": 13.382758086253368
+            },
+            "usage": {
+              "completion_tokens": 223,
+              "prompt_tokens": 1484,
+              "prompt_tokens_details": {
+                "cached_tokens": 0
+              },
+              "total_tokens": 1707
+            }
+          }
+        ],
+        "cases_passed": 0,
+        "cases_total": 2,
+        "engine": "llama.cpp",
+        "evidence_objectives_matched": 1,
+        "fallback_count": 0,
+        "objectives_matched": 0,
+        "objectives_total": 3,
+        "passed": false,
+        "profile": "optimized",
+        "proposals_total": 4,
+        "published_reference_validity": 1.0,
+        "raw_reference_validity": 0.75,
+        "rejected_proposals": 1,
+        "risk_evidence_coverage": 0.3333333333333333,
+        "schema_completion_rate": 1.0,
+        "schema_version": "1.0.0",
+        "semantic_objective_coverage": 0.0,
+        "thresholds": {
+          "maximum_canary_leakage_count": 0,
+          "maximum_fallback_count": 0,
+          "minimum_case_gold_target_density": 0.4,
+          "minimum_case_raw_reference_validity": 0.75,
+          "minimum_case_risk_evidence_coverage": 0.75,
+          "minimum_case_semantic_objective_coverage": 0.75,
+          "schema_completion_rate": 1.0
+        }
+      },
+      "repetition": 3,
+      "task_end_to_end_ms": 45787.453074
+    },
+    {
+      "evaluation": {
+        "accepted_proposals": 3,
+        "canary_leakage_count": 0,
+        "cases": [
+          {
+            "accepted_proposals": 2,
+            "canary_leakage": [],
+            "case_id": "openapi-orders-v2",
+            "client_timings": {
+              "end_to_end_ms": 17639.750819,
+              "streaming": true,
+              "time_to_first_token_ms": 9919.36647
+            },
+            "context_characters": 1426,
+            "context_sha256": "d6940c33ef6506442f0990ef6f1c64a236994e1b41e45356b20fcaf68697b0f2",
+            "error": null,
+            "evidence_objectives_matched": 0,
+            "fallback_used": false,
+            "gold_target_density": 0.0,
+            "matched_objective_ids": [],
+            "objectives_matched": 0,
+            "objectives_total": 1,
+            "passed": false,
+            "profile": "optimized",
+            "proposals_total": 2,
+            "published_reference_validity": 1.0,
+            "raw_reference_validity": 1.0,
+            "rejected": [],
+            "rejected_proposals": 0,
+            "response": {
+              "limitations": [
+                "The mechanical change map does not provide semantic conclusions."
+              ],
+              "tests": [
+                {
+                  "expected_relation": "investigate",
+                  "inputs": [
+                    "openapi.json"
+                  ],
+                  "line": 3,
+                  "name": "Test OpenAPI Version Change",
+                  "path": "openapi.json",
+                  "priority": "high",
+                  "purpose": "Ensure the OpenAPI version is updated from v1 to v2.",
+                  "repository": "source"
+                },
+                {
+                  "expected_relation": "investigate",
+                  "inputs": [
+                    "openapi.json"
+                  ],
+                  "line": 4,
+                  "name": "Test OpenAPI Title Change",
+                  "path": "openapi.json",
+                  "priority": "high",
+                  "purpose": "Ensure the OpenAPI title is updated from 'Orders v1' to 'Orders v2'.",
+                  "repository": "source"
+                }
+              ]
+            },
+            "response_sha256": "8d695eba6f8f34a0665012c507c56d224bd9b2608e644359137641339e965ea9",
+            "risk_evidence_coverage": 0.0,
+            "schema_valid": true,
+            "semantic_objective_coverage": 0.0,
+            "timings": {
+              "cache_n": 0,
+              "predicted_ms": 7849.204,
+              "predicted_n": 222,
+              "predicted_per_second": 28.283122721743503,
+              "predicted_per_token_ms": 35.35677477477477,
+              "prompt_ms": 9765.689,
+              "prompt_n": 910,
+              "prompt_per_second": 93.18338931333979,
+              "prompt_per_token_ms": 10.731526373626375
+            },
+            "usage": {
+              "completion_tokens": 222,
+              "prompt_tokens": 910,
+              "prompt_tokens_details": {
+                "cached_tokens": 0
+              },
+              "total_tokens": 1132
+            }
+          },
+          {
+            "accepted_proposals": 1,
+            "canary_leakage": [],
+            "case_id": "python-refund-v2",
+            "client_timings": {
+              "end_to_end_ms": 28079.737236,
+              "streaming": true,
+              "time_to_first_token_ms": 19991.280366
+            },
+            "context_characters": 3163,
+            "context_sha256": "85e859f5bb0fdf74c69d5c04917b28126f3198a16663e47cdc3fe4381aaf907e",
+            "error": null,
+            "evidence_objectives_matched": 1,
+            "fallback_used": false,
+            "gold_target_density": 0.0,
+            "matched_objective_ids": [],
+            "objectives_matched": 0,
+            "objectives_total": 2,
+            "passed": false,
+            "profile": "optimized",
+            "proposals_total": 2,
+            "published_reference_validity": 1.0,
+            "raw_reference_validity": 0.5,
+            "rejected": [
+              {
+                "index": 0,
+                "line": 11,
+                "path": "pricing.py",
+                "reason": "line was outside the bounded repository scan",
+                "repository": "source"
+              }
+            ],
+            "rejected_proposals": 1,
+            "response": {
+              "limitations": [
+                "The repository note does not provide any specific changes or risks."
+              ],
+              "tests": [
+                {
+                  "expected_relation": "investigate",
+                  "inputs": [
+                    "order-7",
+                    "duplicate"
+                  ],
+                  "line": 11,
+                  "name": "Refund order with reason",
+                  "path": "pricing.py",
+                  "priority": "high",
+                  "purpose": "Ensure that the refund function correctly handles a refund with a reason.",
+                  "repository": "source"
+                },
+                {
+                  "expected_relation": "investigate",
+                  "inputs": [
+                    "1.005",
+                    "USD"
+                  ],
+                  "line": 5,
+                  "name": "Quote amount with currency",
+                  "path": "pricing.py",
+                  "priority": "high",
+                  "purpose": "Ensure that the quote function correctly formats the amount and currency.",
+                  "repository": "source"
+                }
+              ]
+            },
+            "response_sha256": "61cfcc1ea5198785df54d80912bff82e46408113bae31565451d3aa5218d566b",
+            "risk_evidence_coverage": 0.5,
+            "schema_valid": true,
+            "semantic_objective_coverage": 0.0,
+            "timings": {
+              "cache_n": 0,
+              "predicted_ms": 8192.355,
+              "predicted_n": 223,
+              "predicted_per_second": 27.22050008819198,
+              "predicted_per_token_ms": 36.737017937219726,
+              "prompt_ms": 19868.97,
+              "prompt_n": 1484,
+              "prompt_per_second": 74.68932712667038,
+              "prompt_per_token_ms": 13.388793800539084
+            },
+            "usage": {
+              "completion_tokens": 223,
+              "prompt_tokens": 1484,
+              "prompt_tokens_details": {
+                "cached_tokens": 0
+              },
+              "total_tokens": 1707
+            }
+          }
+        ],
+        "cases_passed": 0,
+        "cases_total": 2,
+        "engine": "llama.cpp",
+        "evidence_objectives_matched": 1,
+        "fallback_count": 0,
+        "objectives_matched": 0,
+        "objectives_total": 3,
+        "passed": false,
+        "profile": "optimized",
+        "proposals_total": 4,
+        "published_reference_validity": 1.0,
+        "raw_reference_validity": 0.75,
+        "rejected_proposals": 1,
+        "risk_evidence_coverage": 0.3333333333333333,
+        "schema_completion_rate": 1.0,
+        "schema_version": "1.0.0",
+        "semantic_objective_coverage": 0.0,
+        "thresholds": {
+          "maximum_canary_leakage_count": 0,
+          "maximum_fallback_count": 0,
+          "minimum_case_gold_target_density": 0.4,
+          "minimum_case_raw_reference_validity": 0.75,
+          "minimum_case_risk_evidence_coverage": 0.75,
+          "minimum_case_semantic_objective_coverage": 0.75,
+          "schema_completion_rate": 1.0
+        }
+      },
+      "repetition": 4,
+      "task_end_to_end_ms": 45724.649008
+    },
+    {
+      "evaluation": {
+        "accepted_proposals": 3,
+        "canary_leakage_count": 0,
+        "cases": [
+          {
+            "accepted_proposals": 2,
+            "canary_leakage": [],
+            "case_id": "openapi-orders-v2",
+            "client_timings": {
+              "end_to_end_ms": 17469.305615,
+              "streaming": true,
+              "time_to_first_token_ms": 9877.566092
+            },
+            "context_characters": 1426,
+            "context_sha256": "d6940c33ef6506442f0990ef6f1c64a236994e1b41e45356b20fcaf68697b0f2",
+            "error": null,
+            "evidence_objectives_matched": 0,
+            "fallback_used": false,
+            "gold_target_density": 0.0,
+            "matched_objective_ids": [],
+            "objectives_matched": 0,
+            "objectives_total": 1,
+            "passed": false,
+            "profile": "optimized",
+            "proposals_total": 2,
+            "published_reference_validity": 1.0,
+            "raw_reference_validity": 1.0,
+            "rejected": [],
+            "rejected_proposals": 0,
+            "response": {
+              "limitations": [
+                "The mechanical change map does not provide semantic conclusions."
+              ],
+              "tests": [
+                {
+                  "expected_relation": "investigate",
+                  "inputs": [
+                    "openapi.json"
+                  ],
+                  "line": 3,
+                  "name": "Test OpenAPI Version Change",
+                  "path": "openapi.json",
+                  "priority": "high",
+                  "purpose": "Ensure the OpenAPI version is updated from v1 to v2.",
+                  "repository": "source"
+                },
+                {
+                  "expected_relation": "investigate",
+                  "inputs": [
+                    "openapi.json"
+                  ],
+                  "line": 4,
+                  "name": "Test OpenAPI Title Change",
+                  "path": "openapi.json",
+                  "priority": "high",
+                  "purpose": "Ensure the OpenAPI title is updated from 'Orders v1' to 'Orders v2'.",
+                  "repository": "source"
+                }
+              ]
+            },
+            "response_sha256": "8d695eba6f8f34a0665012c507c56d224bd9b2608e644359137641339e965ea9",
+            "risk_evidence_coverage": 0.0,
+            "schema_valid": true,
+            "semantic_objective_coverage": 0.0,
+            "timings": {
+              "cache_n": 0,
+              "predicted_ms": 7692.533,
+              "predicted_n": 222,
+              "predicted_per_second": 28.859154715358386,
+              "predicted_per_token_ms": 34.65104954954955,
+              "prompt_ms": 9751.049,
+              "prompt_n": 910,
+              "prompt_per_second": 93.32329270420034,
+              "prompt_per_token_ms": 10.715438461538463
+            },
+            "usage": {
+              "completion_tokens": 222,
+              "prompt_tokens": 910,
+              "prompt_tokens_details": {
+                "cached_tokens": 0
+              },
+              "total_tokens": 1132
+            }
+          },
+          {
+            "accepted_proposals": 1,
+            "canary_leakage": [],
+            "case_id": "python-refund-v2",
+            "client_timings": {
+              "end_to_end_ms": 27951.765178,
+              "streaming": true,
+              "time_to_first_token_ms": 19954.882121
+            },
+            "context_characters": 3163,
+            "context_sha256": "85e859f5bb0fdf74c69d5c04917b28126f3198a16663e47cdc3fe4381aaf907e",
+            "error": null,
+            "evidence_objectives_matched": 1,
+            "fallback_used": false,
+            "gold_target_density": 0.0,
+            "matched_objective_ids": [],
+            "objectives_matched": 0,
+            "objectives_total": 2,
+            "passed": false,
+            "profile": "optimized",
+            "proposals_total": 2,
+            "published_reference_validity": 1.0,
+            "raw_reference_validity": 0.5,
+            "rejected": [
+              {
+                "index": 0,
+                "line": 11,
+                "path": "pricing.py",
+                "reason": "line was outside the bounded repository scan",
+                "repository": "source"
+              }
+            ],
+            "rejected_proposals": 1,
+            "response": {
+              "limitations": [
+                "The repository note does not provide any specific changes or risks."
+              ],
+              "tests": [
+                {
+                  "expected_relation": "investigate",
+                  "inputs": [
+                    "order-7",
+                    "duplicate"
+                  ],
+                  "line": 11,
+                  "name": "Refund order with reason",
+                  "path": "pricing.py",
+                  "priority": "high",
+                  "purpose": "Ensure that the refund function correctly handles a refund with a reason.",
+                  "repository": "source"
+                },
+                {
+                  "expected_relation": "investigate",
+                  "inputs": [
+                    "1.005",
+                    "USD"
+                  ],
+                  "line": 5,
+                  "name": "Quote amount with currency",
+                  "path": "pricing.py",
+                  "priority": "high",
+                  "purpose": "Ensure that the quote function correctly formats the amount and currency.",
+                  "repository": "source"
+                }
+              ]
+            },
+            "response_sha256": "61cfcc1ea5198785df54d80912bff82e46408113bae31565451d3aa5218d566b",
+            "risk_evidence_coverage": 0.5,
+            "schema_valid": true,
+            "semantic_objective_coverage": 0.0,
+            "timings": {
+              "cache_n": 0,
+              "predicted_ms": 8101.971,
+              "predicted_n": 223,
+              "predicted_per_second": 27.524166650312623,
+              "predicted_per_token_ms": 36.33170852017937,
+              "prompt_ms": 19830.977,
+              "prompt_n": 1484,
+              "prompt_per_second": 74.83242000633655,
+              "prompt_per_token_ms": 13.363192048517519
+            },
+            "usage": {
+              "completion_tokens": 223,
+              "prompt_tokens": 1484,
+              "prompt_tokens_details": {
+                "cached_tokens": 0
+              },
+              "total_tokens": 1707
+            }
+          }
+        ],
+        "cases_passed": 0,
+        "cases_total": 2,
+        "engine": "llama.cpp",
+        "evidence_objectives_matched": 1,
+        "fallback_count": 0,
+        "objectives_matched": 0,
+        "objectives_total": 3,
+        "passed": false,
+        "profile": "optimized",
+        "proposals_total": 4,
+        "published_reference_validity": 1.0,
+        "raw_reference_validity": 0.75,
+        "rejected_proposals": 1,
+        "risk_evidence_coverage": 0.3333333333333333,
+        "schema_completion_rate": 1.0,
+        "schema_version": "1.0.0",
+        "semantic_objective_coverage": 0.0,
+        "thresholds": {
+          "maximum_canary_leakage_count": 0,
+          "maximum_fallback_count": 0,
+          "minimum_case_gold_target_density": 0.4,
+          "minimum_case_raw_reference_validity": 0.75,
+          "minimum_case_risk_evidence_coverage": 0.75,
+          "minimum_case_semantic_objective_coverage": 0.75,
+          "schema_completion_rate": 1.0
+        }
+      },
+      "repetition": 5,
+      "task_end_to_end_ms": 45426.517642
+    }
+  ],
+  "schema_version": "1.0.0",
+  "scope": "Complete ProofEdge local-model quality task over the frozen two-case corpus in a persistent Python process: bounded scans, context construction, streamed local inference, schema/citation/semantic gates, and ledger construction",
+  "task_end_to_end_ms": {
+    "max": 45834.026063,
+    "mean": 45674.7160456,
+    "min": 45426.517642,
+    "n": 5,
+    "p50": 45724.649008,
+    "p95": 45834.026063
+  },
+  "workload_identity": {
+    "context_hashes_stable": true,
+    "response_hashes_per_case": {
+      "openapi-orders-v2": [
+        "8d695eba6f8f34a0665012c507c56d224bd9b2608e644359137641339e965ea9"
+      ],
+      "python-refund-v2": [
+        "61cfcc1ea5198785df54d80912bff82e46408113bae31565451d3aa5218d566b"
+      ]
+    },
+    "unique_response_counts": {
+      "openapi-orders-v2": 1,
+      "python-refund-v2": 1
+    }
+  }
+}

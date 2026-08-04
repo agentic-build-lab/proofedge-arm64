@@ -14,6 +14,7 @@ class _Case:
     passed: bool
     context_sha256: str
     response_sha256: str
+    raw_response_sha256: str
     client_timings: dict[str, object]
 
 
@@ -46,6 +47,7 @@ def test_product_benchmark_requires_quality_gated_streams(
                     passed=True,
                     context_sha256="context",
                     response_sha256="response",
+                    raw_response_sha256="raw-response",
                     client_timings={
                         "streaming": True,
                         "time_to_first_token_ms": 10.0 + calls,
@@ -63,6 +65,7 @@ def test_product_benchmark_requires_quality_gated_streams(
     assert result["request_time_to_first_token_ms"]["p50"] == 12.0
     assert result["workload_identity"]["context_hashes_stable"] is True
     assert result["workload_identity"]["unique_response_counts"] == {"case-a": 1}
+    assert result["workload_identity"]["unique_raw_response_counts"] == {"case-a": 1}
 
 
 @pytest.mark.parametrize("repetitions", [0, 2, 21])
