@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 };
 
 const repoUrl = "https://github.com/agentic-build-lab/proofedge-arm64";
-const evidenceUrl = `${repoUrl}/blob/main/benchmarks/results/gha-30830782393-summary.json`;
+const evidenceUrl = `${repoUrl}/blob/main/benchmarks/results/gha-30880259094-product-quality-summary.json`;
 
 export default function Home() {
   return (
@@ -83,11 +83,11 @@ export default function Home() {
       <section id="evidence" className="evidence-section shell">
         <div className="section-intro compact">
           <p className="kicker">Measured, not massaged</p>
-          <h2>We kept the failed profile—then confirmed the fix.</h2>
+          <h2>We kept every failed run—then passed the gate.</h2>
           <p>
-            An exploratory profile regressed decode by 0.70%, and that result remains public. A
-            separately frozen profile then passed an independent four-process ABBA confirmation:
-            same VM, model bytes, quantization, workload, and threads; only
+            A mixed first profile and four faster-but-wrong semantic canaries remain public. The
+            final revision passed every quality gate and a four-process ABBA confirmation: same
+            VM, model bytes, quantization, workload, and threads; only
             <code> GGML_CPU_KLEIDIAI</code> changed.
           </p>
         </div>
@@ -97,42 +97,42 @@ export default function Home() {
             <div className="benchmark-heading">
               <div>
                 <span className="label">Prompt processing · pp1024</span>
-                <strong>+0.56%</strong>
+                <strong>+0.60%</strong>
               </div>
               <span className="status positive">confirmed</span>
             </div>
             <div className="bar-row">
               <span>Baseline</span>
               <div className="bar-track"><i style={{ width: "99.44%" }} /></div>
-              <b>96.74 t/s</b>
+              <b>96.60 t/s</b>
             </div>
             <div className="bar-row optimized">
               <span>KleidiAI</span>
               <div className="bar-track"><i style={{ width: "100%" }} /></div>
-              <b>97.28 t/s</b>
+              <b>97.19 t/s</b>
             </div>
-            <p>Descriptive within-process bootstrap range: +0.45% to +0.66%.</p>
+            <p>14 observations per build; descriptive range: +0.47% to +0.74%.</p>
           </article>
 
           <article className="benchmark-card">
             <div className="benchmark-heading">
               <div>
                 <span className="label">Token generation · tg128</span>
-                <strong>+4.28%</strong>
+                <strong>+6.38%</strong>
               </div>
               <span className="status positive">confirmed</span>
             </div>
             <div className="bar-row">
               <span>Baseline</span>
-              <div className="bar-track"><i style={{ width: "95.90%" }} /></div>
-              <b>35.24 t/s</b>
+              <div className="bar-track"><i style={{ width: "94.01%" }} /></div>
+              <b>34.77 t/s</b>
             </div>
             <div className="bar-row optimized">
               <span>KleidiAI</span>
               <div className="bar-track"><i style={{ width: "100%" }} /></div>
-              <b>36.75 t/s</b>
+              <b>36.99 t/s</b>
             </div>
-            <p>Descriptive within-process bootstrap range: +3.68% to +4.91%.</p>
+            <p>14 observations per build; descriptive range: +4.27% to +8.52%.</p>
           </article>
         </div>
 
@@ -140,7 +140,7 @@ export default function Home() {
           <span><b>Hardware:</b> 4-core Arm Neoverse N2, SVE2 + I8MM</span>
           <span><b>Model:</b> Qwen2.5-Coder 1.5B Q4_0, SHA-pinned</span>
           <a href={evidenceUrl} target="_blank" rel="noreferrer">
-            Confirmation summary + evidence link <span aria-hidden="true">↗</span>
+            Final product summary + raw evidence link <span aria-hidden="true">↗</span>
           </a>
         </div>
       </section>
@@ -165,14 +165,14 @@ export default function Home() {
           <i aria-hidden="true">→</i>
           <article>
             <span>03</span>
-            <h3>Local planning</h3>
-            <p>A compact model on llama.cpp proposes high-value differential tests from numbered excerpts.</p>
+            <h3>Local ranking</h3>
+            <p>A compact model on llama.cpp ranks mechanically detected changes from numbered excerpts.</p>
           </article>
           <i aria-hidden="true">→</i>
           <article>
             <span>04</span>
-            <h3>Evidence gate</h3>
-            <p>Every cited path and line is validated. Hallucinated references are rejected and counted.</p>
+            <h3>Evidence compiler</h3>
+            <p>AST/OpenAPI facts compile into citable tests; model misses and safety-floor selections stay visible.</p>
           </article>
         </div>
       </section>

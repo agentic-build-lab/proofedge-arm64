@@ -1,0 +1,2 @@
+Product task: 5/5 runs passed; p50 45387.47 ms; TTFT p50 14960.26 ms
+Product benchmark ledger: artifacts/arm64-llama-bench/quality/baseline-product.json

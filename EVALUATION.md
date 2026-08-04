@@ -6,9 +6,9 @@ quality or product correctness.
 | Layer | Frozen check | Current result |
 | --- | --- | --- |
 | Deterministic analyzer | Two challenge-created migration controls | 2/2 cases; 5/5 categories; unsupported-claim recall 1.00; false unsupported rate 0.00 |
-| Local-model evidence | Strict schema, reference validity, predeclared risk objectives, injection canaries, fallback | Baseline and KleidiAI each pass 2/2 optimized-context cases; schema/reference/coverage 1.00; canary and fallback 0 |
-| Runtime throughput | Same model/runtime workload, native Arm64 ABBA | +0.5604% pp1024 and +4.2808% tg128 for the confirmed KleidiAI profile |
-| Product-request model compute | Prompt + generation timings inside two frozen quality requests | 13.367 → 13.118 s mean (−1.869%); byte-identical response hashes; descriptive n=2 |
+| Local-model evidence | Strict schema, compiled-reference validity, predeclared risk objectives, injection canaries, fallback | Four configurations pass 2/2 cases; compiled references, semantics, and risk coverage 1.00; canary and fallback 0 |
+| Runtime throughput | Same model/runtime workload, native Arm64 ABBA | +0.6029% pp1024 and +6.3783% tg128 in final run `30880259094` |
+| Repeated product task | Five complete two-case trials and ten streamed requests per build | Task p50 45.387 → 44.639 s; TTFT p50 14.960 → 14.867 s; all runs passed; descriptive because raw outputs differed |
 | Deterministic function latency | Direct static evaluation of both frozen cases | Latest-main native warm p50 2.397 ms and p95 2.539 ms; excludes interpreter/CLI startup, report I/O, and local-model inference |
 
 The corpus is intentionally small and auditable; 2/2 is not a claim of broad migration accuracy.
@@ -38,4 +38,4 @@ proofedge evaluate-model \
 
 Definitions, thresholds, corpus details, and the performance acceptance policy are in
 [`docs/EVALUATION.md`](docs/EVALUATION.md). The final native ledgers are under
-[`benchmarks/raw/gha-30830782393/quality`](benchmarks/raw/gha-30830782393/quality).
+[`benchmarks/raw/gha-30880259094/quality`](benchmarks/raw/gha-30880259094/quality).

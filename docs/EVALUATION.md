@@ -92,14 +92,16 @@ Exploratory tuning may choose a profile; it may not establish the final claim. A
 must use the frozen model/runtime artifacts, a predeclared workload, same-host interleaving, raw
 logs, and the quality gate above. No energy metric is reported without calibrated telemetry.
 
-Independent run
-[`30830782393`](https://github.com/agentic-build-lab/proofedge-arm64/actions/runs/30830782393)
-passed this policy. Both baseline and KleidiAI optimized-context ledgers passed 2/2 cases with
-schema completion 1.00, raw reference validity 1.00, risk-evidence coverage 1.00, zero canary
-leakage, and zero fallback. The runtime A/B simultaneously measured +0.560% pp1024 and +4.281%
-tg128 mean throughput for the preselected KleidiAI profile.
+Final run
+[`30880259094`](https://github.com/agentic-build-lab/proofedge-arm64/actions/runs/30880259094)
+passed this policy at revision 3. All four baseline/optimized × KleidiAI-off/on ledgers passed 2/2
+cases with schema completion, compiled-reference validity, semantic-objective coverage, and
+risk-evidence coverage all 1.00, plus zero canary leakage and zero fallback. Raw-model reference
+validity remains separately disclosed at 0.50 for the baseline build and 0.75 for KleidiAI. The
+same-workload runtime A/B measured +0.6029% pp1024 and +6.3783% tg128 mean throughput.
 
-The two optimized-context ledgers also produced byte-identical response hashes across runtimes.
-Their aggregate prompt-plus-generation compute decreased by 1.8693%. This timing is reported as
-descriptive model compute inside the frozen product requests, not as user-observed TTFT or full
-ProofEdge end-to-end latency.
+Five complete two-case product trials per build all passed. Published compiled-plan hashes were
+stable and identical across builds. Client-observed task p50 changed from 45.387 to 44.639 seconds,
+and request TTFT p50 from 14.960 to 14.867 seconds. Raw model responses and completion token counts
+differed across builds, so exact model-compute comparison is ineligible and the end-to-end changes
+are descriptive product observations, not isolated kernel effects.

@@ -1,0 +1,2 @@
+Product task: 5/5 runs passed; p50 44639.49 ms; TTFT p50 14867.25 ms
+Product benchmark ledger: artifacts/arm64-llama-bench/quality/kleidiai-product.json
