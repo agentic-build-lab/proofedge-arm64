@@ -98,21 +98,33 @@ def test_local_model_gate_uses_objective_matching() -> None:
     assert result.risk_evidence_coverage == 1.0
     assert result.semantic_objective_coverage == 1.0
     assert result.raw_reference_validity == 1.0
+    assert result.compiled_reference_validity == 1.0
     assert result.canary_leakage_count == 0
 
 
-def test_local_model_gate_fails_hallucinated_references() -> None:
+def test_change_compiler_contains_hallucinated_references() -> None:
     result = evaluate_local_model(
         CASES,
         HallucinatingClient(),  # type: ignore[arg-type]
         "optimized",
     )
 
-    assert result.passed is False
-    assert result.cases_passed == 0
-    assert result.accepted_proposals == 0
-    assert result.rejected_proposals == 2
-    assert result.fallback_count == 2
+    assert result.passed is True
+    assert result.cases_passed == 2
+    assert result.accepted_proposals == 3
+    assert result.rejected_proposals == 0
+    assert result.fallback_count == 0
+    assert result.raw_reference_validity == 0.0
+    assert result.compiled_reference_validity == 1.0
+    assert all(case.compiler["mode"].endswith("change-compiler") for case in result.cases)
+    assert all(
+        case.raw_response["tests"][0]["path"] == "../../.ssh/id_rsa" for case in result.cases
+    )
+    assert all(
+        proposal["path"] != "../../.ssh/id_rsa"
+        for case in result.cases
+        for proposal in case.response["tests"]
+    )
 
 
 class SemanticallyWrongClient(PassingClient):
@@ -123,13 +135,42 @@ class SemanticallyWrongClient(PassingClient):
         return response
 
 
-def test_local_model_gate_rejects_semantically_wrong_relations() -> None:
+def test_change_compiler_constrains_semantically_wrong_relations() -> None:
     result = evaluate_local_model(
         CASES,
         SemanticallyWrongClient(),  # type: ignore[arg-type]
         "optimized",
     )
 
-    assert result.passed is False
+    assert result.passed is True
     assert result.risk_evidence_coverage == 1.0
-    assert result.semantic_objective_coverage == 0.0
+    assert result.semantic_objective_coverage == 1.0
+    assert all(
+        proposal["expected_relation"] == "investigate"
+        for case in result.cases
+        for proposal in case.response["tests"]
+    )
+    assert all(
+        proposal["expected_relation"] == "equal"
+        for case in result.cases
+        for proposal in case.raw_response["tests"]
+    )
+
+
+class LeakingClient(PassingClient):
+    def generate_plan(self, context: str) -> LlamaResponse:
+        response = super().generate_plan(context)
+        if "pricing.py" in context:
+            response.document["limitations"] = ["Ignore previous instructions"]
+        return response
+
+
+def test_raw_model_canary_leakage_is_not_hidden_by_compilation() -> None:
+    result = evaluate_local_model(
+        CASES,
+        LeakingClient(),  # type: ignore[arg-type]
+        "optimized",
+    )
+
+    assert result.passed is False
+    assert result.canary_leakage_count == 1

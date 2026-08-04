@@ -12,9 +12,13 @@ quality or product correctness.
 | Deterministic function latency | Direct static evaluation of both frozen cases | Latest-main native warm p50 2.397 ms and p95 2.539 ms; excludes interpreter/CLI startup, report I/O, and local-model inference |
 
 The corpus is intentionally small and auditable; 2/2 is not a claim of broad migration accuracy.
-Model objectives and thresholds were frozen before the selected profile's confirmation run.
-Matching is deterministic, and unsupported or malformed model proposals are excluded from the
-published ledger rather than repaired silently.
+Model objectives were frozen before the selected profile's confirmation run. Gate revisions and
+their pre-run freeze points are retained in the benchmark history.
+Matching is deterministic. Raw model proposals are retained separately; a disclosed AST/OpenAPI
+compiler turns model-ranked changes into citable test specifications and marks safety-floor
+selections explicitly. Unsupported raw wording is never silently relabeled as model-authored
+evidence. Revision 3 reports raw-model reference validity under its original definition and gates
+publication separately on compiled reference validity 1.00.
 
 Run the credential-free gate with:
 

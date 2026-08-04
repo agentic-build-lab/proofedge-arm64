@@ -47,6 +47,7 @@ def benchmark_local_model_tasks(
     request_latency_ms: list[float] = []
     runs: list[dict[str, Any]] = []
     response_hashes: dict[str, set[str]] = {}
+    raw_response_hashes: dict[str, set[str]] = {}
     context_hashes: dict[str, set[str]] = {}
 
     for repetition in range(1, repetitions + 1):
@@ -66,6 +67,8 @@ def benchmark_local_model_tasks(
             request_latency_ms.append(float(request_latency))
             if case.response_sha256 is not None:
                 response_hashes.setdefault(case.case_id, set()).add(case.response_sha256)
+            if case.raw_response_sha256 is not None:
+                raw_response_hashes.setdefault(case.case_id, set()).add(case.raw_response_sha256)
             context_hashes.setdefault(case.case_id, set()).add(case.context_sha256)
         runs.append(
             {
@@ -77,7 +80,7 @@ def benchmark_local_model_tasks(
 
     all_passed = all(run["evaluation"]["passed"] for run in runs)
     return {
-        "schema_version": "1.0.0",
+        "schema_version": "1.1.0",
         "scope": (
             "Complete ProofEdge local-model quality task over the frozen two-case corpus in a "
             "persistent Python process: bounded scans, context construction, streamed local "
@@ -99,8 +102,14 @@ def benchmark_local_model_tasks(
             "response_hashes_per_case": {
                 case_id: sorted(values) for case_id, values in sorted(response_hashes.items())
             },
+            "raw_response_hashes_per_case": {
+                case_id: sorted(values) for case_id, values in sorted(raw_response_hashes.items())
+            },
             "unique_response_counts": {
                 case_id: len(values) for case_id, values in sorted(response_hashes.items())
+            },
+            "unique_raw_response_counts": {
+                case_id: len(values) for case_id, values in sorted(raw_response_hashes.items())
             },
         },
         "runs": runs,

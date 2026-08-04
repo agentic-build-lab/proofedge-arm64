@@ -95,6 +95,22 @@ The unchanged semantic gate rejected all configurations, so its positive runtime
 ambiguous diff with a generic ranked change map whose source and target excerpts preserve real
 repository line numbers, and removes contaminating few-shot examples.
 
+Fourth canary
+[`30878319904`](https://github.com/agentic-build-lab/proofedge-arm64/actions/runs/30878319904)
+showed that the numbered change map fixed prompt contamination but did not make a 1.5B model a
+reliable specification writer: it found `refund`, `1.005`, and `201`/`200`, yet still mixed source
+and target coordinates, preferred API metadata in some runs, and wrote “ensure” instead of an
+explicit comparison. The frozen gate again rejected all configurations; its +0.8626% prompt and
++4.7830% generation results are excluded. See the
+[canary summary](benchmarks/results/gha-30878319904-semantic-canary-summary.json) and
+[raw evidence](benchmarks/raw/gha-30878319904).
+
+The next revision changes authority rather than the oracle: the model ranks migration risks, then
+a deterministic AST/OpenAPI compiler instantiates the published scenario, source-versus-target
+purpose, and citable line. The raw model plan and the compiled plan are both retained. A safety
+floor can restore a high-risk mechanically detected candidate that the model missed, so compact
+model wording can no longer silently decide what becomes evidence.
+
 The bootstrap ranges in the summary resample observations within processes and are descriptive;
 they are not confidence intervals across independent hosts. `llama-bench` is not end-to-end
 product latency, and no energy claim is made. Full protocol, artifacts, and qualifications are in

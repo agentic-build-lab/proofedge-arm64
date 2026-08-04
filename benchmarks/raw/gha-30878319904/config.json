@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0.0",
+  "purpose": "Independent confirmation of the profile selected by exploratory run 30828989800",
+  "selection_source": {
+    "run_id": 30828989800,
+    "project_commit": "d840e87c4fc68e97322284182037096cc1a39dc9",
+    "rule": "Frozen in benchmarks/config/arm64-tuning-v1.json before the sweep"
+  },
+  "llama_cpp_commit": "67d5978bb1ba490070ddbd2a7c59c7ec5a60b7cc",
+  "model": {
+    "repository": "Qwen/Qwen2.5-Coder-1.5B-Instruct-GGUF",
+    "revision": "f86cb2c1fa58255f8052cc32aeede1b7482d4361",
+    "filename": "qwen2.5-coder-1.5b-instruct-q4_0.gguf",
+    "sha256": "aa8353e0d0fca3a0041828701e90db7635197400f040676d11d7798665fa316e",
+    "license": "Apache-2.0"
+  },
+  "hardware_class": "GitHub-hosted ubuntu-24.04-arm, 4 vCPU, 16 GB RAM",
+  "benchmark": {
+    "threads": 4,
+    "kleidiai_chunk_multiplier": 1,
+    "batch_size": 1024,
+    "ubatch_size": 256,
+    "context_size": 4096,
+    "gpu_layers": 0,
+    "device": "none",
+    "prompt_tokens": 1024,
+    "generation_tokens": 128,
+    "repetitions_per_block": 7,
+    "block_order": ["baseline", "kleidiai", "kleidiai", "baseline"]
+  },
+  "causal_comparison": "The same source commit, compiler, model bytes, quantization, workload, thread count, batch sizes, context, device selection, and VM are used. Only GGML_CPU_KLEIDIAI changes.",
+  "confirmation_policy": "This config was committed after exploratory selection and before inspecting confirmation results. Both optimized-context model gates must pass."
+}

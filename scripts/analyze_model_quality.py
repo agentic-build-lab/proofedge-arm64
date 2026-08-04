@@ -29,7 +29,19 @@ def main() -> int:
         encoding="utf-8",
         newline="\n",
     )
-    print(json.dumps(result["model_compute_latency_ms"], indent=2, sort_keys=True))
+    print(
+        json.dumps(
+            result.get(
+                "model_compute_latency_ms",
+                {
+                    "comparison_eligible": False,
+                    "reason": result.get("model_compute_comparison_exclusion_reason"),
+                },
+            ),
+            indent=2,
+            sort_keys=True,
+        )
+    )
     return 0
 
 

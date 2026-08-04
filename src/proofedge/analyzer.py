@@ -20,6 +20,7 @@ from proofedge.models import (
     ReportSummary,
     RepositoryStats,
 )
+from proofedge.proposal_compiler import compile_model_plan
 from proofedge.security import FileRecord, RepositorySnapshot, scan_repository
 
 
@@ -384,7 +385,9 @@ def augment_with_local_model(
         return replace(report, engine="deterministic-fallback", metadata=metadata)
     accepted: list[str] = []
     rejected: list[Finding] = []
-    gate = gate_model_proposals(response.document, source, target, context.text)
+    compilation = compile_model_plan(response.document, source, target)
+    published_document = compilation.document
+    gate = gate_model_proposals(published_document, source, target, context.text)
     for decision in gate.rejected:
         rejected.append(
             Finding(
@@ -436,14 +439,23 @@ def augment_with_local_model(
             "rejected_tests": len(rejected),
             "fallback_used": not accepted,
             "accepted_proposals": list(gate.accepted),
-            "model_limitations": list(response.document["limitations"]),
+            "published_limitations": list(published_document["limitations"]),
+            "raw_model_proposals": list(response.document["tests"]),
+            "raw_model_limitations": list(response.document["limitations"]),
+            "compiler": compilation.metadata(),
             "timings": response.timings,
             "usage": response.usage,
         },
     }
     return replace(
         report,
-        engine="llama.cpp" if accepted else "deterministic-fallback",
+        engine=(
+            "llama.cpp+deterministic-change-compiler"
+            if accepted and compilation.mode != "model-direct"
+            else "llama.cpp"
+            if accepted
+            else "deterministic-fallback"
+        ),
         summary=summary,
         findings=findings,
         differential_test_plan=tuple(accepted) or report.differential_test_plan,

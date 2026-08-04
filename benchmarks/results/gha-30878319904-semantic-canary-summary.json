@@ -1,0 +1,39 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": 30878319904,
+  "run_url": "https://github.com/agentic-build-lab/proofedge-arm64/actions/runs/30878319904",
+  "project_commit": "1c900fb02c2c1976077c013650415c3bd1306947",
+  "purpose": "Fourth fail-closed canary for a ranked, citable source-target change map without contaminating few-shot examples",
+  "status": "rejected_by_semantic_quality_gate",
+  "native_environment": {
+    "architecture": "aarch64",
+    "cpu": "Arm Neoverse-N2",
+    "kleidiai_runtime_selection_verified": true
+  },
+  "quality": {
+    "four_single_run_ledgers_passed": 0,
+    "baseline_repeated_product_runs_passed": 0,
+    "kleidiai_repeated_product_runs_passed": 0,
+    "repeated_runs_per_configuration": 5,
+    "failure_reason": "The change map removed prompt contamination and exposed valid anchors, but the compact model still confused source and target line numbers, selected OpenAPI metadata over the response contract, and used ensure language rather than an explicit source-versus-target comparison. The unchanged revision-2 gate rejected every configuration."
+  },
+  "instrumentation_validation": {
+    "streaming_ttft_captured": true,
+    "context_hashes_stable_across_repetitions": true,
+    "unique_response_count_per_case_and_configuration": 1,
+    "startup_trials_per_configuration": 3,
+    "client_and_server_resource_records_captured": true
+  },
+  "runtime_result_not_eligible_for_product_claim": {
+    "prompt_processing_change_percent": 0.862552762338531,
+    "token_generation_change_percent": 4.7830253083177565,
+    "reason": "The paired semantic quality gate failed, so the runtime and client timing measurements are preserved but not selected."
+  },
+  "evidence": {
+    "directory": "benchmarks/raw/gha-30878319904",
+    "sha256sums_file_sha256": "d04f33fa825bc118afbe300ade51634d062d54ee962f0e97f9892eea86e7d9f4",
+    "sha256sums_verified": true,
+    "runtime_summary": "benchmarks/results/gha-30878319904-runtime-summary.json"
+  },
+  "next_revision": "Retain the raw model plan as evidence, use it only to rank mechanically detected migration risks, and compile the published tests from AST/OpenAPI changes into executable stimuli, explicit source-target purposes, and visible citations."
+}

@@ -114,7 +114,7 @@ def test_local_model_proposals_are_evidence_gated(tmp_path: Path) -> None:
                 "repository": "source",
                 "line": 1,
                 "inputs": [""],
-                "expected_relation": "equal",
+                "expected_relation": "investigate",
                 "priority": "high",
             }
             return LlamaResponse(
@@ -143,7 +143,7 @@ def test_local_model_proposals_are_evidence_gated(tmp_path: Path) -> None:
     assert not any("Hallucinated" in step for step in augmented.differential_test_plan)
     assert augmented.metadata["local_model"]["rejected_tests"] == 1
     assert augmented.metadata["local_model"]["accepted_proposals"][0]["inputs"] == [""]
-    assert augmented.metadata["local_model"]["model_limitations"] == []
+    assert augmented.metadata["local_model"]["raw_model_limitations"] == []
 
 
 def test_local_model_fallback_is_explicit(tmp_path: Path) -> None:
