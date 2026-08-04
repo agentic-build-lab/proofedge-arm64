@@ -3,6 +3,8 @@
 **Evidence before confidence. Private migration assurance on Arm64.**
 
 [Live demo](https://github.com/agentic-build-lab/proofedge-arm64) ·
+[Challenge video](https://youtu.be/iuY49KZkrSs) ·
+[v1.0.0 release](https://github.com/agentic-build-lab/proofedge-arm64/releases/tag/v1.0.0) ·
 [Native Arm evidence](BENCHMARKS.md) ·
 [Evaluation protocol](EVALUATION.md) ·
 [MIT license](LICENSE)
