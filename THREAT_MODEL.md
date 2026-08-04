@@ -22,6 +22,11 @@ compromised local process can impersonate the model server, and a proposed test 
 code if a user chooses to run it later. ProofEdge is an evidence-gated review assistant, not a
 sandbox or a proof of semantic equivalence.
 
+Windows/x64 is covered for deterministic development tests, not for the published inference
+performance claims. Windows symlink permissions and third-party llama.cpp builds can differ from
+the documented Ubuntu Arm64 environment; users must not transfer the Arm64 kernel, latency, RSS,
+or CPU results to a Windows/x64 deployment.
+
 Use read-only snapshots, run unprivileged, keep the model server on `127.0.0.1`, verify the GGUF
 hash, and review proposed tests before execution. The complete threat/control/residual-risk matrix
 is in [`docs/THREAT_MODEL.md`](docs/THREAT_MODEL.md); disclosure guidance is in

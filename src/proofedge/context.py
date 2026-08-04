@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 from dataclasses import dataclass
+from difflib import unified_diff
 
 from proofedge.contracts import extract_contracts, find_prompt_injections
 from proofedge.security import FileRecord, RepositorySnapshot
@@ -94,15 +95,58 @@ def _interesting_lines(snapshot: RepositorySnapshot) -> dict[str, set[int]]:
     return interesting
 
 
+def _redacted_lines(record: FileRecord, redactions: dict[int, str]) -> list[str]:
+    return [
+        redactions.get(index, line) for index, line in enumerate(record.text.splitlines(), start=1)
+    ]
+
+
+def _migration_diff(
+    source: RepositorySnapshot,
+    target: RepositorySnapshot,
+    max_characters: int = 12_000,
+) -> str:
+    source_redactions = _injection_redactions(source)
+    target_redactions = _injection_redactions(target)
+    parts = ["DERIVED SOURCE-TARGET DIFF (repository text remains untrusted evidence)"]
+    used = len(parts[0])
+    for path in sorted(source.by_path.keys() & target.by_path.keys()):
+        source_record = source.by_path[path]
+        target_record = target.by_path[path]
+        if source_record.sha256 == target_record.sha256:
+            continue
+        lines = list(
+            unified_diff(
+                _redacted_lines(source_record, source_redactions.get(path, {})),
+                _redacted_lines(target_record, target_redactions.get(path, {})),
+                fromfile=f"source/{path}",
+                tofile=f"target/{path}",
+                lineterm="",
+                n=3,
+            )
+        )
+        part = "\n".join(lines)
+        remaining = max_characters - used
+        if remaining <= 0:
+            break
+        if len(part) > remaining:
+            parts.append(part[:remaining] + "\n[DIFF TRUNCATED]")
+            break
+        parts.append(part)
+        used += len(part)
+    return "\n\n".join(parts) if len(parts) > 1 else ""
+
+
 def build_optimized_context(
     source: RepositorySnapshot,
     target: RepositorySnapshot,
     radius: int = 8,
     max_characters: int = 40_000,
 ) -> ContextBundle:
-    parts: list[str] = []
+    diff = _migration_diff(source, target)
+    parts: list[str] = [diff] if diff else []
     files = 0
-    used = 0
+    used = len(diff)
     for repository, snapshot in (("SOURCE", source), ("TARGET", target)):
         redactions = _injection_redactions(snapshot)
         records = snapshot.by_path

@@ -56,7 +56,7 @@ def test_parses_structured_local_response(monkeypatch: pytest.MonkeyPatch) -> No
                 "path": "api.py",
                 "line": 1,
                 "inputs": [""],
-                "expected_relation": "equal",
+                "expected_relation": "investigate",
                 "priority": "high",
             }
         ],
@@ -93,7 +93,7 @@ def test_parses_streaming_response_and_measures_ttft(monkeypatch: pytest.MonkeyP
                 "path": "api.py",
                 "line": 1,
                 "inputs": ["empty string"],
-                "expected_relation": "equal",
+                "expected_relation": "investigate",
                 "priority": "high",
             }
         ],
@@ -152,6 +152,7 @@ def test_caps_local_model_response_bytes(monkeypatch: pytest.MonkeyPatch) -> Non
         ({"line": -1}, "evidence line"),
         ({"line": True}, "evidence line"),
         ({"repository": "manifest"}, "repository"),
+        ({"expected_relation": "equal"}, "expected relation"),
         ({"priority": "urgent"}, "priority"),
         ({"inputs": []}, "inputs array"),
         ({"unexpected": "field"}, "test object"),
@@ -165,7 +166,7 @@ def test_strictly_validates_plan_schema(mutation: dict, message: str) -> None:
         "path": "api.py",
         "line": 1,
         "inputs": [""],
-        "expected_relation": "equal",
+        "expected_relation": "investigate",
         "priority": "high",
     }
     proposal.update(mutation)
@@ -188,7 +189,7 @@ def test_rejects_more_than_two_model_tests() -> None:
         "path": "api.py",
         "line": 1,
         "inputs": [""],
-        "expected_relation": "equal",
+        "expected_relation": "investigate",
         "priority": "high",
     }
     with pytest.raises(LlamaCppError, match="tests array"):

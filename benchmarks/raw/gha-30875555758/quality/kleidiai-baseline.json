@@ -1,0 +1,192 @@
+{
+  "accepted_proposals": 4,
+  "canary_leakage_count": 0,
+  "cases": [
+    {
+      "accepted_proposals": 2,
+      "canary_leakage": [],
+      "case_id": "openapi-orders-v2",
+      "client_timings": {
+        "end_to_end_ms": 14146.602237,
+        "streaming": false,
+        "time_to_first_token_ms": null
+      },
+      "context_characters": 944,
+      "context_sha256": "72ef379604b0ae4681298c7e2d98b6a4a3e4ac922dffaddefa23113ce919cfc1",
+      "error": null,
+      "evidence_objectives_matched": 1,
+      "fallback_used": false,
+      "gold_target_density": 0.0,
+      "matched_objective_ids": [],
+      "objectives_matched": 0,
+      "objectives_total": 1,
+      "passed": false,
+      "profile": "baseline",
+      "proposals_total": 2,
+      "published_reference_validity": 1.0,
+      "raw_reference_validity": 1.0,
+      "rejected": [],
+      "rejected_proposals": 0,
+      "response": {
+        "limitations": [
+          "The test focuses on the response status code, which is a common field in API responses."
+        ],
+        "tests": [
+          {
+            "expected_relation": "equal",
+            "inputs": [
+              "201"
+            ],
+            "line": 8,
+            "name": "Ensure the response status code remains unchanged",
+            "path": "openapi.json",
+            "priority": "high",
+            "purpose": "The response status code should remain 201 in the target version.",
+            "repository": "source"
+          },
+          {
+            "expected_relation": "equal",
+            "inputs": [
+              "200"
+            ],
+            "line": 8,
+            "name": "Check the response status code in the target version",
+            "path": "openapi.json",
+            "priority": "high",
+            "purpose": "The response status code should be 200 in the target version.",
+            "repository": "target"
+          }
+        ]
+      },
+      "response_sha256": "17e1bb98c025ce73b5607629833061173545dd6abd62d116c5053c6714cbfe0d",
+      "risk_evidence_coverage": 1.0,
+      "schema_valid": true,
+      "semantic_objective_coverage": 0.0,
+      "timings": {
+        "cache_n": 0,
+        "predicted_ms": 7021.758,
+        "predicted_n": 224,
+        "predicted_per_second": 31.900843065226688,
+        "predicted_per_token_ms": 31.347133928571427,
+        "prompt_ms": 7116.489,
+        "prompt_n": 738,
+        "prompt_per_second": 103.70282311965916,
+        "prompt_per_token_ms": 9.642939024390243
+      },
+      "usage": {
+        "completion_tokens": 224,
+        "prompt_tokens": 738,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "total_tokens": 962
+      }
+    },
+    {
+      "accepted_proposals": 2,
+      "canary_leakage": [],
+      "case_id": "python-refund-v2",
+      "client_timings": {
+        "end_to_end_ms": 16824.578299,
+        "streaming": false,
+        "time_to_first_token_ms": null
+      },
+      "context_characters": 1623,
+      "context_sha256": "f3e81182ef8ae1f1d9db75081b9f41a032187958b2f9a53d01e8874bfbc60ba5",
+      "error": null,
+      "evidence_objectives_matched": 2,
+      "fallback_used": false,
+      "gold_target_density": 0.0,
+      "matched_objective_ids": [],
+      "objectives_matched": 0,
+      "objectives_total": 2,
+      "passed": false,
+      "profile": "baseline",
+      "proposals_total": 2,
+      "published_reference_validity": 1.0,
+      "raw_reference_validity": 1.0,
+      "rejected": [],
+      "rejected_proposals": 0,
+      "response": {
+        "limitations": [
+          "The target repository note does not provide any specific migration requirements or instructions."
+        ],
+        "tests": [
+          {
+            "expected_relation": "equal",
+            "inputs": [
+              "2"
+            ],
+            "line": 6,
+            "name": "Test quote with half-up rounding",
+            "path": "pricing.py",
+            "priority": "high",
+            "purpose": "Ensure that the quote function rounds to the nearest cent using HALF_UP rounding.",
+            "repository": "target"
+          },
+          {
+            "expected_relation": "equal",
+            "inputs": [
+              "order-7"
+            ],
+            "line": 11,
+            "name": "Test refund with no reason",
+            "path": "pricing.py",
+            "priority": "high",
+            "purpose": "Ensure that the refund function sets the reason to None.",
+            "repository": "target"
+          }
+        ]
+      },
+      "response_sha256": "7f6dc992bacfbeb04c65470837dd5d46f67eb8ee943b3cee727bad40c6a03e28",
+      "risk_evidence_coverage": 1.0,
+      "schema_valid": true,
+      "semantic_objective_coverage": 0.0,
+      "timings": {
+        "cache_n": 0,
+        "predicted_ms": 6816.608,
+        "predicted_n": 212,
+        "predicted_per_second": 31.100512160887057,
+        "predicted_per_token_ms": 32.15381132075472,
+        "prompt_ms": 9991.96,
+        "prompt_n": 933,
+        "prompt_per_second": 93.37507355914155,
+        "prompt_per_token_ms": 10.709496248660235
+      },
+      "usage": {
+        "completion_tokens": 212,
+        "prompt_tokens": 933,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "total_tokens": 1145
+      }
+    }
+  ],
+  "cases_passed": 0,
+  "cases_total": 2,
+  "engine": "llama.cpp",
+  "evidence_objectives_matched": 3,
+  "fallback_count": 0,
+  "objectives_matched": 0,
+  "objectives_total": 3,
+  "passed": false,
+  "profile": "baseline",
+  "proposals_total": 4,
+  "published_reference_validity": 1.0,
+  "raw_reference_validity": 1.0,
+  "rejected_proposals": 0,
+  "risk_evidence_coverage": 1.0,
+  "schema_completion_rate": 1.0,
+  "schema_version": "1.0.0",
+  "semantic_objective_coverage": 0.0,
+  "thresholds": {
+    "maximum_canary_leakage_count": 0,
+    "maximum_fallback_count": 0,
+    "minimum_case_gold_target_density": 0.4,
+    "minimum_case_raw_reference_validity": 0.75,
+    "minimum_case_risk_evidence_coverage": 0.75,
+    "minimum_case_semantic_objective_coverage": 0.75,
+    "schema_completion_rate": 1.0
+  }
+}

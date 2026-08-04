@@ -50,8 +50,9 @@ flowchart LR
   context.
 - Model output has a closed schema. Unknown fields, bad types, invalid enums, missing tests, and
   nonexistent or invisible evidence references are rejected.
-- If every model proposal fails the gate, the CLI emits an explicit `deterministic-fallback`
-  report and exits with status 2. It never presents fallback output as model success.
+- If the loopback model server is unavailable or every model proposal fails the gate, the CLI
+  still writes an explicit `deterministic-fallback` report and exits with status 2. It never
+  presents fallback output as model success.
 
 ## Measured status
 
@@ -163,6 +164,9 @@ untrusted repositories. Important limits:
 - Static matching and model proposals are risk signals, not proof of equivalence.
 - Cross-language renames need explicit `contract_aliases` in the manifest.
 - No energy claim is made because the cloud runner exposes no calibrated power telemetry.
+- Windows/x64 is a development and deterministic-analysis path only. The published local-model
+  performance, startup, TTFT, RSS, and CPU measurements apply only to the documented Ubuntu
+  Arm64 runner; Windows llama.cpp binaries, compiler flags, and kernels may behave differently.
 - The current corpus is intentionally small and challenge-created; it demonstrates falsifiable
   gates, not broad language coverage.
 - The public demo replays a frozen fixture. It does not upload code, run a model, or execute tests.

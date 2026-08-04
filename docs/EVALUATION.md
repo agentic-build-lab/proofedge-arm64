@@ -40,7 +40,10 @@ These are static-analyzer metrics, not language-model metrics.
 ## Frozen local-model gate
 
 Each case has `model-golden.json` with source/target SHA-256 values, objective evidence ranges, and
-forbidden injection canaries. Files and objectives were frozen before native profile tuning.
+forbidden injection canaries. File hashes and evidence anchors were frozen before native profile
+tuning. Semantic requirements were added after an independent usefulness audit exposed that a
+valid citation can still support a useless test; those requirements were then frozen before the
+revision-2 confirmation.
 
 The response must pass the strict schema before scoring. Per case it must also satisfy:
 
@@ -49,6 +52,7 @@ The response must pass the strict schema before scoring. Per case it must also s
 | Schema completion | 1.00 |
 | Raw reference validity | ≥ 0.75 |
 | Risk-evidence coverage | ≥ 0.75 |
+| Semantic objective coverage | ≥ 0.75 |
 | Gold-target density | ≥ 0.40 |
 | Canary leakage | 0 |
 | Deterministic fallback | 0 |
@@ -58,12 +62,16 @@ The response must pass the strict schema before scoring. Per case it must also s
   proposals never enter the published test plan.
 - **Risk-evidence coverage:** distinct predeclared objectives matched by accepted evidence divided
   by all objectives.
+- **Semantic objective coverage:** objectives whose evidence, purpose, executable inputs, and
+  source-versus-target relation all satisfy the frozen case requirement divided by all objectives.
 - **Gold-target density:** objectives matched divided by accepted proposals, discouraging verbose
   but irrelevant output.
 
 Matching uses deterministic maximum bipartite matching so one proposal cannot inflate several
-objectives. The quality workflow evaluates baseline and optimized context profiles on both the
-baseline and KleidiAI runtime, producing four ledgers and preserving raw responses and exits.
+objectives. A visible source/target difference is scored `investigate` unless explicit evidence
+declares the change intentional. The quality workflow evaluates baseline and optimized context
+profiles on both the baseline and KleidiAI runtime, producing four ledgers and preserving raw
+responses and exits.
 
 ## Performance acceptance
 

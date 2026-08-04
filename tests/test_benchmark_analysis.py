@@ -9,6 +9,7 @@ from proofedge.benchmark_analysis import (
     compare_product_benchmarks,
     compare_quality_ledgers,
     parse_process_measurements,
+    parse_server_process_measurements,
     parse_startup_measurements,
 )
 
@@ -123,3 +124,20 @@ def test_parse_startup_measurements(tmp_path: Path) -> None:
     assert result["n"] == 3
     assert result["p50"] == 1000
     assert result["p95"] == 1100
+
+
+def test_parse_server_process_measurements(tmp_path: Path) -> None:
+    status = tmp_path / "status.txt"
+    ps = tmp_path / "ps.txt"
+    status.write_text("VmHWM:\t2012040 kB\nVmRSS:\t1999000 kB\n", encoding="utf-8")
+    ps.write_text(
+        "    PID ELAPSED     TIME %CPU %MEM   RSS    VSZ COMMAND\n"
+        "   1234     180 00:02:58  98.5 12.3 1999000 2200000 llama-server\n",
+        encoding="utf-8",
+    )
+
+    result = parse_server_process_measurements(status, ps)
+
+    assert result["peak_rss_kib"] == 2012040
+    assert result["average_cpu_utilization_percent_at_capture"] == 98.5
+    assert result["process"] == "llama-server"

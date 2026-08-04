@@ -25,6 +25,25 @@ def test_optimized_context_is_numbered_and_smaller(tmp_path: Path) -> None:
     assert "irrelevant" not in optimized.text
 
 
+def test_optimized_context_includes_a_redacted_source_target_diff(tmp_path: Path) -> None:
+    source = tmp_path / "source"
+    target = tmp_path / "target"
+    source.mkdir()
+    target.mkdir()
+    (source / "api.py").write_text(
+        "def cancel(item_id, note=None):\n    return note\n", encoding="utf-8"
+    )
+    (target / "api.py").write_text("def cancel(item_id):\n    return None\n", encoding="utf-8")
+
+    optimized = build_optimized_context(scan_repository(source), scan_repository(target))
+
+    assert "DERIVED SOURCE-TARGET DIFF" in optimized.text
+    assert "--- source/api.py" in optimized.text
+    assert "+++ target/api.py" in optimized.text
+    assert "-def cancel(item_id, note=None):" in optimized.text
+    assert "+def cancel(item_id):" in optimized.text
+
+
 def test_prompt_injection_text_is_replaced_with_a_typed_fact(tmp_path: Path) -> None:
     source = tmp_path / "source"
     target = tmp_path / "target"
