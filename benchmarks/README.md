@@ -62,36 +62,42 @@ records pp512 131.680 tok/s, tg128 36.566 tok/s, and pp1024 97.078 tok/s for the
 These values selected [`config/arm64-confirm-v1.json`](config/arm64-confirm-v1.json); they are not
 reported as independent performance evidence.
 
-## Independent confirmation
+## Final revision-3 confirmation
 
 The selected profile was committed before confirmation in
 [`config/arm64-confirm-v1.json`](config/arm64-confirm-v1.json): 4 threads, KleidiAI chunk
-multiplier 1, batch 1024, micro-batch 256, pp1024, and tg128. GitHub Actions run
-[`30830782393`](https://github.com/agentic-build-lab/proofedge-arm64/actions/runs/30830782393)
-then rebuilt both runtimes and ran four fresh processes in ABBA order with seven observations per
-block.
+multiplier 1, batch 1024, micro-batch 256, pp1024, and tg128. After four failed semantic canaries
+were preserved, GitHub Actions run
+[`30880259094`](https://github.com/agentic-build-lab/proofedge-arm64/actions/runs/30880259094)
+rebuilt both runtimes and ran four processes in ABBA order with seven observations per block.
 
 | Metric | Baseline mean | KleidiAI mean | Relative change |
 | --- | ---: | ---: | ---: |
-| pp1024 | 96.7379 tok/s | 97.2800 tok/s | **+0.5604%** |
-| tg128 | 35.2443 tok/s | 36.7531 tok/s | **+4.2808%** |
+| pp1024 | 96.6036 tok/s | 97.1860 tok/s | **+0.6029%** |
+| tg128 | 34.7734 tok/s | 36.9914 tok/s | **+6.3783%** |
 
-The descriptive within-process bootstrap ranges were +0.452% to +0.655% for prompt processing
-and +3.684% to +4.909% for token generation. They are explicitly exploratory ranges, not
+The descriptive within-process bootstrap ranges were +0.470% to +0.736% for prompt processing
+and +4.269% to +8.523% for token generation. They are explicitly exploratory ranges, not
 host-level confidence intervals. Runtime logs recorded
 `kleidiai: primary q4 kernel feature I8MM`; build-time enablement alone was not accepted.
 
-Both the baseline and KleidiAI runtimes independently passed all 2/2 frozen optimized-context
-model cases: schema completion 1.00, raw reference validity 1.00, risk-evidence coverage 1.00,
-zero canary leakage, and zero deterministic fallback. The machine-readable summary is
-[`results/gha-30830782393-summary.json`](results/gha-30830782393-summary.json). The complete
-raw bundle is retained under [`raw/gha-30830782393`](raw/gha-30830782393) with a self-verifying
-`SHA256SUMS` manifest. The original 90-day Actions artifact has SHA-256
-`72409990a3fc0ac13e05059e3d74dbda1875fec06ee0bdb5a0025f99658805b1`.
+All four baseline/optimized × KleidiAI-off/on ledgers independently passed 2/2 frozen cases:
+schema completion, compiled-reference validity, semantic-objective coverage, and risk-evidence
+coverage 1.00, with zero canary leakage and zero deterministic fallback. Raw reference validity
+is separately disclosed at 0.50 baseline and 0.75 KleidiAI. The machine-readable runtime and
+product summaries are [`results/gha-30880259094-runtime-summary.json`](results/gha-30880259094-runtime-summary.json)
+and [`results/gha-30880259094-product-quality-summary.json`](results/gha-30880259094-product-quality-summary.json).
+The complete raw bundle is retained under [`raw/gha-30880259094`](raw/gha-30880259094) with an
+independently verified 81-file `SHA256SUMS` manifest.
+
+Five complete two-case product trials per build also passed, with identical compiled published
+plans. Task p50 changed from 45.387 to 44.639 seconds and TTFT p50 from 14.960 to 14.867 seconds.
+Raw model outputs and token counts differed, so these product changes are descriptive and the
+analyzer refuses exact model-compute comparison.
 
 ## Qualifications
 
-- The confirmation evidence covers one native VM and one preselected serving profile.
+- The final evidence covers one native VM and one preselected serving profile.
 - `llama-bench` omits several end-to-end application stages.
 - Peak RSS is a process measurement, not whole-host memory or energy.
 - Energy is not reported because the hosted runner exposes no calibrated power telemetry.

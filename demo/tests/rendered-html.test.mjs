@@ -35,11 +35,11 @@ test("server-renders the complete public ProofEdge narrative", async () => {
   const html = await response.text();
   assert.match(html, /<title>ProofEdge — Evidence before confidence<\/title>/i);
   assert.match(html, /Migrations are easy to generate/);
-  assert.match(html, /We kept the failed profile—then confirmed the fix\./);
-  assert.match(html, /exploratory profile regressed decode by 0\.70%/i);
+  assert.match(html, /We kept every failed run—then passed the gate\./);
+  assert.match(html, /four faster-but-wrong semantic canaries remain public/i);
   assert.match(html, /Run verified replay/);
   assert.match(html, /genuine aarch64 runner/);
-  assert.match(html, /Confirmation summary \+ evidence link/);
+  assert.match(html, /Final product summary \+ raw evidence link/);
   assert.match(html, /github\.com\/agentic-build-lab\/proofedge-arm64/);
   assert.doesNotMatch(html, /codex-preview|react-loading-skeleton|starter loading/i);
   assert.doesNotMatch(html, /\b[A-Z]:[\\/]/);
@@ -54,10 +54,10 @@ test("keeps benchmark claims qualified and production dependencies audited", asy
     readFile(new URL("../package.json", import.meta.url), "utf8"),
   ]);
 
-  assert.match(page, /\+0\.56%/);
-  assert.match(page, /\+4\.28%/);
-  assert.match(page, /exploratory profile regressed decode by 0\.70%/i);
-  assert.match(page, /same VM, model bytes, quantization, workload, and threads/i);
+  assert.match(page, /\+0\.60%/);
+  assert.match(page, /\+6\.38%/);
+  assert.match(page, /four faster-but-wrong semantic canaries remain public/i);
+  assert.match(page, /same\s+VM, model bytes, quantization, workload, and threads/i);
   assert.match(consoleSource, /browser demo replays|replay fixture/);
   assert.match(consoleSource, /repository code execution/i);
   assert.match(layout, /summary_large_image/);

@@ -4,7 +4,7 @@
 
 [Live demo](https://proofedge-arm64.liu891855.chatgpt.site) ·
 [Challenge video](https://youtu.be/iuY49KZkrSs) ·
-[v1.0.0 release](https://github.com/agentic-build-lab/proofedge-arm64/releases/tag/v1.0.0) ·
+[v1.0.1 release](https://github.com/agentic-build-lab/proofedge-arm64/releases/tag/v1.0.1) ·
 [Native Arm evidence](BENCHMARKS.md) ·
 [Evaluation protocol](EVALUATION.md) ·
 [MIT license](LICENSE)
@@ -68,19 +68,21 @@ results are retained.
 | --- | --- | --- |
 | Deterministic quality | 2/2 cases; 5/5 expected categories; unsupported-claim recall 1.00; false unsupported rate 0.00 | Frozen synthetic controls; not local-model accuracy |
 | Native deterministic function path | 30/30 task passes; warm p50 2.397 ms; warm p95 2.539 ms; cold 3.034 ms; peak RSS 24,516 KiB | Latest main commit on native `aarch64` Neoverse N2; direct static evaluation, excluding CLI startup and report I/O |
-| Confirmed same-model runtime A/B | pp1024 96.738 → 97.280 tok/s (**+0.560%**); tg128 35.244 → 36.753 tok/s (**+4.281%**) | Independent ABBA confirmation of the preselected profile; Qwen Q4_0, same native Neoverse N2 VM and model bytes |
-| Frozen product requests | Mean model compute 13.367 → 13.118 s (**−1.869%**); both responses byte-identical | Two descriptive quality-gate requests inside `llama-server`; not full CLI end-to-end latency or a repeated-trial claim |
-| Frozen local-model gate | Baseline and KleidiAI each passed 2/2 cases; schema, raw-reference validity, and risk coverage all 1.00; canary leakage and fallback both 0 | Optimized context on both runtimes; raw responses and ledgers retained |
+| Final same-model runtime A/B | pp1024 96.604 → 97.186 tok/s (**+0.603%**); tg128 34.773 → 36.991 tok/s (**+6.378%**) | Four-process ABBA confirmation of the frozen profile; 14 observations per build on the same native Neoverse N2 VM |
+| Repeated full product task | p50 45.387 → 44.639 s (**−1.648%**); p95 45.464 → 44.688 s (**−1.706%**); 5/5 runs passed per build | Complete two-case task in a persistent client; descriptive because raw model responses differed |
+| Streaming request timing | TTFT p50 14.960 → 14.867 s (**−0.622%**); request p50 22.674 → 22.314 s (**−1.587%**) | Ten requests per build; same prompts before response divergence, not an isolated kernel-effect claim |
+| Frozen local-model gate | Four configurations passed 2/2 cases; compiled references, semantic objectives, and risk coverage all 1.00; canary leakage and fallback both 0 | Raw model reference validity is disclosed separately: 0.50 baseline and 0.75 KleidiAI |
 
-The first exploratory profile remains published as **mixed/negative** (+0.532% prefill,
-−0.697% decode). A separately frozen tuning sweep selected a new profile, and independent run
-[`30830782393`](https://github.com/agentic-build-lab/proofedge-arm64/actions/runs/30830782393)
-confirmed the figures above while both local-model quality gates passed. These are runtime
-throughput results, not energy claims. The same run also captured server timings for two frozen
-ProofEdge quality requests: KleidiAI reduced aggregate model compute by 1.869% while preserving
-the exact response hashes. This is descriptive product-task evidence, not full CLI latency or a
-repeated-trial estimate. See the
-[benchmark protocol and qualifications](BENCHMARKS.md).
+Final native run
+[`30880259094`](https://github.com/agentic-build-lab/proofedge-arm64/actions/runs/30880259094)
+produced the figures above from project commit `6d828a9e`. The same model bytes, runtime commit,
+configuration, prompts, context hashes, and native VM class were frozen. Published test-plan
+hashes were identical across both builds and all five trials. Raw model responses and completion
+token counts differed, so exact model-compute comparison is deliberately marked ineligible and
+end-to-end changes are descriptive product observations. The causal headline is the same-workload
+`llama-bench` ABBA result. Energy remains unmeasured because the runner exposes no calibrated
+power telemetry. Four earlier semantic canaries and the first mixed runtime profile remain
+public in the [benchmark protocol and qualifications](BENCHMARKS.md).
 
 ## Quick start: credential-free deterministic path
 

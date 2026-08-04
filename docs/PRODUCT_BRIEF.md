@@ -42,9 +42,10 @@ or select arbitrary network targets. If the model fails, the product says so and
 
 ## Current measured claim
 
-ProofEdge's independently confirmed, preselected Neoverse N2 profile improves same-model
-KleidiAI throughput by **0.560% for pp1024** and **4.281% for tg128** versus the baseline build.
-Both runtimes pass 2/2 frozen optimized-context model cases with schema completion, raw-reference
-validity, and risk-evidence coverage all at 1.00, with zero canary leakage and zero fallback. The
-first exploratory mixed result remains public. No energy or end-to-end latency improvement is
-claimed.
+ProofEdge's final native Neoverse N2 ABBA run improves same-workload KleidiAI throughput by
+**0.603% for pp1024** and **6.378% for tg128** versus the baseline build. All four quality
+configurations pass 2/2 frozen cases with compiled references, semantic objectives, and risk
+coverage at 1.00, with zero canary leakage and zero fallback. Five repeated product tasks per
+build also pass with identical compiled published plans; their p50 changes from 45.387 to 44.639
+seconds, reported descriptively because raw model outputs differ. The mixed first profile and four
+failed semantic canaries remain public. No energy improvement is claimed.

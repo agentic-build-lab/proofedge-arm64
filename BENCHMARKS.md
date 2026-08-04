@@ -1,58 +1,68 @@
 # Benchmarks
 
-## Confirmed Arm64 result
+## Final Arm64 result
 
-ProofEdge's final claim comes from an independent confirmation of a profile selected in a
-separate exploratory run. The model, quantization, `llama.cpp` commit, native VM, workload, and
-thread count were identical; the causal build change was `GGML_CPU_KLEIDIAI=OFF` versus `ON`.
+ProofEdge's release claim comes from native run
+[`30880259094`](https://github.com/agentic-build-lab/proofedge-arm64/actions/runs/30880259094)
+at project commit `6d828a9e4416af70f56bb8f7b370cc9568916ef2`. The model, quantization,
+`llama.cpp` commit, VM class, workload, and thread count were identical; the causal build change
+was `GGML_CPU_KLEIDIAI=OFF` versus `ON`.
 
 | Metric | Baseline | KleidiAI | Change |
 | --- | ---: | ---: | ---: |
-| Prompt processing, pp1024 | 96.7379 tok/s | 97.2800 tok/s | **+0.5604%** |
-| Token generation, tg128 | 35.2443 tok/s | 36.7531 tok/s | **+4.2808%** |
+| Prompt processing, pp1024 | 96.6036 tok/s | 97.1860 tok/s | **+0.6029%** |
+| Token generation, tg128 | 34.7734 tok/s | 36.9914 tok/s | **+6.3783%** |
 
-Run [`30830782393`](https://github.com/agentic-build-lab/proofedge-arm64/actions/runs/30830782393)
-used four fresh processes in ABBA order and seven observations per block on a native `aarch64`
-Neoverse N2 GitHub runner. The selected profile was 4 threads, KleidiAI chunk multiplier 1,
-batch 1024, and micro-batch 256. Logs confirmed runtime selection of the I8MM Q4 kernel.
+Four fresh `llama-bench` processes ran in ABBA order with seven observations per block: 14 per
+build. The native runner reported `aarch64` and Neoverse N2. The selected profile remained 4
+threads, KleidiAI chunk multiplier 1, batch 1024, and micro-batch 256. Runtime logs proved I8MM Q4
+kernel selection. Peak RSS was 2,011,996 KiB baseline and 2,012,040 KiB KleidiAI; mean observed
+CPU utilization was 387.0% and 386.5%, respectively.
 
-Both baseline and KleidiAI also passed 2/2 frozen optimized-context model cases with schema
-completion 1.00, raw-reference validity 1.00, risk-evidence coverage 1.00, zero canary leakage,
-and zero fallback. See the
-[machine-readable summary](benchmarks/results/gha-30830782393-summary.json) and
-[complete raw bundle](benchmarks/raw/gha-30830782393).
+The four baseline/optimized × KleidiAI-off/on quality ledgers all passed 2/2 frozen cases. Schema
+completion, compiled-reference validity, semantic-objective coverage, and risk-evidence coverage
+were 1.00, with zero canary leakage and zero fallback. Raw model reference validity remained
+visible rather than being relabeled: 0.50 in the baseline build and 0.75 in the KleidiAI build.
+The raw and compiled plans, compiler provenance, logs, environment, binaries, and a verified
+81-file SHA-256 manifest are retained in the
+[complete raw bundle](benchmarks/raw/gha-30880259094).
 
-## Product-task timing already present in the confirmation evidence
+## Repeated product-task timing
 
-The quality ledgers also contain `llama-server` timings for the same two optimized-context
-ProofEdge requests. Baseline and KleidiAI received identical context hashes and token counts and
-returned byte-identical response hashes. Aggregate model compute fell from 26.7348 to 26.2351
-seconds, a **1.8693% reduction**. Per-case changes were −2.3286% for `openapi-orders-v2` and
-−1.4807% for `python-refund-v2`; every deterministic evidence gate still passed.
+Each build ran the complete frozen two-case ProofEdge model task five times in a persistent Python
+process. Every run passed. Published compiled-plan hashes were stable within each build and
+identical across builds. Raw model response hashes and completion token counts differed, so the
+analyzer explicitly marks exact model-compute comparison ineligible.
 
-This is the prompt-plus-generation compute reported by `llama-server` inside complete frozen
-quality requests. It excludes repository scanning, HTTP overhead, schema validation, evidence
-gating, and report rendering, and each case was captured once per configuration. It is therefore
-descriptive product-task evidence, not a repeated full end-to-end latency claim. The derivation is
-reproducible with `scripts/analyze_model_quality.py`; see the
-[machine-readable product-task summary](benchmarks/results/gha-30830782393-product-quality-summary.json).
+| Client-observed measure | Baseline | KleidiAI | Descriptive change |
+| --- | ---: | ---: | ---: |
+| Full two-case task, p50 | 45.387 s | 44.639 s | **−1.648%** |
+| Full two-case task, p95 | 45.464 s | 44.688 s | **−1.706%** |
+| Request TTFT, p50 (n=10) | 14.960 s | 14.867 s | **−0.622%** |
+| Request TTFT, p95 (n=10) | 20.025 s | 19.969 s | **−0.280%** |
+| Request end-to-end, p50 (n=10) | 22.674 s | 22.314 s | **−1.587%** |
+| Request end-to-end, p95 (n=10) | 27.701 s | 27.661 s | **−0.146%** |
+
+TTFT compares the same prompts before response divergence. Full-task and request end-to-end
+changes are descriptive product observations, not an isolated KleidiAI kernel effect. The
+machine-readable derivation is in
+[`gha-30880259094-product-quality-summary.json`](benchmarks/results/gha-30880259094-product-quality-summary.json).
 
 ## Measurement inventory
 
 | Requested measure | Reported evidence | Scope or reason unavailable |
 | --- | --- | --- |
-| Time to first token | Not observed | ProofEdge deliberately uses non-streaming responses so a complete JSON object can be validated before publication. Non-streaming latency is not relabeled as TTFT. |
-| Tokens per second | pp1024 +0.5604%; tg128 +4.2808% | 14 observations per configuration in the independent ABBA runtime comparison. |
-| Product-task latency | Model compute 13.367 s mean → 13.118 s mean (−1.8693%) | Two frozen requests, byte-identical outputs; excludes non-model product stages. |
-| Deterministic function latency | Warm p50 2.397 ms, p95 2.539 ms, cold 3.034 ms on latest main | Direct `evaluate_cases` static path; excludes interpreter/CLI startup, report I/O, and local-model inference. |
-| p50 and p95 | Published for runtime throughput and deterministic CLI latency | The two product requests are reported individually; their descriptive p50/p95 are machine-readable but not treated as population estimates. |
-| Peak RSS | Baseline 2,011,996 KiB; KleidiAI 2,012,040 KiB | `llama-bench` process peak; latest deterministic function benchmark peak is 24,516 KiB. |
+| Time to first token | p50 14.960 → 14.867 s; p95 20.025 → 19.969 s | Client-observed first non-empty streamed content, 10 requests per build. |
+| Tokens per second | pp1024 +0.6029%; tg128 +6.3783% | 14 observations per build in the same-host ABBA runtime comparison. |
+| Product-task latency | p50 45.387 → 44.639 s; p95 45.464 → 44.688 s | Five complete two-case trials per build; descriptive because raw outputs differed. |
+| Deterministic function latency | Warm p50 2.397 ms, p95 2.539 ms, cold 3.034 ms | Direct static path from the latest lightweight native evidence; excludes local inference. |
+| Peak RSS | Runtime: 2,011,996 vs 2,012,040 KiB; server: 2,094,936 vs 2,091,712 KiB | Process-level maxima; client and server are not falsely summed into a whole-system peak. |
 | Model size | 1,066,227,264 bytes | Pinned Qwen2.5-Coder-1.5B-Instruct Q4_0 artifact. |
-| Startup time | Not timestamped in the confirmation run | No startup claim is made. |
-| CPU utilization | 387% mean for both builds | Four-thread `llama-bench` processes measured by `/usr/bin/time -v`. |
+| Startup time | Baseline mean 2,026.7 ms; KleidiAI mean 2,020.0 ms | Three server startups per build on one hosted VM. |
+| CPU utilization | Runtime mean 387.0% vs 386.5%; server capture 383% vs 383% | Four-vCPU process observations, not energy. |
 | Energy or power | Not measured | The hosted runner exposes no calibrated power telemetry. |
-| Output quality | Both builds passed 2/2 cases; schema/reference/coverage 1.00 | Frozen golden objectives, raw responses, and byte-identical hashes retained. |
-| Task success | Deterministic 2/2; model gate 2/2 per runtime | Small, disclosed challenge-created corpus. |
+| Output quality | Four configurations passed; compiled references, semantics, and coverage 1.00 | Raw validity 0.50/0.75 and compiler provenance are separately disclosed. |
+| Task success | Product trials 5/5 per build; model gate 2/2 per configuration | Small, disclosed challenge-created corpus. |
 | Unsupported claims | Recall 1.00; false unsupported rate 0.00 | Deterministic golden evaluation, not broad real-world accuracy. |
 
 ## Honest evidence chain
@@ -61,8 +71,11 @@ The first ABBA profile was mixed: +0.5322% pp512 and −0.6967% tg128. It remain
 [`benchmarks/results/gha-30822903168-summary.json`](benchmarks/results/gha-30822903168-summary.json).
 Exploratory run
 [`30828989800`](https://github.com/agentic-build-lab/proofedge-arm64/actions/runs/30828989800)
-then selected a profile using predeclared rules. Only the later, separately launched run above is
-used for the confirmed claim.
+then selected a profile using predeclared rules. Run
+[`30830782393`](https://github.com/agentic-build-lab/proofedge-arm64/actions/runs/30830782393)
+initially confirmed its runtime gain under the revision-1 gate; the audit below later showed why
+that gate could not authorize a final product claim. Only final revision-3 run `30880259094` is
+used for the release claim.
 
 An independent usefulness audit later found that the revision-1 model gate validated citations
 and objective anchors but did not reject a semantically wrong `equal` relation. Revision-2 canary
@@ -110,6 +123,13 @@ a deterministic AST/OpenAPI compiler instantiates the published scenario, source
 purpose, and citable line. The raw model plan and the compiled plan are both retained. A safety
 floor can restore a high-risk mechanically detected candidate that the model missed, so compact
 model wording can no longer silently decide what becomes evidence.
+
+Final run `30880259094` passed the unchanged semantic objectives and the new compiled-reference
+gate in all four configurations. For the optimized profile, the Python signature candidate was
+model-aligned while the Python body change and OpenAPI status change were restored by the
+deterministic safety floor. That provenance is part of the evidence, not hidden. All five repeated
+product trials per build produced stable, cross-build-identical compiled plans; raw model outputs
+remained distinct and therefore exclude an exact model-compute comparison.
 
 The bootstrap ranges in the summary resample observations within processes and are descriptive;
 they are not confidence intervals across independent hosts. `llama-bench` is not end-to-end
