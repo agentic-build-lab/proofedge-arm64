@@ -93,7 +93,9 @@ energy measurements only on calibrated hardware.
 ## Try it out
 
 - Demo: https://proofedge-arm64.liu891855.chatgpt.site
+- Video: https://youtu.be/iuY49KZkrSs
 - Source: https://github.com/agentic-build-lab/proofedge-arm64
+- Release: https://github.com/agentic-build-lab/proofedge-arm64/releases/tag/v1.0.0
 - Confirmed evidence: https://github.com/agentic-build-lab/proofedge-arm64/blob/main/benchmarks/results/gha-30830782393-summary.json
 
 ## Built with
