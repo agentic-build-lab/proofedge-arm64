@@ -181,46 +181,68 @@ jobs:
           run_quality() {
             local label="$1"
             local port="$2"
-            GGML_TOTAL_THREADS="$THREADS" \
-            GGML_KLEIDIAI_CHUNK_MULTIPLIER="$KLEIDIAI_CHUNK_MULTIPLIER" \
-              "build/${label}/bin/llama-server" \
-                -m "$MODEL_DIR/$MODEL_FILE" \
-                --alias local-model \
-                --host 127.0.0.1 \
-                --port "$port" \
-                -t "$THREADS" \
-                -tb "$THREADS" \
-                -c "$CONTEXT_SIZE" \
-                -b "$BATCH_SIZE" \
-                -ub "$UBATCH_SIZE" \
-                -ngl "$GPU_LAYERS" \
-                -dev "$DEVICE" \
-                -np 1 \
-                --no-cont-batching \
-                --no-cache-prompt \
-                --metrics \
-                --log-verbosity 3 \
-                --log-timestamps \
-                > "$EVIDENCE/quality/${label}-server.stdout.log" \
-                2> "$EVIDENCE/quality/${label}-server.stderr.log" &
-            server_pid=$!
-            local ready=0
-            for _ in $(seq 1 90); do
-              if curl --fail --silent --noproxy '*' \
-                "http://127.0.0.1:${port}/health" \
-                > "$EVIDENCE/quality/${label}-health.json"; then
-                ready=1
-                break
+            : > "$EVIDENCE/quality/${label}-startup.jsonl"
+            local trial
+            for trial in 1 2 3; do
+              local prefix="${label}-startup-${trial}"
+              if [ "$trial" -eq 3 ]; then
+                prefix="${label}-server"
               fi
-              if ! kill -0 "$server_pid" 2>/dev/null; then
-                break
+              local started_ns
+              started_ns=$(date +%s%N)
+              GGML_TOTAL_THREADS="$THREADS" \
+              GGML_KLEIDIAI_CHUNK_MULTIPLIER="$KLEIDIAI_CHUNK_MULTIPLIER" \
+                "build/${label}/bin/llama-server" \
+                  -m "$MODEL_DIR/$MODEL_FILE" \
+                  --alias local-model \
+                  --host 127.0.0.1 \
+                  --port "$port" \
+                  -t "$THREADS" \
+                  -tb "$THREADS" \
+                  -c "$CONTEXT_SIZE" \
+                  -b "$BATCH_SIZE" \
+                  -ub "$UBATCH_SIZE" \
+                  -ngl "$GPU_LAYERS" \
+                  -dev "$DEVICE" \
+                  -np 1 \
+                  --no-cont-batching \
+                  --no-cache-prompt \
+                  --metrics \
+                  --log-verbosity 3 \
+                  --log-timestamps \
+                  > "$EVIDENCE/quality/${prefix}.stdout.log" \
+                  2> "$EVIDENCE/quality/${prefix}.stderr.log" &
+              server_pid=$!
+              local ready=0
+              for _ in $(seq 1 90); do
+                if curl --fail --silent --noproxy '*' \
+                  "http://127.0.0.1:${port}/health" \
+                  > "$EVIDENCE/quality/${prefix}-health.json"; then
+                  ready=1
+                  break
+                fi
+                if ! kill -0 "$server_pid" 2>/dev/null; then
+                  break
+                fi
+                sleep 1
+              done
+              if [ "$ready" -ne 1 ]; then
+                echo "${label}-startup=1" >> "$EVIDENCE/quality/exit-codes.txt"
+                cleanup
+                server_pid=""
+                return
               fi
-              sleep 1
+              local ready_ns
+              ready_ns=$(date +%s%N)
+              echo "{\"trial\":${trial},\"startup_ms\":$(((ready_ns - started_ns) / 1000000))}" \
+                >> "$EVIDENCE/quality/${label}-startup.jsonl"
+              if [ "$trial" -lt 3 ]; then
+                cleanup
+                server_pid=""
+              fi
             done
-            if [ "$ready" -ne 1 ]; then
-              echo "${label}-startup=1" >> "$EVIDENCE/quality/exit-codes.txt"
+            if [ -z "$server_pid" ]; then
               cleanup
-              server_pid=""
               return
             fi
 
@@ -237,9 +259,27 @@ jobs:
               set -e
               echo "${label}-${profile}=${status}" >> "$EVIDENCE/quality/exit-codes.txt"
             done
+            set +e
+            /usr/bin/time -v \
+              -o "$EVIDENCE/quality/${label}-product-client-time.txt" \
+              python scripts/benchmark_model_task.py \
+                --cases evaluation/cases \
+                --endpoint "http://127.0.0.1:${port}" \
+                --profile optimized \
+                --repetitions 5 \
+                --output "$EVIDENCE/quality/${label}-product.json" \
+                > "$EVIDENCE/quality/${label}-product.stdout.log" \
+                2> "$EVIDENCE/quality/${label}-product.stderr.log"
+            local product_status=$?
+            set -e
+            echo "${label}-product=${product_status}" >> "$EVIDENCE/quality/exit-codes.txt"
             curl --fail --silent --noproxy '*' \
               "http://127.0.0.1:${port}/metrics" \
               > "$EVIDENCE/quality/${label}-metrics.txt"
+            cp "/proc/${server_pid}/status" \
+              "$EVIDENCE/quality/${label}-server-proc-status.txt"
+            ps -p "$server_pid" -o pid,etimes,time,%cpu,%mem,rss,vsz,comm \
+              > "$EVIDENCE/quality/${label}-server-ps.txt"
             cleanup
             server_pid=""
           }
@@ -271,6 +311,8 @@ jobs:
           cat "$EVIDENCE/quality/exit-codes.txt"
           grep -qx 'baseline-optimized=0' "$EVIDENCE/quality/exit-codes.txt"
           grep -qx 'kleidiai-optimized=0' "$EVIDENCE/quality/exit-codes.txt"
+          grep -qx 'baseline-product=0' "$EVIDENCE/quality/exit-codes.txt"
+          grep -qx 'kleidiai-product=0' "$EVIDENCE/quality/exit-codes.txt"
       - name: Upload complete raw evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4

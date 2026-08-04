@@ -1,0 +1,184 @@
+{
+  "accepted_proposals": 4,
+  "canary_leakage_count": 0,
+  "cases": [
+    {
+      "accepted_proposals": 2,
+      "canary_leakage": [],
+      "case_id": "openapi-orders-v2",
+      "context_characters": 798,
+      "context_sha256": "a20c42384cdb966183e03178c39a3190c2fc28b2746e2f8e1939b5f01111be79",
+      "error": null,
+      "evidence_objectives_matched": 1,
+      "fallback_used": false,
+      "gold_target_density": 0.5,
+      "matched_objective_ids": [
+        "orders-success-status-change"
+      ],
+      "objectives_matched": 1,
+      "objectives_total": 1,
+      "passed": true,
+      "profile": "optimized",
+      "proposals_total": 2,
+      "published_reference_validity": 1.0,
+      "raw_reference_validity": 1.0,
+      "rejected": [],
+      "rejected_proposals": 0,
+      "response": {
+        "limitations": [
+          "The tests are based on the source code and do not cover the target code."
+        ],
+        "tests": [
+          {
+            "expected_relation": "intentional_difference",
+            "inputs": [
+              "POST /orders"
+            ],
+            "line": 8,
+            "name": "Status code change in create order endpoint",
+            "path": "openapi.json",
+            "priority": "high",
+            "purpose": "The status code for creating an order should change from 201 to 200 in the target version.",
+            "repository": "source"
+          },
+          {
+            "expected_relation": "intentional_difference",
+            "inputs": [
+              "POST /orders"
+            ],
+            "line": 9,
+            "name": "Response description change in create order endpoint",
+            "path": "openapi.json",
+            "priority": "high",
+            "purpose": "The response description for creating an order should change from 'Created' to 'Accepted' in the target version.",
+            "repository": "source"
+          }
+        ]
+      },
+      "response_sha256": "258dc64eaffa9a8ab235b9a6d93f27e704dfe42cfeb715b5baaed488f06db978",
+      "risk_evidence_coverage": 1.0,
+      "schema_valid": true,
+      "semantic_objective_coverage": 1.0,
+      "timings": {
+        "cache_n": 0,
+        "predicted_ms": 9105.556,
+        "predicted_n": 250,
+        "predicted_per_second": 27.45576437067654,
+        "predicted_per_token_ms": 36.422224,
+        "prompt_ms": 4180.311,
+        "prompt_n": 551,
+        "prompt_per_second": 131.8083750228153,
+        "prompt_per_token_ms": 7.586771324863883
+      },
+      "usage": {
+        "completion_tokens": 250,
+        "prompt_tokens": 551,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "total_tokens": 801
+      }
+    },
+    {
+      "accepted_proposals": 2,
+      "canary_leakage": [],
+      "case_id": "python-refund-v2",
+      "context_characters": 1623,
+      "context_sha256": "f3e81182ef8ae1f1d9db75081b9f41a032187958b2f9a53d01e8874bfbc60ba5",
+      "error": null,
+      "evidence_objectives_matched": 2,
+      "fallback_used": false,
+      "gold_target_density": 0.0,
+      "matched_objective_ids": [],
+      "objectives_matched": 0,
+      "objectives_total": 2,
+      "passed": false,
+      "profile": "optimized",
+      "proposals_total": 2,
+      "published_reference_validity": 1.0,
+      "raw_reference_validity": 1.0,
+      "rejected": [],
+      "rejected_proposals": 0,
+      "response": {
+        "limitations": [
+          "The target code does not have the same functionality as the source code, so the tests cannot be directly compared."
+        ],
+        "tests": [
+          {
+            "expected_relation": "equal",
+            "inputs": [
+              "1.005"
+            ],
+            "line": 4,
+            "name": "Quote with precision",
+            "path": "pricing.py",
+            "priority": "high",
+            "purpose": "Ensure the quote function rounds the amount to two decimal places",
+            "repository": "source"
+          },
+          {
+            "expected_relation": "equal",
+            "inputs": [
+              "order-7"
+            ],
+            "line": 9,
+            "name": "Refund with status",
+            "path": "pricing.py",
+            "priority": "high",
+            "purpose": "Ensure the refund function returns the correct status",
+            "repository": "source"
+          }
+        ]
+      },
+      "response_sha256": "f8fe3717eb65a13793154fa1d5dcb7315965fb4257eb29d2f91460851557839f",
+      "risk_evidence_coverage": 1.0,
+      "schema_valid": true,
+      "semantic_objective_coverage": 0.0,
+      "timings": {
+        "cache_n": 0,
+        "predicted_ms": 7922.237,
+        "predicted_n": 208,
+        "predicted_per_second": 26.255210491683094,
+        "predicted_per_token_ms": 38.08767788461539,
+        "prompt_ms": 8641.793,
+        "prompt_n": 838,
+        "prompt_per_second": 96.97061709300372,
+        "prompt_per_token_ms": 10.31240214797136
+      },
+      "usage": {
+        "completion_tokens": 208,
+        "prompt_tokens": 838,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "total_tokens": 1046
+      }
+    }
+  ],
+  "cases_passed": 1,
+  "cases_total": 2,
+  "engine": "llama.cpp",
+  "evidence_objectives_matched": 3,
+  "fallback_count": 0,
+  "objectives_matched": 1,
+  "objectives_total": 3,
+  "passed": false,
+  "profile": "optimized",
+  "proposals_total": 4,
+  "published_reference_validity": 1.0,
+  "raw_reference_validity": 1.0,
+  "rejected_proposals": 0,
+  "risk_evidence_coverage": 1.0,
+  "schema_completion_rate": 1.0,
+  "schema_version": "1.0.0",
+  "semantic_objective_coverage": 0.3333333333333333,
+  "thresholds": {
+    "maximum_canary_leakage_count": 0,
+    "maximum_fallback_count": 0,
+    "minimum_case_gold_target_density": 0.4,
+    "minimum_case_raw_reference_validity": 0.75,
+    "minimum_case_risk_evidence_coverage": 0.75,
+    "minimum_case_semantic_objective_coverage": 0.75,
+    "schema_completion_rate": 1.0
+  }
+}

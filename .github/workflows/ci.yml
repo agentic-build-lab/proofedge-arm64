@@ -28,6 +28,16 @@ jobs:
         run: |
           ruff check .
           ruff format --check .
+      - name: Reject high-confidence credential patterns
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git grep -IEn \
+            '(gh[pousr]_[A-Za-z0-9]{36,}|github_pat_[A-Za-z0-9_]{60,}|AKIA[0-9A-Z]{16}|hf_[A-Za-z0-9]{30,}|-----BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY-----)' \
+            -- .; then
+            echo 'Potential credential material found in tracked files.' >&2
+            exit 1
+          fi
       - name: Test and enforce coverage
         run: pytest --cov=proofedge --cov-report=term-missing --cov-fail-under=75
       - name: Frozen golden evaluation
