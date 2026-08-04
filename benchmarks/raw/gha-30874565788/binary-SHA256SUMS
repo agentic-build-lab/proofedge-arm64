@@ -1,0 +1,6 @@
+73cbff56db5c6eecdd6a509ab57db2c58751dde396f0ec4d7f32b71dbcc1b32d  build/baseline/bin/llama-bench
+656a3305685d331560739bb4ccca9d0ff714f1c2552968d1aaac1aefaba80eb6  build/kleidiai/bin/llama-bench
+e60ad519e1ba7015a9c399fd644a4b04e61891f08e42b2106a92aa7a41237d22  build/baseline/bin/llama-server
+57b458d8b9b33cfc2db03bd3f1d051ad77667147e85a48aa05df4eb2a1bdcd75  build/kleidiai/bin/llama-server
+c85c16a1e40cb2a0961524d99f9c2fb23871680086f308dd9f28ae9b53cc0949  build/baseline/bin/libggml-cpu.so
+037bb81bc720c713f27a46ed09555ce005833b00a9e762849d73304a888954e1  build/kleidiai/bin/libggml-cpu.so

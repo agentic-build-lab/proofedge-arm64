@@ -13,7 +13,7 @@ Quantization and model swaps are not labeled Arm optimizations. `llama-bench` re
 labeled end-to-end latency because they exclude tokenization, structured parsing, evidence gates,
 reporting, and some sampling work.
 
-## Pinned runtime comparison
+## Initial pinned runtime comparison
 
 - Native runner: GitHub `ubuntu-24.04-arm`, reported as `aarch64`, Neoverse N2, 4 vCPU
 - `llama.cpp`: `67d5978bb1ba490070ddbd2a7c59c7ec5a60b7cc`
@@ -57,28 +57,37 @@ candidate measured pp512 131.680 tok/s and tg128 36.566 tok/s. At stage two, the
 measured pp1024 97.078 tok/s. These are selection data, not confirmation claims. The independent
 profile and acceptance policy are frozen in `benchmarks/config/arm64-confirm-v1.json`.
 
-## Independent confirmation result
+## Final independent result
 
 Run
-[`30830782393`](https://github.com/agentic-build-lab/proofedge-arm64/actions/runs/30830782393)
+[`30880259094`](https://github.com/agentic-build-lab/proofedge-arm64/actions/runs/30880259094)
 used the committed selection without further tuning: 4 threads, chunk multiplier 1, batch 1024,
-micro-batch 256, pp1024, and tg128. Four new benchmark processes ran in ABBA order with seven
-observations per block.
+micro-batch 256, pp1024, and tg128. Four benchmark processes ran in ABBA order with seven
+observations per block, 14 observations per build.
 
 | Metric | Baseline | KleidiAI | Mean change |
 | --- | ---: | ---: | ---: |
-| Prompt processing | 96.7379 tok/s | 97.2800 tok/s | **+0.5604%** |
-| Token generation | 35.2443 tok/s | 36.7531 tok/s | **+4.2808%** |
+| Prompt processing | 96.6036 tok/s | 97.1860 tok/s | **+0.6029%** |
+| Token generation | 34.7734 tok/s | 36.9914 tok/s | **+6.3783%** |
 
-The optimized runtime selected the I8MM Q4 kernel at runtime. Baseline and KleidiAI each passed
-2/2 frozen optimized-context model-quality cases with perfect schema completion, reference
-validity, and risk coverage, plus zero canary leakage and zero fallback. This supports a narrow,
-reproducible same-model runtime-throughput claim; it does not support an energy or end-to-end
-latency claim.
+The optimized runtime selected the I8MM Q4 kernel at runtime. All four baseline/optimized ×
+KleidiAI-off/on quality configurations passed 2/2 cases with perfect compiled-reference validity,
+semantic-objective coverage, and risk-evidence coverage, plus zero canary leakage and zero
+fallback. Raw model reference validity remains separately reported at 0.50 baseline and 0.75
+KleidiAI. This supports a narrow, reproducible same-model runtime-throughput claim; it does not
+support an energy claim.
+
+The same run repeated the complete two-case product task five times per build and streamed ten
+requests per build. Every task passed, with identical compiled published-plan hashes. Task p50
+changed from 45.387 to 44.639 seconds (−1.648%), and TTFT p50 from 14.960 to 14.867 seconds
+(−0.622%). Raw model responses and completion token counts differed, so exact model-compute
+comparison is explicitly ineligible. Product timings are descriptive and not relabeled as an
+isolated KleidiAI kernel effect. The derivation is reproducible in
+`benchmarks/results/gha-30880259094-product-quality-summary.json`.
 
 ## Workflow optimization boundary
 
 The current fixtures produce only modest context reduction, including one case with no reduction.
-Therefore ProofEdge does not claim a workflow latency or context-compression win from these cases.
-A future claim requires larger frozen fixtures and streaming server timing that measures first
-token directly; non-streaming CLI latency will not be relabeled as TTFT.
+Therefore ProofEdge does not claim a workflow context-compression win from these cases. The final
+run measures client-observed streaming TTFT and full task latency, but the small frozen corpus and
+single hosted VM support descriptive p50/p95 only, not population inference.

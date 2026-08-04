@@ -95,6 +95,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         print(
             f"Local-model evidence gate: {result.cases_passed}/{result.cases_total} "
             f"cases passed; risk coverage {result.risk_evidence_coverage:.1%}; "
+            f"semantic coverage {result.semantic_objective_coverage:.1%}; "
             f"raw reference validity {result.raw_reference_validity:.1%}"
         )
         print(f"Model evaluation ledger: {args.output}")

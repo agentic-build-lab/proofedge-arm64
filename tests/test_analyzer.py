@@ -3,8 +3,15 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from proofedge.analyzer import AnalysisConfig, analyze_migration, augment_with_local_model
-from proofedge.engines import LlamaResponse
+import pytest
+
+from proofedge.analyzer import (
+    MAX_MANIFEST_BYTES,
+    AnalysisConfig,
+    analyze_migration,
+    augment_with_local_model,
+)
+from proofedge.engines import LlamaCppError, LlamaResponse
 from proofedge.report import write_report
 
 
@@ -107,7 +114,7 @@ def test_local_model_proposals_are_evidence_gated(tmp_path: Path) -> None:
                 "repository": "source",
                 "line": 1,
                 "inputs": [""],
-                "expected_relation": "equal",
+                "expected_relation": "investigate",
                 "priority": "high",
             }
             return LlamaResponse(
@@ -135,6 +142,8 @@ def test_local_model_proposals_are_evidence_gated(tmp_path: Path) -> None:
     assert any("Grounded" in step for step in augmented.differential_test_plan)
     assert not any("Hallucinated" in step for step in augmented.differential_test_plan)
     assert augmented.metadata["local_model"]["rejected_tests"] == 1
+    assert augmented.metadata["local_model"]["accepted_proposals"][0]["inputs"] == [""]
+    assert augmented.metadata["local_model"]["raw_model_limitations"] == []
 
 
 def test_local_model_fallback_is_explicit(tmp_path: Path) -> None:
@@ -176,3 +185,56 @@ def test_local_model_fallback_is_explicit(tmp_path: Path) -> None:
     assert augmented.engine == "deterministic-fallback"
     assert augmented.metadata["local_model"]["fallback_used"] is True
     assert augmented.differential_test_plan == base.differential_test_plan
+
+
+def test_local_model_unavailable_writes_explicit_fallback_report(tmp_path: Path) -> None:
+    source = tmp_path / "source"
+    target = tmp_path / "target"
+    _write(source / "api.py", "def parse(value):\n    return value\n")
+    _write(target / "api.py", "def parse(value):\n    return value\n")
+    base = analyze_migration(AnalysisConfig(source=source, target=target))
+
+    class UnavailableClient:
+        def generate_plan(self, _context: str) -> LlamaResponse:
+            raise LlamaCppError("Local llama.cpp request failed: connection refused")
+
+    augmented = augment_with_local_model(
+        base,
+        AnalysisConfig(source=source, target=target),
+        client=UnavailableClient(),  # type: ignore[arg-type]
+        profile="optimized",
+    )
+
+    assert augmented.engine == "deterministic-fallback"
+    assert augmented.differential_test_plan == base.differential_test_plan
+    assert augmented.metadata["local_model"]["fallback_used"] is True
+    assert "connection refused" in augmented.metadata["local_model"]["error"]
+
+
+def test_manifest_is_bounded_and_rejects_parent_paths(tmp_path: Path) -> None:
+    source = tmp_path / "source"
+    target = tmp_path / "target"
+    _write(source / "api.py", "def parse(value):\n    return value\n")
+    _write(target / "api.py", "def parse(value):\n    return value\n")
+    manifest = tmp_path / "manifest.json"
+    manifest.write_text(
+        json.dumps(
+            {
+                "claims": [
+                    {
+                        "id": "escape",
+                        "statement": "Invalid reference",
+                        "evidence": [{"repository": "target", "path": "../secret.txt"}],
+                    }
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ValueError, match="repository-relative"):
+        analyze_migration(AnalysisConfig(source=source, target=target, manifest=manifest))
+
+    manifest.write_bytes(b"{" + b" " * MAX_MANIFEST_BYTES + b"}")
+    with pytest.raises(ValueError, match="byte limit"):
+        analyze_migration(AnalysisConfig(source=source, target=target, manifest=manifest))

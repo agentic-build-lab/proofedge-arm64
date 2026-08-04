@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
+import { access, readFile } from "node:fs/promises";
 import test from "node:test";
 
 async function render() {
@@ -35,13 +35,15 @@ test("server-renders the complete public ProofEdge narrative", async () => {
   const html = await response.text();
   assert.match(html, /<title>ProofEdge — Evidence before confidence<\/title>/i);
   assert.match(html, /Migrations are easy to generate/);
-  assert.match(html, /We kept the failed profile—then confirmed the fix\./);
-  assert.match(html, /exploratory profile regressed decode by 0\.70%/i);
+  assert.match(html, /We kept every failed run—then passed the gate\./);
+  assert.match(html, /four faster-but-wrong semantic canaries remain public/i);
   assert.match(html, /Run verified replay/);
   assert.match(html, /genuine aarch64 runner/);
-  assert.match(html, /Confirmation summary \+ evidence link/);
+  assert.match(html, /Final product summary \+ raw evidence link/);
   assert.match(html, /github\.com\/agentic-build-lab\/proofedge-arm64/);
   assert.doesNotMatch(html, /codex-preview|react-loading-skeleton|starter loading/i);
+  assert.doesNotMatch(html, /\b[A-Z]:[\\/]/);
+  assert.doesNotMatch(html, /Administrator|New project 8/i);
 });
 
 test("keeps benchmark claims qualified and production dependencies audited", async () => {
@@ -52,10 +54,10 @@ test("keeps benchmark claims qualified and production dependencies audited", asy
     readFile(new URL("../package.json", import.meta.url), "utf8"),
   ]);
 
-  assert.match(page, /\+0\.56%/);
-  assert.match(page, /\+4\.28%/);
-  assert.match(page, /exploratory profile regressed decode by 0\.70%/i);
-  assert.match(page, /same VM, model bytes, quantization, workload, and threads/i);
+  assert.match(page, /\+0\.60%/);
+  assert.match(page, /\+6\.38%/);
+  assert.match(page, /four faster-but-wrong semantic canaries remain public/i);
+  assert.match(page, /same\s+VM, model bytes, quantization, workload, and threads/i);
   assert.match(consoleSource, /browser demo replays|replay fixture/);
   assert.match(consoleSource, /repository code execution/i);
   assert.match(layout, /summary_large_image/);
@@ -65,4 +67,17 @@ test("keeps benchmark claims qualified and production dependencies audited", asy
   assert.match(packageJson, /"postcss": "8\.5\.25"/);
   assert.match(packageJson, /"sharp": "0\.35\.3"/);
   assert.match(packageJson, /"undici": "7\.29\.0"/);
+});
+
+test("self-hosts fonts without leaking build-machine paths", async () => {
+  const [styles] = await Promise.all([
+    readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
+    access(new URL("../public/fonts/Geist-Variable.woff2", import.meta.url)),
+    access(new URL("../public/fonts/GeistMono-Variable.woff2", import.meta.url)),
+  ]);
+
+  assert.match(styles, /url\("\/fonts\/Geist-Variable\.woff2"\)/);
+  assert.match(styles, /url\("\/fonts\/GeistMono-Variable\.woff2"\)/);
+  assert.doesNotMatch(styles, /\b[A-Z]:[\\/]/);
+  assert.doesNotMatch(styles, /Administrator|New project 8/i);
 });

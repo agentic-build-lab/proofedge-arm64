@@ -16,9 +16,16 @@ layer.
 - CPU only; no GPU offload
 
 The selection run searched thread count, KleidiAI chunk multiplier, batch, micro-batch, and
-context depth under rules committed before results were inspected. The independent confirmation
-then measured +0.5604% pp1024 and +4.2808% tg128 with the runtime log proving I8MM Q4 kernel
-selection. Both runtimes independently passed the frozen local-model evidence gate.
+context depth under rules committed before results were inspected. Final native run `30880259094`
+measured +0.6029% pp1024 and +6.3783% tg128 in a four-process ABBA design, with the runtime log
+proving I8MM Q4 kernel selection. All four local-model quality configurations passed 2/2 frozen
+cases under the semantic and compiled-reference gates.
+
+The same run repeated the complete two-case product task five times per build. Every trial passed
+and compiled published-plan hashes were identical across builds. Task p50 changed from 45.387 to
+44.639 seconds and streamed TTFT p50 from 14.960 to 14.867 seconds. Raw model outputs and
+completion token counts differed, so these are descriptive product observations and exact model
+compute comparison is explicitly ineligible.
 
 This is deliberately a narrow throughput claim. ProofEdge does not relabel `llama-bench` as
 end-to-end latency, does not infer quality from identical model bytes, and does not report energy
