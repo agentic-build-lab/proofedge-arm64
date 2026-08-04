@@ -147,6 +147,73 @@ def compare_quality_ledgers(baseline_path: Path, kleidiai_path: Path) -> dict[st
     }
 
 
+def compare_product_benchmarks(baseline_path: Path, kleidiai_path: Path) -> dict[str, Any]:
+    """Compare repeated complete product tasks with workload and quality controls."""
+    baseline = json.loads(baseline_path.read_text(encoding="utf-8"))
+    kleidiai = json.loads(kleidiai_path.read_text(encoding="utf-8"))
+    for label, document in (("baseline", baseline), ("kleidiai", kleidiai)):
+        if not isinstance(document, dict) or not document.get("passed"):
+            raise ValueError(f"{label} repeated product benchmark did not pass")
+        if document.get("repetitions", 0) < 3:
+            raise ValueError(f"{label} product benchmark has too few repetitions")
+        identity = document.get("workload_identity", {})
+        if not identity.get("context_hashes_stable"):
+            raise ValueError(f"{label} context hashes changed between product runs")
+    if baseline["profile"] != kleidiai["profile"]:
+        raise ValueError("Product benchmark profiles do not match")
+    baseline_hashes = baseline["workload_identity"]["response_hashes_per_case"]
+    kleidiai_hashes = kleidiai["workload_identity"]["response_hashes_per_case"]
+    if baseline_hashes != kleidiai_hashes:
+        raise ValueError("Product benchmark responses differ between configurations")
+
+    metrics: dict[str, Any] = {}
+    for key in (
+        "task_end_to_end_ms",
+        "request_time_to_first_token_ms",
+        "request_end_to_end_ms",
+    ):
+        baseline_metric = baseline[key]
+        kleidiai_metric = kleidiai[key]
+        metrics[key] = {
+            "baseline": baseline_metric,
+            "kleidiai": kleidiai_metric,
+            "mean_change_percent": (kleidiai_metric["mean"] / baseline_metric["mean"] - 1) * 100,
+            "p50_change_percent": (kleidiai_metric["p50"] / baseline_metric["p50"] - 1) * 100,
+            "p95_change_percent": (kleidiai_metric["p95"] / baseline_metric["p95"] - 1) * 100,
+        }
+    return {
+        "scope": baseline["scope"],
+        "profile": baseline["profile"],
+        "quality_gate": {
+            "baseline_all_runs_passed": True,
+            "kleidiai_all_runs_passed": True,
+            "baseline_runs": baseline["repetitions"],
+            "kleidiai_runs": kleidiai["repetitions"],
+        },
+        "workload_identity": {
+            "contexts_stable": True,
+            "responses_identical_across_configurations": True,
+            "response_hashes_per_case": baseline_hashes,
+        },
+        **metrics,
+    }
+
+
+def parse_startup_measurements(path: Path) -> dict[str, float | int]:
+    values: list[float] = []
+    for line in path.read_text(encoding="utf-8").splitlines():
+        if not line.strip():
+            continue
+        document = json.loads(line)
+        value = document.get("startup_ms")
+        if not isinstance(value, (int, float)) or value < 0:
+            raise ValueError(f"Invalid startup measurement in {path}")
+        values.append(float(value))
+    if len(values) < 3:
+        raise ValueError(f"Expected at least three startup measurements in {path}")
+    return _describe(values)
+
+
 def _parse_elapsed_seconds(value: str) -> float:
     pieces = [float(piece) for piece in value.split(":")]
     if len(pieces) == 2:
@@ -199,6 +266,32 @@ def analyze_native_evidence(evidence_dir: Path) -> dict[str, Any]:
         "size_bytes": int(model_match.group(1)),
         "quantization": "Q4_0",
     }
+    baseline_product = quality_dir / "baseline-product.json"
+    kleidiai_product = quality_dir / "kleidiai-product.json"
+    if baseline_product.exists() and kleidiai_product.exists():
+        product["repeated_product_task"] = compare_product_benchmarks(
+            baseline_product,
+            kleidiai_product,
+        )
+        product["server_startup_ms"] = {
+            label: parse_startup_measurements(quality_dir / f"{label}-startup.jsonl")
+            for label in ("baseline", "kleidiai")
+        }
+        product["explicitly_unmeasured"] = {
+            "energy_or_power": (
+                "Not measured because the hosted VM exposes no calibrated power telemetry."
+            ),
+            "whole_system_peak_rss": (
+                "Server and client were separate processes; server and client resource records "
+                "are published separately rather than summed into a false instantaneous peak."
+            ),
+        }
+        product["limitations"] = [
+            "The fixed quality corpus has two deliberately compact migration cases.",
+            "Five repeated task trials support descriptive p50/p95, not population inference.",
+            "Startup has three observed trials per configuration on one hosted Arm64 VM.",
+        ]
+        return product
     product["explicitly_unmeasured"] = {
         "time_to_first_token": (
             "Not observed: the safety-gated ProofEdge client uses non-streaming responses."

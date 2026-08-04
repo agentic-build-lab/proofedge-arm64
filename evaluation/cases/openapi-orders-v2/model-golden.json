@@ -19,8 +19,9 @@
     {
       "id": "orders-success-status-change",
       "required_content_any": ["status", "201", "200", "created", "accepted"],
+      "required_purpose_any": ["source", "target", "compare", "versus"],
       "required_input_any": ["post", "/orders", "order"],
-      "allowed_expected_relations": ["investigate", "intentional_difference"],
+      "allowed_expected_relations": ["investigate"],
       "acceptable_evidence": [
         {"repository": "source", "path": "openapi.json", "line_start": 5, "line_end": 9},
         {"repository": "target", "path": "openapi.json", "line_start": 5, "line_end": 9}

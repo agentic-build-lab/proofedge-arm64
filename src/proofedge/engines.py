@@ -4,7 +4,8 @@ from __future__ import annotations
 
 import json
 import socket
-from dataclasses import dataclass
+import time
+from dataclasses import dataclass, field
 from ipaddress import ip_address
 from typing import Any
 from urllib.error import HTTPError, URLError
@@ -70,9 +71,14 @@ equivalence. Each purpose must name the source-versus-target behavior being comp
 must be executable scenario stimuli rather than an expected output alone. Use expected_relation
 "equal" only when behavior should be preserved, "intentional_difference" only when visible
 evidence explicitly establishes an intended change, and "investigate" when a potential change is
-visible but its intent is unknown. Cite exactly one visible repository file and line for each
-test. Return only the required JSON object. Do not request tools, secrets, network access, or
-execution."""
+visible but its intent is unknown. A source/target difference never proves intent by itself: if
+there is no explicit migration requirement declaring the change intentional, use "investigate".
+Every test must exercise the changed behavior, not a nearby unchanged field. For a removed or
+changed parameter, include a non-default value for that parameter in inputs. For a changed
+rounding policy, include a halfway boundary value. Avoid vague purposes such as "ensure correct";
+state what source behavior is compared with what target behavior. Cite exactly one visible
+repository file and line for each test. Return only the required JSON object. Do not request tools,
+secrets, network access, or execution."""
 
 MAX_RESPONSE_BYTES = 1_048_576
 
@@ -82,6 +88,7 @@ class LlamaResponse:
     document: dict[str, Any]
     timings: dict[str, Any]
     usage: dict[str, Any]
+    client_timings: dict[str, Any] = field(default_factory=dict)
 
 
 class LlamaCppError(RuntimeError):
@@ -166,7 +173,13 @@ def validate_plan_document(document: Any) -> dict[str, Any]:
 
 
 class LlamaCppClient:
-    def __init__(self, endpoint: str, timeout_seconds: float = 120.0) -> None:
+    def __init__(
+        self,
+        endpoint: str,
+        timeout_seconds: float = 120.0,
+        *,
+        stream: bool = False,
+    ) -> None:
         parsed = urlparse(endpoint)
         hostname = parsed.hostname or ""
         try:
@@ -187,6 +200,7 @@ class LlamaCppClient:
             raise ValueError("llama.cpp endpoint must be loopback HTTP")
         self.endpoint = endpoint.rstrip("/")
         self.timeout_seconds = timeout_seconds
+        self.stream = stream
 
     def generate_plan(self, context: str) -> LlamaResponse:
         payload = {
@@ -206,19 +220,25 @@ class LlamaCppClient:
             "temperature": 0,
             "seed": 424242,
             "max_tokens": 768,
-            "stream": False,
+            "stream": self.stream,
             "cache_prompt": False,
             "response_format": {"type": "json_object", "schema": PLAN_SCHEMA},
         }
+        if self.stream:
+            payload["stream_options"] = {"include_usage": True}
         request = Request(  # noqa: S310 - constructor receives a validated loopback HTTP URL
             f"{self.endpoint}/v1/chat/completions",
             data=json.dumps(payload).encode(),
             headers={"Content-Type": "application/json"},
             method="POST",
         )
+        started_ns = time.perf_counter_ns()
         try:
             with _LOCAL_OPENER.open(request, timeout=self.timeout_seconds) as response:  # noqa: S310
+                if self.stream:
+                    return self._read_stream(response, started_ns)
                 payload_bytes = response.read(MAX_RESPONSE_BYTES + 1)
+                completed_ns = time.perf_counter_ns()
                 if len(payload_bytes) > MAX_RESPONSE_BYTES:
                     raise LlamaCppError("llama.cpp response exceeds the byte limit")
                 result = json.loads(payload_bytes)
@@ -234,4 +254,59 @@ class LlamaCppClient:
             document=document,
             timings=result.get("timings", {}),
             usage=result.get("usage", {}),
+            client_timings={
+                "streaming": False,
+                "time_to_first_token_ms": None,
+                "end_to_end_ms": (completed_ns - started_ns) / 1_000_000,
+            },
+        )
+
+    def _read_stream(self, response: Any, started_ns: int) -> LlamaResponse:
+        content_parts: list[str] = []
+        first_content_ns: int | None = None
+        timings: dict[str, Any] = {}
+        usage: dict[str, Any] = {}
+        bytes_read = 0
+        try:
+            for raw_line in response:
+                bytes_read += len(raw_line)
+                if bytes_read > MAX_RESPONSE_BYTES:
+                    raise LlamaCppError("llama.cpp response exceeds the byte limit")
+                line = raw_line.decode("utf-8").strip()
+                if not line or not line.startswith("data:"):
+                    continue
+                data = line.removeprefix("data:").strip()
+                if data == "[DONE]":
+                    break
+                event = json.loads(data)
+                if isinstance(event.get("timings"), dict):
+                    timings = event["timings"]
+                if isinstance(event.get("usage"), dict):
+                    usage = event["usage"]
+                choices = event.get("choices", [])
+                if not choices:
+                    continue
+                content = choices[0].get("delta", {}).get("content")
+                if isinstance(content, str) and content:
+                    if first_content_ns is None:
+                        first_content_ns = time.perf_counter_ns()
+                    content_parts.append(content)
+        except (UnicodeDecodeError, json.JSONDecodeError, KeyError, TypeError) as exc:
+            raise LlamaCppError("llama.cpp returned an invalid streaming response") from exc
+        completed_ns = time.perf_counter_ns()
+        if first_content_ns is None:
+            raise LlamaCppError("llama.cpp streaming response contained no content")
+        try:
+            document = validate_plan_document(json.loads("".join(content_parts)))
+        except json.JSONDecodeError as exc:
+            raise LlamaCppError("llama.cpp returned invalid streamed JSON content") from exc
+        return LlamaResponse(
+            document=document,
+            timings=timings,
+            usage=usage,
+            client_timings={
+                "streaming": True,
+                "time_to_first_token_ms": (first_content_ns - started_ns) / 1_000_000,
+                "end_to_end_ms": (completed_ns - started_ns) / 1_000_000,
+            },
         )

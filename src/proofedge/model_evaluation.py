@@ -41,6 +41,7 @@ class ModelCaseEvaluation:
     rejected: tuple[dict[str, Any], ...]
     timings: dict[str, Any]
     usage: dict[str, Any]
+    client_timings: dict[str, Any]
     error: str | None
 
 
@@ -127,6 +128,10 @@ def _semantic_match(proposal: dict[str, Any], objective: dict[str, Any]) -> bool
     required_content = objective.get("required_content_any", [])
     if required_content and not any(str(term).casefold() in content for term in required_content):
         return False
+    purpose = proposal["purpose"].casefold()
+    required_purpose = objective.get("required_purpose_any", [])
+    if required_purpose and not any(str(term).casefold() in purpose for term in required_purpose):
+        return False
     input_content = " ".join(proposal["inputs"]).casefold()
     required_inputs = objective.get("required_input_any", [])
     return not required_inputs or any(
@@ -204,6 +209,7 @@ def evaluate_model_case(
             rejected=(),
             timings={},
             usage={},
+            client_timings={},
             error=str(exc),
         )
 
@@ -263,6 +269,7 @@ def evaluate_model_case(
         rejected=tuple(_rejected_dict(item) for item in gate.rejected),
         timings=response.timings,
         usage=response.usage,
+        client_timings=response.client_timings,
         error=None,
     )
 
