@@ -104,6 +104,17 @@ def analyze(raw_dir: Path, bootstrap_samples: int = 20_000) -> dict[str, Any]:
         match = RSS_PATTERN.search(path.read_text(encoding="utf-8"))
         if match:
             rss[configuration].append(int(match.group(1)))
+    prompt_change = metrics["prompt_processing_tokens_per_second"]["relative_mean_change_percent"]
+    generation_change = metrics["token_generation_tokens_per_second"][
+        "relative_mean_change_percent"
+    ]
+    both_positive = prompt_change > 0 and generation_change > 0
+    status = "positive_runtime_result" if both_positive else "mixed_negative_result"
+    claim = (
+        f"KleidiAI changed mean prompt-processing throughput by {prompt_change:+.3f}% and "
+        f"mean token-generation throughput by {generation_change:+.3f}% in this fixed "
+        "same-host configuration."
+    )
     return {
         "schema_version": "1.0.0",
         "benchmark": "same-host-llama-cpp-kleidiai-abba",
@@ -112,13 +123,12 @@ def analyze(raw_dir: Path, bootstrap_samples: int = 20_000) -> dict[str, Any]:
         "metrics": metrics,
         "peak_rss_kib_by_process": rss,
         "interpretation": {
-            "status": "mixed_negative_result",
-            "claim": (
-                "KleidiAI produced a small prefill improvement in this configuration, while "
-                "decode did not show a stable improvement. This configuration is not the final "
-                "ProofEdge optimized profile."
+            "status": status,
+            "claim": claim,
+            "quality_scope": (
+                "This benchmark does not establish output-quality equivalence. Apply the "
+                "separate frozen model-quality gate before making a product claim."
             ),
-            "quality_scope": "Model bytes are identical; output-quality equivalence is structural.",
         },
         "limitations": [
             "The exploratory bootstrap treats within-process repetitions as samples; it is "

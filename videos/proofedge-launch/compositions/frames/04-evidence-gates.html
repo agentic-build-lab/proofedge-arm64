@@ -1,0 +1,669 @@
+<template>
+  <style>
+    @font-face {
+      font-family: "Geist";
+      src: url("assets/fonts/Geist-Variable.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 400 700;
+      font-display: swap;
+    }
+
+    #root {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      container-type: size;
+      font-family: "Geist";
+      color: #f3efe7;
+    }
+
+    .f04-evidence-gates-ground,
+    .f04-evidence-gates-stage {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+
+    .f04-evidence-gates-ground {
+      background: #0e1319;
+    }
+
+    .f04-evidence-gates-header {
+      position: absolute;
+      top: 74px;
+      left: 100px;
+      width: 1180px;
+    }
+
+    .f04-evidence-gates-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      color: #f3a712;
+      font-size: 0.82cqw;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .f04-evidence-gates-eyebrow::before {
+      content: "";
+      display: block;
+      width: 60px;
+      height: 4px;
+      border-radius: 2px;
+      background: #f3a712;
+    }
+
+    .f04-evidence-gates-title {
+      margin-top: 16px;
+      color: #f3efe7;
+      font-size: 3.7cqw;
+      font-weight: 680;
+      line-height: 1.02;
+      letter-spacing: -0.035em;
+    }
+
+    .f04-evidence-gates-rail {
+      position: absolute;
+      top: 226px;
+      left: 100px;
+      width: 1650px;
+      height: 54px;
+    }
+
+    .f04-evidence-gates-rail-base,
+    .f04-evidence-gates-rail-fill {
+      position: absolute;
+      top: 25px;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      border-radius: 6px;
+      transform-origin: left center;
+    }
+
+    .f04-evidence-gates-rail-base {
+      background: rgba(243, 167, 18, 0.08);
+    }
+
+    .f04-evidence-gates-rail-fill {
+      background: #f3a712;
+    }
+
+    .f04-evidence-gates-node {
+      position: absolute;
+      top: 10px;
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border: 1.5px solid rgba(243, 167, 18, 0.2);
+      border-radius: 50%;
+      background: #0e1319;
+      color: #f3a712;
+      font-size: 13px;
+      font-weight: 650;
+    }
+
+    .f04-evidence-gates-node-one { left: 0; }
+    .f04-evidence-gates-node-two { left: 33.33%; }
+    .f04-evidence-gates-node-three { left: 66.66%; }
+    .f04-evidence-gates-node-four { right: 0; }
+
+    .f04-evidence-gates-spinner {
+      position: absolute;
+      top: 0;
+      left: -10px;
+      width: 54px;
+      height: 54px;
+      overflow: visible;
+    }
+
+    .f04-evidence-gates-spinner circle {
+      fill: none;
+      stroke: #f3a712;
+      stroke-width: 4;
+      stroke-linecap: round;
+      stroke-dasharray: 34 94;
+    }
+
+    .f04-evidence-gates-stack {
+      position: absolute;
+      top: 306px;
+      left: 100px;
+      width: 700px;
+      height: 456px;
+    }
+
+    .f04-evidence-gates-card {
+      position: absolute;
+      left: 0;
+      width: 700px;
+      height: 118px;
+      display: grid;
+      grid-template-columns: 76px 1fr auto;
+      align-items: center;
+      column-gap: 18px;
+      padding: 0 26px;
+      box-sizing: border-box;
+      border: 1.5px solid rgba(243, 167, 18, 0.2);
+      border-radius: 14px;
+      background: rgba(243, 167, 18, 0.04);
+      transform-origin: left center;
+    }
+
+    .f04-evidence-gates-card-one { top: 0; }
+    .f04-evidence-gates-card-two { top: 138px; }
+    .f04-evidence-gates-card-three { top: 276px; }
+
+    .f04-evidence-gates-card-num {
+      color: #f3a712;
+      font-size: 2.15cqw;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .f04-evidence-gates-card-copy {
+      min-width: 0;
+    }
+
+    .f04-evidence-gates-card-title {
+      color: #f3efe7;
+      font-size: 1.42cqw;
+      font-weight: 600;
+      line-height: 1.12;
+      letter-spacing: -0.02em;
+    }
+
+    .f04-evidence-gates-status-wrap {
+      margin-top: 10px;
+      min-width: 340px;
+      min-height: 19px;
+      white-space: nowrap;
+      color: #63d6c5;
+      font-size: 0.8cqw;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+    }
+
+    .f04-evidence-gates-card-tag {
+      padding: 9px 13px;
+      border-radius: 100px;
+      background: rgba(243, 167, 18, 0.08);
+      color: #f3a712;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .f04-evidence-gates-excerpt {
+      position: absolute;
+      top: 776px;
+      left: 100px;
+      width: 700px;
+      height: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      box-sizing: border-box;
+      border-left: 4px solid #f3a712;
+      border-radius: 12px;
+      background: rgba(243, 167, 18, 0.08);
+      color: #63d6c5;
+      font-size: 0.74cqw;
+      font-weight: 560;
+      letter-spacing: 0.06em;
+    }
+
+    .f04-evidence-gates-excerpt b {
+      color: #f3a712;
+      font-weight: 650;
+    }
+
+    .f04-evidence-gates-proof-plate {
+      position: absolute;
+      top: 184px;
+      left: 830px;
+      width: 990px;
+      height: 557px;
+      object-fit: cover;
+      border: 1.5px solid rgba(243, 167, 18, 0.2);
+      border-radius: 14px;
+      opacity: 0;
+    }
+
+    .f04-evidence-gates-receipt {
+      position: absolute;
+      top: 298px;
+      left: 900px;
+      width: 850px;
+      height: 508px;
+      padding: 32px 38px;
+      box-sizing: border-box;
+      border: 1.5px solid rgba(243, 167, 18, 0.2);
+      border-radius: 14px;
+      background: rgba(14, 19, 25, 0.92);
+      transform-origin: right center;
+    }
+
+    .f04-evidence-gates-receipt-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      padding-bottom: 22px;
+      border-bottom: 1.5px solid rgba(243, 167, 18, 0.2);
+    }
+
+    .f04-evidence-gates-receipt-label {
+      color: #f3a712;
+      font-size: 0.78cqw;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .f04-evidence-gates-receipt-title {
+      margin-top: 8px;
+      color: #f3efe7;
+      font-size: 2cqw;
+      font-weight: 650;
+      line-height: 1.05;
+      letter-spacing: -0.025em;
+    }
+
+    .f04-evidence-gates-receipt-chip {
+      padding: 10px 15px;
+      border-radius: 100px;
+      background: rgba(243, 167, 18, 0.08);
+      color: #f3a712;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+    }
+
+    .f04-evidence-gates-receipt-rows {
+      margin-top: 8px;
+    }
+
+    .f04-evidence-gates-receipt-row {
+      height: 78px;
+      display: grid;
+      grid-template-columns: 48px 1fr auto;
+      align-items: center;
+      gap: 16px;
+      border-bottom: 1px solid rgba(243, 167, 18, 0.12);
+    }
+
+    .f04-evidence-gates-receipt-row:last-child {
+      border-bottom: none;
+    }
+
+    .f04-evidence-gates-check {
+      width: 32px;
+      height: 32px;
+      overflow: visible;
+    }
+
+    .f04-evidence-gates-check circle {
+      fill: rgba(243, 167, 18, 0.08);
+      stroke: rgba(243, 167, 18, 0.2);
+      stroke-width: 1.5;
+    }
+
+    .f04-evidence-gates-check path {
+      fill: none;
+      stroke: #f3a712;
+      stroke-width: 3.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .f04-evidence-gates-receipt-row-copy strong {
+      display: block;
+      color: #f3efe7;
+      font-size: 1.42cqw;
+      font-weight: 600;
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+    }
+
+    .f04-evidence-gates-receipt-row-copy span {
+      display: block;
+      margin-top: 5px;
+      color: #63d6c5;
+      font-size: 0.73cqw;
+      font-weight: 400;
+      line-height: 1.2;
+    }
+
+    .f04-evidence-gates-receipt-state {
+      color: #f3a712;
+      font-size: 0.7cqw;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .f04-evidence-gates-final {
+      position: absolute;
+      top: 270px;
+      left: 100px;
+      width: 690px;
+    }
+
+    .f04-evidence-gates-final-kicker {
+      color: #f3a712;
+      font-size: 0.82cqw;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .f04-evidence-gates-final-title {
+      margin-top: 22px;
+      color: #f3efe7;
+      font-size: 4.15cqw;
+      font-weight: 680;
+      line-height: 0.98;
+      letter-spacing: -0.045em;
+    }
+
+    .f04-evidence-gates-final-title span {
+      display: block;
+    }
+
+    .f04-evidence-gates-final-rule {
+      margin-top: 40px;
+      width: 68px;
+      height: 5px;
+      border-radius: 6px;
+      background: #f3a712;
+    }
+
+    .f04-evidence-gates-progress {
+      position: absolute;
+      top: 872px;
+      left: 96px;
+      width: 1728px;
+      height: 3px;
+      overflow: hidden;
+      background: rgba(243, 167, 18, 0.08);
+    }
+
+    .f04-evidence-gates-progress-fill {
+      display: block;
+      width: 44%;
+      height: 100%;
+      background: #f3a712;
+    }
+  </style>
+
+  <div id="root" data-composition-id="04-evidence-gates" data-width="1920" data-height="1080" data-start="0" data-duration="19.621">
+    <div class="clip f04-evidence-gates-ground" data-start="0" data-duration="19.621" data-track-index="0"></div>
+
+    <div class="clip f04-evidence-gates-stage" data-start="0" data-duration="19.621" data-track-index="1">
+      <div id="04-evidence-gates-header" class="f04-evidence-gates-header">
+        <div class="f04-evidence-gates-eyebrow">Evidence gates</div>
+        <div class="f04-evidence-gates-title">FOUR GATES. ONE LEDGER.</div>
+      </div>
+
+      <div class="f04-evidence-gates-rail" aria-hidden="true">
+        <div class="f04-evidence-gates-rail-base"></div>
+        <div id="04-evidence-gates-rail-fill" class="f04-evidence-gates-rail-fill"></div>
+        <div class="f04-evidence-gates-node f04-evidence-gates-node-one">01</div>
+        <div class="f04-evidence-gates-node f04-evidence-gates-node-two">02</div>
+        <div class="f04-evidence-gates-node f04-evidence-gates-node-three">03</div>
+        <div class="f04-evidence-gates-node f04-evidence-gates-node-four">04</div>
+        <svg class="f04-evidence-gates-spinner" viewBox="0 0 54 54">
+          <circle id="04-evidence-gates-spinner-arc" cx="27" cy="27" r="20"></circle>
+        </svg>
+      </div>
+
+      <img id="04-evidence-gates-proof-plate" class="f04-evidence-gates-proof-plate" src="assets/scroll-080.png" alt="Captured benchmark and evidence architecture">
+
+      <div id="04-evidence-gates-stack" class="f04-evidence-gates-stack">
+        <div id="04-evidence-gates-card-one" class="f04-evidence-gates-card f04-evidence-gates-card-one">
+          <div class="f04-evidence-gates-card-num">01</div>
+          <div class="f04-evidence-gates-card-copy">
+            <div class="f04-evidence-gates-card-title">BOUNDED INGESTION</div>
+            <div class="f04-evidence-gates-status-wrap"><span id="04-evidence-gates-ingest-status">SCANNING</span></div>
+          </div>
+          <div class="f04-evidence-gates-card-tag">Gate</div>
+        </div>
+
+        <div id="04-evidence-gates-card-two" class="f04-evidence-gates-card f04-evidence-gates-card-two">
+          <div class="f04-evidence-gates-card-num">02</div>
+          <div class="f04-evidence-gates-card-copy">
+            <div class="f04-evidence-gates-card-title">DETERMINISTIC CONTRACT MAP</div>
+            <div class="f04-evidence-gates-status-wrap">TYPED FACTS</div>
+          </div>
+          <div class="f04-evidence-gates-card-tag">Gate</div>
+        </div>
+
+        <div id="04-evidence-gates-card-three" class="f04-evidence-gates-card f04-evidence-gates-card-three">
+          <div class="f04-evidence-gates-card-num">03</div>
+          <div class="f04-evidence-gates-card-copy">
+            <div class="f04-evidence-gates-card-title">LOCAL PLAN ≤ 2 TESTS</div>
+            <div class="f04-evidence-gates-status-wrap">PROPOSAL ONLY</div>
+          </div>
+          <div class="f04-evidence-gates-card-tag">Gate</div>
+        </div>
+      </div>
+
+      <div id="04-evidence-gates-excerpt" class="f04-evidence-gates-excerpt">
+        <span><b>01</b> INPUT</span>
+        <span><b>02</b> FACTS</span>
+        <span><b>03</b> PLAN</span>
+        <span><b>04</b> VALIDATE</span>
+      </div>
+
+      <div id="04-evidence-gates-receipt" class="f04-evidence-gates-receipt">
+        <div class="f04-evidence-gates-receipt-top">
+          <div>
+            <div class="f04-evidence-gates-receipt-label">Auditable receipt</div>
+            <div class="f04-evidence-gates-receipt-title">PATH + LINE VALIDATION</div>
+          </div>
+          <div id="04-evidence-gates-receipt-chip" class="f04-evidence-gates-receipt-chip">VALIDATING</div>
+        </div>
+
+        <div class="f04-evidence-gates-receipt-rows">
+          <div class="f04-evidence-gates-receipt-row">
+            <svg class="f04-evidence-gates-check" viewBox="0 0 32 32" aria-hidden="true">
+              <circle cx="16" cy="16" r="14"></circle>
+              <path id="04-evidence-gates-check-one" d="M 8 16 L 14 22 L 25 9"></path>
+            </svg>
+            <div class="f04-evidence-gates-receipt-row-copy"><strong>INGESTION</strong><span>bounded content</span></div>
+            <div class="f04-evidence-gates-receipt-state">verified</div>
+          </div>
+          <div class="f04-evidence-gates-receipt-row">
+            <svg class="f04-evidence-gates-check" viewBox="0 0 32 32" aria-hidden="true">
+              <circle cx="16" cy="16" r="14"></circle>
+              <path id="04-evidence-gates-check-two" d="M 8 16 L 14 22 L 25 9"></path>
+            </svg>
+            <div class="f04-evidence-gates-receipt-row-copy"><strong>TYPED FACTS</strong><span>deterministic map</span></div>
+            <div class="f04-evidence-gates-receipt-state">verified</div>
+          </div>
+          <div class="f04-evidence-gates-receipt-row">
+            <svg class="f04-evidence-gates-check" viewBox="0 0 32 32" aria-hidden="true">
+              <circle cx="16" cy="16" r="14"></circle>
+              <path id="04-evidence-gates-check-three" d="M 8 16 L 14 22 L 25 9"></path>
+            </svg>
+            <div class="f04-evidence-gates-receipt-row-copy"><strong>TEST PLAN</strong><span>local proposal</span></div>
+            <div class="f04-evidence-gates-receipt-state">verified</div>
+          </div>
+          <div class="f04-evidence-gates-receipt-row">
+            <svg class="f04-evidence-gates-check" viewBox="0 0 32 32" aria-hidden="true">
+              <circle cx="16" cy="16" r="14"></circle>
+              <path id="04-evidence-gates-check-four" d="M 8 16 L 14 22 L 25 9"></path>
+            </svg>
+            <div class="f04-evidence-gates-receipt-row-copy"><strong>CITED PATH + LINE</strong><span>reference validated</span></div>
+            <div class="f04-evidence-gates-receipt-state">verified</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="04-evidence-gates-final" class="f04-evidence-gates-final">
+        <div class="f04-evidence-gates-final-kicker">Defense in depth</div>
+        <div class="f04-evidence-gates-final-title">
+          <span>AI PROPOSES.</span>
+          <span>EVIDENCE DISPOSES.</span>
+        </div>
+        <div class="f04-evidence-gates-final-rule"></div>
+      </div>
+
+      <div class="f04-evidence-gates-progress" aria-hidden="true"><span class="f04-evidence-gates-progress-fill"></span></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script>
+    (() => {
+      const tl = gsap.timeline({ paused: true });
+      window.__timelines = window.__timelines || {};
+      window.__timelines["04-evidence-gates"] = tl;
+
+      const header = document.getElementById("04-evidence-gates-header");
+      const railFill = document.getElementById("04-evidence-gates-rail-fill");
+      const spinnerArc = document.getElementById("04-evidence-gates-spinner-arc");
+      const stack = document.getElementById("04-evidence-gates-stack");
+      const statusEl = document.getElementById("04-evidence-gates-ingest-status");
+      const excerpt = document.getElementById("04-evidence-gates-excerpt");
+      const receipt = document.getElementById("04-evidence-gates-receipt");
+      const receiptChip = document.getElementById("04-evidence-gates-receipt-chip");
+      const proofPlate = document.getElementById("04-evidence-gates-proof-plate");
+      const finalLockup = document.getElementById("04-evidence-gates-final");
+
+      gsap.set(document.getElementById("04-evidence-gates-card-one"), { autoAlpha: 0 });
+      gsap.set(document.getElementById("04-evidence-gates-card-two"), { autoAlpha: 0 });
+      gsap.set(document.getElementById("04-evidence-gates-card-three"), { autoAlpha: 0 });
+      gsap.set(excerpt, { autoAlpha: 0 });
+      gsap.set(receipt, { autoAlpha: 0 });
+      gsap.set(proofPlate, { autoAlpha: 0 });
+      gsap.set(finalLockup, { autoAlpha: 0 });
+
+      tl.fromTo(header, { y: 24, opacity: 0 }, { y: 0, opacity: 1, duration: 0.4, ease: "power3.out" }, 0.08);
+      tl.fromTo(railFill, { scaleX: 0 }, { scaleX: 1, duration: 15.4, ease: "none" }, 0.18);
+
+      const spinState = { deg: 0 };
+      tl.to(
+        spinState,
+        {
+          deg: 972,
+          duration: 5.44,
+          ease: "none",
+          onUpdate: () => spinnerArc.setAttribute("transform", `rotate(${spinState.deg} 27 27)`),
+        },
+        0.18,
+      );
+
+      tl.fromTo(
+        document.getElementById("04-evidence-gates-card-one"),
+        { scale: 0.88, y: 18, opacity: 0 },
+        { scale: 1, y: 0, opacity: 1, duration: 0.58, ease: "power3.out" },
+        3.0,
+      );
+
+      const STATUS_SEQUENCE = [
+        { t: 0, text: "SCANNING" },
+        { t: 5.62, text: "REJECTS UNSAFE / EXCESSIVE" },
+      ];
+      function statusAt(time) {
+        for (let i = STATUS_SEQUENCE.length - 1; i >= 0; i -= 1) {
+          if (time >= STATUS_SEQUENCE[i].t) return STATUS_SEQUENCE[i].text;
+        }
+        return STATUS_SEQUENCE[0].text;
+      }
+      const statusDriver = { t: 0 };
+      let lastStatus = STATUS_SEQUENCE[0].text;
+      tl.to(
+        statusDriver,
+        {
+          t: 19.221,
+          duration: 19.221,
+          ease: "none",
+          onUpdate: () => {
+            const next = statusAt(statusDriver.t);
+            if (next !== lastStatus) {
+              statusEl.textContent = next;
+              lastStatus = next;
+            }
+          },
+        },
+        0,
+      );
+
+      tl.fromTo(excerpt, { opacity: 0 }, { opacity: 1, duration: 0.42, ease: "power1.out" }, 7.0);
+      tl.fromTo(
+        document.getElementById("04-evidence-gates-card-two"),
+        { scale: 0.9, y: 16, opacity: 0 },
+        { scale: 1, y: 0, opacity: 1, duration: 0.62, ease: "power3.out" },
+        7.18,
+      );
+      tl.fromTo(
+        document.getElementById("04-evidence-gates-card-three"),
+        { scale: 0.9, y: 14, opacity: 0 },
+        { scale: 1, y: 0, opacity: 1, duration: 0.62, ease: "power3.out" },
+        9.34,
+      );
+
+      tl.fromTo(receipt, { scaleX: 0.84, opacity: 0 }, { scaleX: 1, opacity: 1, duration: 0.62, ease: "power3.out" }, 12.0);
+
+      const checks = [
+        document.getElementById("04-evidence-gates-check-one"),
+        document.getElementById("04-evidence-gates-check-two"),
+        document.getElementById("04-evidence-gates-check-three"),
+        document.getElementById("04-evidence-gates-check-four"),
+      ];
+      checks.forEach((path) => {
+        const len = path.getTotalLength();
+        path.style.strokeDasharray = `${len}`;
+        path.style.strokeDashoffset = `${len}`;
+      });
+      const checkTimes = [12.55, 13.28, 14.01, 14.74];
+      checks.forEach((path, index) => {
+        tl.to(path, { strokeDashoffset: 0, duration: 0.44, ease: "power2.out" }, checkTimes[index]);
+      });
+
+      const RECEIPT_STATES = [
+        { t: 0, text: "VALIDATING" },
+        { t: 15.18, text: "LEDGER READY" },
+      ];
+      function receiptStateAt(time) {
+        for (let i = RECEIPT_STATES.length - 1; i >= 0; i -= 1) {
+          if (time >= RECEIPT_STATES[i].t) return RECEIPT_STATES[i].text;
+        }
+        return RECEIPT_STATES[0].text;
+      }
+      const receiptDriver = { t: 0 };
+      let lastReceiptState = RECEIPT_STATES[0].text;
+      tl.to(
+        receiptDriver,
+        {
+          t: 19.221,
+          duration: 19.221,
+          ease: "none",
+          onUpdate: () => {
+            const next = receiptStateAt(receiptDriver.t);
+            if (next !== lastReceiptState) {
+              receiptChip.textContent = next;
+              lastReceiptState = next;
+            }
+          },
+        },
+        0,
+      );
+
+      tl.set(header, { autoAlpha: 0 }, 16.0);
+      tl.set(stack, { autoAlpha: 0 }, 16.0);
+      tl.set(excerpt, { autoAlpha: 0 }, 16.0);
+      tl.fromTo(proofPlate, { opacity: 0 }, { opacity: 0.24, duration: 0.68, ease: "power1.out" }, 16.0);
+      tl.set(finalLockup, { autoAlpha: 1 }, 16.0);
+      tl.fromTo(finalLockup, { x: -42, opacity: 0 }, { x: 0, opacity: 1, duration: 0.58, ease: "power3.out" }, 16.08);
+      tl.fromTo(receipt, { x: 0, scale: 1 }, { x: 18, scale: 0.94, duration: 0.68, ease: "power3.out" }, 16.08);
+    })();
+  </script>
+</template>

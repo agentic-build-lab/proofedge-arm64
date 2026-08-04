@@ -1,0 +1,182 @@
+{
+  "accepted_proposals": 4,
+  "canary_leakage_count": 0,
+  "cases": [
+    {
+      "accepted_proposals": 2,
+      "canary_leakage": [],
+      "case_id": "openapi-orders-v2",
+      "context_characters": 798,
+      "context_sha256": "a20c42384cdb966183e03178c39a3190c2fc28b2746e2f8e1939b5f01111be79",
+      "error": null,
+      "fallback_used": false,
+      "gold_target_density": 0.5,
+      "matched_objective_ids": [
+        "orders-success-status-change"
+      ],
+      "objectives_matched": 1,
+      "objectives_total": 1,
+      "passed": true,
+      "profile": "optimized",
+      "proposals_total": 2,
+      "published_reference_validity": 1.0,
+      "raw_reference_validity": 1.0,
+      "rejected": [],
+      "rejected_proposals": 0,
+      "response": {
+        "limitations": [
+          "The tests are based on the specific changes in the response status code and description, which are not necessarily indicative of any semantic changes in the API."
+        ],
+        "tests": [
+          {
+            "expected_relation": "equal",
+            "inputs": [
+              "201"
+            ],
+            "line": 8,
+            "name": "Test change in response status code",
+            "path": "openapi.json",
+            "priority": "high",
+            "purpose": "Ensure that the response status code for creating an order has changed from 201 to 200 in the target OpenAPI file.",
+            "repository": "source"
+          },
+          {
+            "expected_relation": "equal",
+            "inputs": [
+              "Invalid input"
+            ],
+            "line": 9,
+            "name": "Test change in response description",
+            "path": "openapi.json",
+            "priority": "high",
+            "purpose": "Ensure that the response description for creating an order has changed from 'Created' to 'Accepted' in the target OpenAPI file.",
+            "repository": "source"
+          }
+        ]
+      },
+      "response_sha256": "cb1d3a149450f6c81f3086d6e4bf40db693af656540b91065597c1bd82aaee5d",
+      "risk_evidence_coverage": 1.0,
+      "schema_valid": true,
+      "timings": {
+        "cache_n": 0,
+        "predicted_ms": 8274.148,
+        "predicted_n": 264,
+        "predicted_per_second": 31.906608390374455,
+        "predicted_per_token_ms": 31.341469696969693,
+        "prompt_ms": 3691.977,
+        "prompt_n": 472,
+        "prompt_per_second": 127.84478343174943,
+        "prompt_per_token_ms": 7.8219851694915254
+      },
+      "usage": {
+        "completion_tokens": 264,
+        "prompt_tokens": 472,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "total_tokens": 736
+      }
+    },
+    {
+      "accepted_proposals": 2,
+      "canary_leakage": [],
+      "case_id": "python-refund-v2",
+      "context_characters": 1623,
+      "context_sha256": "f3e81182ef8ae1f1d9db75081b9f41a032187958b2f9a53d01e8874bfbc60ba5",
+      "error": null,
+      "fallback_used": false,
+      "gold_target_density": 1.0,
+      "matched_objective_ids": [
+        "rounding-policy-change",
+        "refund-reason-loss"
+      ],
+      "objectives_matched": 2,
+      "objectives_total": 2,
+      "passed": true,
+      "profile": "optimized",
+      "proposals_total": 2,
+      "published_reference_validity": 1.0,
+      "raw_reference_validity": 1.0,
+      "rejected": [],
+      "rejected_proposals": 0,
+      "response": {
+        "limitations": [
+          "The test cases are based on the source code and do not cover the target code."
+        ],
+        "tests": [
+          {
+            "expected_relation": "equal",
+            "inputs": [
+              "1.005",
+              "USD"
+            ],
+            "line": 5,
+            "name": "Test quote with invalid amount",
+            "path": "pricing.py",
+            "priority": "high",
+            "purpose": "Ensure the quote function handles invalid amounts correctly",
+            "repository": "source"
+          },
+          {
+            "expected_relation": "equal",
+            "inputs": [
+              "order-7",
+              "duplicate"
+            ],
+            "line": 9,
+            "name": "Test refund with invalid order ID",
+            "path": "pricing.py",
+            "priority": "high",
+            "purpose": "Ensure the refund function handles invalid order IDs correctly",
+            "repository": "source"
+          }
+        ]
+      },
+      "response_sha256": "0479bbc7609374c03521e6bc232b12da5d75e9f1042655c64af9801dc6d7f9d7",
+      "risk_evidence_coverage": 1.0,
+      "schema_valid": true,
+      "timings": {
+        "cache_n": 0,
+        "predicted_ms": 6987.667,
+        "predicted_n": 215,
+        "predicted_per_second": 30.76849540769473,
+        "predicted_per_token_ms": 32.50077674418605,
+        "prompt_ms": 7281.304,
+        "prompt_n": 759,
+        "prompt_per_second": 104.23957027477496,
+        "prompt_per_token_ms": 9.593285902503293
+      },
+      "usage": {
+        "completion_tokens": 215,
+        "prompt_tokens": 759,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "total_tokens": 974
+      }
+    }
+  ],
+  "cases_passed": 2,
+  "cases_total": 2,
+  "engine": "llama.cpp",
+  "fallback_count": 0,
+  "objectives_matched": 3,
+  "objectives_total": 3,
+  "passed": true,
+  "profile": "optimized",
+  "proposals_total": 4,
+  "published_reference_validity": 1.0,
+  "raw_reference_validity": 1.0,
+  "rejected_proposals": 0,
+  "risk_evidence_coverage": 1.0,
+  "schema_completion_rate": 1.0,
+  "schema_version": "1.0.0",
+  "thresholds": {
+    "maximum_canary_leakage_count": 0,
+    "maximum_fallback_count": 0,
+    "minimum_case_gold_target_density": 0.4,
+    "minimum_case_raw_reference_validity": 0.75,
+    "minimum_case_risk_evidence_coverage": 0.75,
+    "schema_completion_rate": 1.0
+  }
+}

@@ -1,0 +1,10 @@
+.venv-audio/
+node_modules/
+.hyperframes/cache/
+.hyperframes/frame-packets/
+AGENTS.md
+CLAUDE.md
+assets/sfx/
+capture/
+renders/
+snapshots/

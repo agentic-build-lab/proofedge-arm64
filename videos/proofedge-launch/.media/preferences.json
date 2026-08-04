@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "preferences": {
+    "flow": {
+      "value": "automation",
+      "confirmed_in": [
+        "proofedge-launch"
+      ],
+      "updated_at": "2026-08-03T16:13:07.513Z"
+    },
+    "storyboard": {
+      "value": "no",
+      "confirmed_in": [
+        "proofedge-launch"
+      ],
+      "updated_at": "2026-08-03T16:13:07.561Z"
+    },
+    "language": {
+      "value": "en",
+      "confirmed_in": [
+        "proofedge-launch"
+      ],
+      "updated_at": "2026-08-03T16:13:07.616Z"
+    }
+  },
+  "sightings": {}
+}

@@ -3,8 +3,8 @@
 **Evidence before confidence. Private migration assurance on Arm64.**
 
 [Live demo](https://proofedge-arm64.liu891855.chatgpt.site) ·
-[Native Arm evidence](benchmarks/README.md) ·
-[Evaluation protocol](docs/EVALUATION.md) ·
+[Native Arm evidence](BENCHMARKS.md) ·
+[Evaluation protocol](EVALUATION.md) ·
 [MIT license](LICENSE)
 
 ProofEdge is a local-first engineering agent for reviewing software migrations. It compares a
@@ -60,12 +60,15 @@ results are retained.
 | --- | --- | --- |
 | Deterministic quality | 2/2 cases; 5/5 expected categories; unsupported-claim recall 1.00; false unsupported rate 0.00 | Frozen synthetic controls; not local-model accuracy |
 | Native deterministic path | 30/30 task passes; warm p50 1.486 ms; warm p95 1.526 ms; cold 2.053 ms; peak RSS 19,636 KiB | Native `aarch64` Neoverse N2 runner; static analysis only |
-| Same-model runtime A/B | Prefill 130.486 → 131.180 tok/s (**+0.532%**); decode 35.384 → 35.137 tok/s (**−0.697%**) | One exploratory ABBA run, Qwen Q4_0, 4 threads, same VM and model bytes |
+| Confirmed same-model runtime A/B | pp1024 96.738 → 97.280 tok/s (**+0.560%**); tg128 35.244 → 36.753 tok/s (**+4.281%**) | Independent ABBA confirmation of the preselected profile; Qwen Q4_0, same native Neoverse N2 VM and model bytes |
+| Frozen local-model gate | Baseline and KleidiAI each passed 2/2 cases; schema, raw-reference validity, and risk coverage all 1.00; canary leakage and fallback both 0 | Optimized context on both runtimes; raw responses and ledgers retained |
 
-The first KleidiAI result is deliberately reported as **mixed/negative**, not as a product
-speedup. Its exploratory prefill interval is positive, while decode does not show a stable win.
-The frozen tuning and independent local-model quality workflows are the next evidence stages.
-See [the benchmark protocol and qualifications](benchmarks/README.md).
+The first exploratory profile remains published as **mixed/negative** (+0.532% prefill,
+−0.697% decode). A separately frozen tuning sweep selected a new profile, and independent run
+[`30830782393`](https://github.com/agentic-build-lab/proofedge-arm64/actions/runs/30830782393)
+confirmed the figures above while both local-model quality gates passed. These are runtime
+throughput results, not end-to-end latency or energy claims. See the
+[benchmark protocol and qualifications](BENCHMARKS.md).
 
 ## Quick start: credential-free deterministic path
 
@@ -148,7 +151,7 @@ output, and artifact hashes are retained. See [reproducibility](docs/REPRODUCIBI
 
 ## Security and limitations
 
-Read [SECURITY.md](SECURITY.md) and the [threat model](docs/THREAT_MODEL.md) before analyzing
+Read [SECURITY.md](SECURITY.md) and the [threat model](THREAT_MODEL.md) before analyzing
 untrusted repositories. Important limits:
 
 - Static matching and model proposals are risk signals, not proof of equivalence.

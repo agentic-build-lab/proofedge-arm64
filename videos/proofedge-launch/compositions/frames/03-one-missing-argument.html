@@ -1,0 +1,679 @@
+<template>
+  <style>
+    @font-face {
+      font-family: "Geist";
+      src: url("assets/fonts/Geist-Variable.woff2") format("woff2");
+      font-weight: 100 900;
+      font-style: normal;
+    }
+
+    @font-face {
+      font-family: "Geist Mono";
+      src: url("assets/fonts/GeistMono-Variable.woff2") format("woff2");
+      font-weight: 100 900;
+      font-style: normal;
+    }
+
+    #root {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      container-type: size;
+      font-family: "Geist", sans-serif;
+      color: #f3efe7;
+    }
+
+    .f03-ground {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 50% 38%, rgba(243, 167, 18, 0.075), transparent 44%),
+        #0e1319;
+    }
+
+    .f03-ground::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      opacity: 0.16;
+      background-image:
+        linear-gradient(rgba(99, 214, 197, 0.055) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(99, 214, 197, 0.055) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: linear-gradient(to bottom, black, transparent 85%);
+    }
+
+    .f03-stage {
+      position: absolute;
+      inset: 0;
+    }
+
+    .f03-kicker {
+      position: absolute;
+      left: 10cqw;
+      top: 4.8cqh;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-size: 0.78cqw;
+      font-weight: 650;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #f3a712;
+    }
+
+    .f03-kicker-line {
+      width: 52px;
+      height: 4px;
+      border-radius: 6px;
+      background: #f3a712;
+    }
+
+    .f03-surface {
+      position: absolute;
+      left: 10cqw;
+      top: 10.4cqh;
+      width: 80cqw;
+      height: 70.5cqh;
+      overflow: hidden;
+      border: 1.5px solid rgba(243, 167, 18, 0.2);
+      border-radius: 14px;
+      background: #090e13;
+    }
+
+    .f03-windowbar {
+      position: absolute;
+      z-index: 20;
+      left: 0;
+      right: 0;
+      top: 0;
+      height: 54px;
+      display: flex;
+      align-items: center;
+      padding: 0 22px;
+      border-bottom: 1px solid rgba(243, 167, 18, 0.2);
+      background: rgba(14, 19, 25, 0.96);
+    }
+
+    .f03-dots {
+      display: flex;
+      gap: 8px;
+    }
+
+    .f03-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(99, 214, 197, 0.38);
+    }
+
+    .f03-windowtitle {
+      position: absolute;
+      left: 50%;
+      font-family: "Geist Mono", monospace;
+      font-size: 13px;
+      font-weight: 560;
+      letter-spacing: 0.02em;
+      color: #f3efe7;
+      transform: translateX(-50%);
+    }
+
+    .f03-status {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-family: "Geist Mono", monospace;
+      font-size: 12px;
+      color: #63d6c5;
+    }
+
+    .f03-status::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #63d6c5;
+    }
+
+    .f03-swap-wrap {
+      position: absolute;
+      inset: 54px 0 0;
+      overflow: hidden;
+      background: #090e13;
+    }
+
+    .f03-screen {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      transform-origin: 50% 50%;
+      background: #090e13;
+    }
+
+    .f03-screen-outgoing {
+      z-index: 1;
+    }
+
+    .f03-screen-incoming {
+      z-index: 2;
+    }
+
+    .f03-capture {
+      position: absolute;
+      width: 2496px;
+      height: 1404px;
+      max-width: none;
+      user-select: none;
+      pointer-events: none;
+    }
+
+    .f03-capture-source {
+      left: -481px;
+      top: -745px;
+    }
+
+    .f03-capture-evidence {
+      left: -481px;
+      top: -4px;
+    }
+
+    .f03-soft-mask {
+      position: absolute;
+      z-index: 3;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(to bottom, rgba(9, 14, 19, 0.6) 0, transparent 86px),
+        linear-gradient(to right, transparent 0 64%, rgba(9, 14, 19, 0.26) 64% 100%);
+    }
+
+    .f03-column-label {
+      position: absolute;
+      z-index: 5;
+      top: 26px;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 8px 13px;
+      border: 1px solid rgba(243, 167, 18, 0.2);
+      border-radius: 100px;
+      background: rgba(243, 167, 18, 0.08);
+      font-family: "Geist Mono", monospace;
+      font-size: 12px;
+      font-weight: 650;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #f3a712;
+    }
+
+    .f03-source-label {
+      left: 22px;
+    }
+
+    .f03-target-label {
+      left: 443px;
+    }
+
+    .f03-ledger-label {
+      left: 856px;
+    }
+
+    .f03-highlight-wrap {
+      position: absolute;
+      z-index: 6;
+      left: 178px;
+      top: 251px;
+      width: 155px;
+      height: 25px;
+    }
+
+    .f03-highlight-bar {
+      position: absolute;
+      inset: 0 -6px;
+      border-radius: 4px;
+      background: rgba(243, 167, 18, 0.48);
+      transform-origin: left center;
+    }
+
+    .f03-highlight-note {
+      position: absolute;
+      z-index: 7;
+      left: 62px;
+      top: 304px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 13px;
+      border: 1px solid rgba(243, 167, 18, 0.2);
+      border-radius: 100px;
+      background: rgba(14, 19, 25, 0.94);
+      font-family: "Geist Mono", monospace;
+      font-size: 13px;
+      color: #f3a712;
+    }
+
+    .f03-highlight-note::before {
+      content: "";
+      width: 26px;
+      height: 2px;
+      background: #f3a712;
+    }
+
+    .f03-defect-chip {
+      position: absolute;
+      z-index: 8;
+      left: 540px;
+      top: 140px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border: 1px solid rgba(220, 38, 38, 0.72);
+      border-radius: 100px;
+      background: rgba(220, 38, 38, 0.12);
+      font-family: "Geist Mono", monospace;
+      font-size: 13px;
+      font-weight: 650;
+      letter-spacing: 0.05em;
+      color: #f3efe7;
+    }
+
+    .f03-defect-arrow {
+      color: #dc2626;
+      font-size: 18px;
+    }
+
+    .f03-claim {
+      position: absolute;
+      z-index: 8;
+      right: 42px;
+      top: 78px;
+      padding: 12px 18px;
+      border: 1.5px solid rgba(220, 38, 38, 0.7);
+      border-radius: 100px;
+      background: rgba(14, 19, 25, 0.92);
+      font-size: 14px;
+      font-weight: 650;
+      letter-spacing: 0.12em;
+      color: #f3efe7;
+    }
+
+    .f03-claim-lines {
+      position: absolute;
+      inset: 0 -6px;
+      overflow: hidden;
+      z-index: 2;
+    }
+
+    .f03-claim-line {
+      position: absolute;
+      display: block;
+      left: 0;
+      top: 50%;
+      width: 100%;
+      height: 2px;
+      background: #dc2626;
+      transform-origin: left center;
+    }
+
+    .f03-ledger {
+      position: absolute;
+      z-index: 12;
+      right: 30px;
+      top: 126px;
+      width: 595px;
+      font-family: "Geist Mono", monospace;
+    }
+
+    .f03-ledger-head {
+      position: relative;
+      z-index: 2;
+      height: 58px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      border: 1.5px solid rgba(243, 167, 18, 0.36);
+      border-radius: 14px 14px 0 0;
+      background: rgba(18, 24, 31, 0.98);
+      color: #f3efe7;
+    }
+
+    .f03-ledger-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      font-weight: 650;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .f03-ledger-title::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #f3a712;
+    }
+
+    .f03-ledger-count {
+      padding: 6px 10px;
+      border-radius: 100px;
+      background: rgba(243, 167, 18, 0.08);
+      font-size: 11px;
+      color: #f3a712;
+    }
+
+    .f03-ledger-mask {
+      height: 352px;
+      overflow: hidden;
+      transform-origin: 50% 0%;
+    }
+
+    .f03-ledger-sheet {
+      height: 352px;
+      padding: 12px 18px 16px;
+      border: 1.5px solid rgba(243, 167, 18, 0.28);
+      border-top: 0;
+      border-radius: 0 0 14px 14px;
+      background: rgba(14, 19, 25, 0.98);
+      will-change: transform;
+    }
+
+    .f03-ledger-row {
+      display: grid;
+      grid-template-columns: 118px 1fr;
+      align-items: center;
+      min-height: 72px;
+      padding: 9px 4px;
+      border-bottom: 1px solid rgba(99, 214, 197, 0.13);
+    }
+
+    .f03-ledger-row:last-child {
+      border-bottom: 0;
+    }
+
+    .f03-row-key {
+      font-size: 11px;
+      font-weight: 650;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: #63d6c5;
+    }
+
+    .f03-row-value {
+      font-size: 14px;
+      line-height: 1.35;
+      color: #f3efe7;
+    }
+
+    .f03-row-value em {
+      font-style: normal;
+      color: #f3a712;
+    }
+
+    .f03-verdict {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 76px;
+      padding: 10px 4px 0;
+    }
+
+    .f03-verdict-label {
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      color: #63d6c5;
+    }
+
+    .f03-verdict-value {
+      padding: 10px 14px;
+      border: 1px solid rgba(220, 38, 38, 0.7);
+      border-radius: 100px;
+      background: rgba(220, 38, 38, 0.1);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: #f3efe7;
+    }
+
+    .f03-ledger-below {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      height: 38px;
+      padding-top: 10px;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #63d6c5;
+      will-change: transform;
+    }
+
+    .f03-ledger-below::before {
+      content: "";
+      width: 38px;
+      height: 2px;
+      background: #f3a712;
+    }
+
+    .f03-progress {
+      position: absolute;
+      left: 10cqw;
+      right: 10cqw;
+      top: 82.5cqh;
+      height: 3px;
+      background: rgba(243, 167, 18, 0.08);
+    }
+
+    .f03-progress-fill {
+      display: block;
+      width: 42%;
+      height: 100%;
+      background: #f3a712;
+      transform-origin: left center;
+    }
+  </style>
+
+  <div id="root" data-composition-id="03-one-missing-argument" data-width="1920" data-height="1080" data-start="0" data-duration="17.673">
+    <div class="clip f03-ground" data-start="0" data-duration="17.673" data-track-index="0"></div>
+
+    <div class="clip f03-stage" data-start="0" data-duration="17.673" data-track-index="1">
+      <div class="f03-kicker" id="f03-kicker">
+        <span class="f03-kicker-line"></span>
+        Frozen public case
+      </div>
+
+      <div class="f03-surface" id="f03-surface">
+        <div class="f03-windowbar">
+          <div class="f03-dots">
+            <span class="f03-dot"></span><span class="f03-dot"></span><span class="f03-dot"></span>
+          </div>
+          <div class="f03-windowtitle">proofedge / python-refund-v2</div>
+          <div class="f03-status">replay fixture · public</div>
+        </div>
+
+        <div class="f03-swap-wrap">
+          <div class="f03-screen f03-screen-outgoing" id="f03-screen-source">
+            <img class="f03-capture f03-capture-source" src="assets/scroll-027.png" alt="Captured ProofEdge source and target comparison" />
+            <div class="f03-soft-mask"></div>
+            <div class="f03-column-label f03-source-label">Source · pricing.py</div>
+            <div class="f03-column-label f03-target-label">Target · pricing.py</div>
+            <div class="f03-column-label f03-ledger-label">Evidence ledger</div>
+            <div class="f03-highlight-wrap" id="f03-highlight-wrap">
+              <span class="f03-highlight-bar" id="f03-highlight-bar"></span>
+            </div>
+            <div class="f03-highlight-note" id="f03-highlight-note">reason=None</div>
+          </div>
+
+          <div class="f03-screen f03-screen-incoming" id="f03-screen-evidence">
+            <img class="f03-capture f03-capture-evidence" src="assets/scroll-053.png" alt="Captured ProofEdge evidence state" />
+            <div class="f03-soft-mask"></div>
+            <div class="f03-column-label f03-source-label">Source · pricing.py</div>
+            <div class="f03-column-label f03-target-label">Target · pricing.py</div>
+            <div class="f03-column-label f03-ledger-label">Evidence ledger</div>
+
+            <div class="f03-defect-chip" id="f03-defect-chip">
+              <span class="f03-defect-arrow">↘</span>
+              optional argument missing
+            </div>
+
+            <div class="f03-claim" id="f03-claim">
+              COMPATIBLE
+              <span class="f03-claim-lines" id="f03-claim-lines">
+                <span class="f03-claim-line f03-claim-fwd"></span>
+                <span class="f03-claim-line f03-claim-bwd"></span>
+              </span>
+            </div>
+
+            <div class="f03-ledger" id="f03-ledger">
+              <div class="f03-ledger-head">
+                <div class="f03-ledger-title">Evidence receipt</div>
+                <div class="f03-ledger-count">4 checks</div>
+              </div>
+              <div class="f03-ledger-mask" id="f03-ledger-mask" data-layout-allow-overflow>
+                <div class="f03-ledger-sheet" id="f03-ledger-sheet">
+                  <div class="f03-ledger-row">
+                    <div class="f03-row-key">Source line</div>
+                    <div class="f03-row-value">refund(order_id, <em>reason=None</em>)</div>
+                  </div>
+                  <div class="f03-ledger-row">
+                    <div class="f03-row-key">Target line</div>
+                    <div class="f03-row-value">refund(order_id)</div>
+                  </div>
+                  <div class="f03-ledger-row">
+                    <div class="f03-row-key">Boundary test</div>
+                    <div class="f03-row-value">refund(order_id, reason)</div>
+                  </div>
+                  <div class="f03-verdict">
+                    <span class="f03-verdict-label">Compatibility claim</span>
+                    <span class="f03-verdict-value">UNSUPPORTED</span>
+                  </div>
+                </div>
+              </div>
+              <div class="f03-ledger-below" id="f03-ledger-below">Evidence complete</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="f03-progress" id="f03-progress">
+        <span class="f03-progress-fill" id="f03-progress-fill"></span>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script>
+    (() => {
+      const tl = gsap.timeline({ paused: true });
+      window.__timelines = window.__timelines || {};
+      window.__timelines["03-one-missing-argument"] = tl;
+
+      tl.fromTo(
+        "#f03-surface",
+        { opacity: 0, y: 24, scale: 0.985 },
+        { opacity: 1, y: 0, scale: 1, duration: 0.48, ease: "power3.out" },
+        0
+      );
+      tl.fromTo(
+        "#f03-kicker",
+        { opacity: 0, x: -18 },
+        { opacity: 1, x: 0, duration: 0.42, ease: "power2.out" },
+        0.1
+      );
+      tl.fromTo(
+        "#f03-progress-fill",
+        { scaleX: 0 },
+        { scaleX: 1, duration: 16.5, ease: "none" },
+        0.25
+      );
+
+      tl.fromTo(
+        "#f03-highlight-bar",
+        { scaleX: 0, opacity: 0.2 },
+        { scaleX: 1, opacity: 1, duration: 0.56, ease: "power2.out" },
+        3.05
+      );
+      tl.fromTo(
+        "#f03-highlight-note",
+        { opacity: 0, x: -14 },
+        { opacity: 1, x: 0, duration: 0.42, ease: "power3.out" },
+        3.42
+      );
+
+      tl.to(
+        "#f03-screen-source",
+        { scale: 0.74, opacity: 0, duration: 0.42, ease: "power2.in" },
+        7.55
+      );
+      tl.fromTo(
+        "#f03-screen-evidence",
+        { scale: 0.74, opacity: 0 },
+        { scale: 1, opacity: 1, duration: 0.62, ease: "back.out(1.45)" },
+        7.82
+      );
+      tl.fromTo(
+        "#f03-defect-chip",
+        { opacity: 0, y: 14 },
+        { opacity: 1, y: 0, duration: 0.42, ease: "power3.out" },
+        8.72
+      );
+      tl.fromTo(
+        "#f03-claim",
+        { opacity: 0, y: -10 },
+        { opacity: 1, y: 0, duration: 0.38, ease: "power2.out" },
+        9.55
+      );
+      tl.fromTo(
+        "#f03-claim-lines .f03-claim-fwd",
+        { scaleX: 0, rotation: -11 },
+        { scaleX: 1, rotation: -11, duration: 0.3, ease: "power2.out" },
+        10.0
+      );
+      tl.fromTo(
+        "#f03-claim-lines .f03-claim-bwd",
+        { scaleX: 0, rotation: 11 },
+        { scaleX: 1, rotation: 11, duration: 0.3, ease: "power2.out" },
+        10.15
+      );
+
+      const ledgerBodyHeight = 352;
+      tl.fromTo(
+        ["#f03-ledger-sheet", "#f03-ledger-below"],
+        { y: -ledgerBodyHeight },
+        { y: 0, duration: 0.56, ease: "power3.out" },
+        12.02
+      );
+      tl.fromTo(
+        "#f03-ledger .f03-ledger-head",
+        { opacity: 0, x: 18 },
+        { opacity: 1, x: 0, duration: 0.34, ease: "power2.out" },
+        11.82
+      );
+      tl.fromTo(
+        "#f03-ledger .f03-ledger-row",
+        { opacity: 0, x: 16 },
+        { opacity: 1, x: 0, duration: 0.32, stagger: 0.56, ease: "power2.out" },
+        12.22
+      );
+      tl.fromTo(
+        "#f03-ledger .f03-verdict",
+        { opacity: 0, x: 16 },
+        { opacity: 1, x: 0, duration: 0.36, ease: "power3.out" },
+        14.55
+      );
+      tl.fromTo(
+        "#f03-ledger-below",
+        { opacity: 0 },
+        { opacity: 1, duration: 0.35, ease: "power2.out" },
+        15.35
+      );
+    })();
+  </script>
+</template>
