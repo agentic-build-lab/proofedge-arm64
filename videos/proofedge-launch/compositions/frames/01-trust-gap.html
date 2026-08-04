@@ -1,0 +1,411 @@
+<template>
+  <style>
+    @font-face {
+      font-family: "Geist";
+      src: url("assets/fonts/Geist-Variable.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 400 700;
+      font-display: swap;
+    }
+
+    #root {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      container-type: size;
+      font-family: "Geist";
+      color: #f3efe7;
+    }
+
+    .f01-trust-gap-ground,
+    .f01-trust-gap-stage {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+
+    .f01-trust-gap-ground {
+      background: #0e1319;
+    }
+
+    .f01-trust-gap-rail {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 31cqw;
+      height: 83cqh;
+      background: linear-gradient(154deg, rgba(243, 167, 18, 0.065), rgba(243, 167, 18, 0) 72%);
+      clip-path: polygon(28% 0, 100% 0, 100% 100%, 0 100%);
+    }
+
+    .f01-trust-gap-dots {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .f01-trust-gap-dot {
+      position: absolute;
+      border-radius: 50%;
+      background: #f3a712;
+    }
+
+    .f01-trust-gap-dot-plane-a { width: 5px; height: 5px; opacity: 0.52; }
+    .f01-trust-gap-dot-plane-b { width: 8px; height: 8px; opacity: 0.24; }
+    .f01-trust-gap-dot-plane-c { width: 12px; height: 12px; opacity: 0.1; }
+
+    .f01-trust-gap-kicker {
+      position: absolute;
+      top: 122px;
+      left: 126px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      color: #f3a712;
+      font-size: 0.82cqw;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .f01-trust-gap-kicker-mark {
+      width: 36px;
+      height: 2px;
+      border-radius: 2px;
+      background: #f3a712;
+    }
+
+    .f01-trust-gap-relay {
+      position: absolute;
+      top: 210px;
+      left: 126px;
+      width: 1320px;
+      min-height: 440px;
+    }
+
+    .f01-trust-gap-pinned {
+      display: flex;
+      align-items: baseline;
+      gap: 0.32em;
+      min-height: 112px;
+      font-size: 5.25cqw;
+      font-weight: 650;
+      line-height: 1.02;
+      letter-spacing: -0.04em;
+      color: #f3efe7;
+      white-space: nowrap;
+    }
+
+    .f01-trust-gap-word {
+      display: block;
+      will-change: transform, opacity;
+    }
+
+    .f01-trust-gap-variable-wrap {
+      position: relative;
+      margin-top: 18px;
+      width: 1260px;
+      min-height: 148px;
+      overflow: visible;
+    }
+
+    .f01-trust-gap-variable {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 1260px;
+      display: block;
+      font-size: 5.25cqw;
+      font-weight: 650;
+      line-height: 1.02;
+      letter-spacing: -0.04em;
+      color: #f3efe7;
+      white-space: nowrap;
+      filter: url(#01-trust-gap-streak-filter);
+      will-change: transform, opacity;
+    }
+
+    .f01-trust-gap-rule {
+      position: absolute;
+      top: 286px;
+      left: 0;
+      width: 1050px;
+      height: 24px;
+      overflow: visible;
+    }
+
+    .f01-trust-gap-rule path {
+      fill: none;
+      stroke: #f3a712;
+      stroke-width: 5;
+      stroke-linecap: round;
+    }
+
+    .f01-trust-gap-arg-chip {
+      position: absolute;
+      top: 338px;
+      right: 54px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 20px;
+      border: 1.5px solid rgba(243, 167, 18, 0.2);
+      border-radius: 100px;
+      background: rgba(243, 167, 18, 0.04);
+      color: #63d6c5;
+      font-size: 1.4cqw;
+      font-weight: 500;
+      line-height: 1;
+      letter-spacing: -0.01em;
+    }
+
+    .f01-trust-gap-arg-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #f3a712;
+    }
+
+    .f01-trust-gap-final {
+      position: absolute;
+      top: 214px;
+      left: 126px;
+      width: 1460px;
+      min-height: 470px;
+    }
+
+    .f01-trust-gap-final-question {
+      width: 1380px;
+      font-size: 5.45cqw;
+      font-weight: 680;
+      line-height: 0.98;
+      letter-spacing: -0.045em;
+      color: #f3efe7;
+    }
+
+    .f01-trust-gap-final-question span {
+      display: block;
+    }
+
+    .f01-trust-gap-final-answer {
+      margin-top: 44px;
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      color: #f3a712;
+      font-size: 2.6cqw;
+      font-weight: 600;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+    }
+
+    .f01-trust-gap-final-answer::before {
+      content: "";
+      width: 68px;
+      height: 5px;
+      border-radius: 6px;
+      background: #f3a712;
+    }
+
+    .f01-trust-gap-progress {
+      position: absolute;
+      top: 872px;
+      left: 96px;
+      width: 1728px;
+      height: 3px;
+      overflow: hidden;
+      background: rgba(243, 167, 18, 0.08);
+    }
+
+    .f01-trust-gap-progress-fill {
+      display: block;
+      width: 11%;
+      height: 100%;
+      background: #f3a712;
+    }
+  </style>
+
+  <div id="root" data-composition-id="01-trust-gap" data-width="1920" data-height="1080" data-start="0" data-duration="11.707">
+    <div class="clip f01-trust-gap-ground" data-start="0" data-duration="11.707" data-track-index="0">
+      <div class="f01-trust-gap-rail"></div>
+      <div class="f01-trust-gap-dots" aria-hidden="true">
+        <i class="f01-trust-gap-dot f01-trust-gap-dot-plane-a" style="left: 81%; top: 17%;"></i>
+        <i class="f01-trust-gap-dot f01-trust-gap-dot-plane-a" style="left: 89%; top: 34%;"></i>
+        <i class="f01-trust-gap-dot f01-trust-gap-dot-plane-a" style="left: 76%; top: 61%;"></i>
+        <i class="f01-trust-gap-dot f01-trust-gap-dot-plane-b" style="left: 85%; top: 52%;"></i>
+        <i class="f01-trust-gap-dot f01-trust-gap-dot-plane-b" style="left: 93%; top: 69%;"></i>
+        <i class="f01-trust-gap-dot f01-trust-gap-dot-plane-b" style="left: 72%; top: 28%;"></i>
+        <i class="f01-trust-gap-dot f01-trust-gap-dot-plane-c" style="left: 96%; top: 20%;"></i>
+        <i class="f01-trust-gap-dot f01-trust-gap-dot-plane-c" style="left: 79%; top: 73%;"></i>
+      </div>
+    </div>
+
+    <div class="clip f01-trust-gap-stage" data-start="0" data-duration="11.707" data-track-index="1">
+      <svg width="0" height="0" aria-hidden="true" style="position: absolute;">
+        <filter id="01-trust-gap-streak-filter" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur id="01-trust-gap-streak-blur" in="SourceGraphic" stdDeviation="0 0"></feGaussianBlur>
+        </filter>
+      </svg>
+
+      <div id="01-trust-gap-kicker" class="f01-trust-gap-kicker">
+        <span class="f01-trust-gap-kicker-mark"></span>
+        <span>Migration speed</span>
+      </div>
+
+      <div id="01-trust-gap-relay" class="f01-trust-gap-relay">
+        <div class="f01-trust-gap-pinned" aria-label="AI can">
+          <span id="01-trust-gap-word-ai" class="f01-trust-gap-word">AI</span>
+          <span id="01-trust-gap-word-can" class="f01-trust-gap-word">CAN</span>
+        </div>
+        <div class="f01-trust-gap-variable-wrap">
+          <span id="01-trust-gap-variable" class="f01-trust-gap-variable">REWRITE</span>
+        </div>
+        <svg class="f01-trust-gap-rule" viewBox="0 0 1050 24" aria-hidden="true">
+          <path id="01-trust-gap-rule-full" d="M 4 12 L 1028 12"></path>
+          <path id="01-trust-gap-rule-left" d="M 4 12 L 432 12"></path>
+          <path id="01-trust-gap-rule-right" d="M 548 12 L 1028 12"></path>
+        </svg>
+        <div id="01-trust-gap-arg-chip" class="f01-trust-gap-arg-chip">
+          <span class="f01-trust-gap-arg-dot"></span>
+          <span>parameter</span>
+        </div>
+      </div>
+
+      <div id="01-trust-gap-final" class="f01-trust-gap-final">
+        <div id="01-trust-gap-final-question" class="f01-trust-gap-final-question">
+          <span data-layout-allow-overlap>PROVE BEHAVIOR</span>
+          <span data-layout-allow-overlap>SURVIVED?</span>
+        </div>
+        <div id="01-trust-gap-final-answer" class="f01-trust-gap-final-answer">EVIDENCE IS HARD.</div>
+      </div>
+
+      <div class="f01-trust-gap-progress" aria-hidden="true">
+        <span class="f01-trust-gap-progress-fill"></span>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script>
+    (() => {
+      const tl = gsap.timeline({ paused: true });
+      window.__timelines = window.__timelines || {};
+      window.__timelines["01-trust-gap"] = tl;
+
+      const relay = document.getElementById("01-trust-gap-relay");
+      const variableEl = document.getElementById("01-trust-gap-variable");
+      const chip = document.getElementById("01-trust-gap-arg-chip");
+      const final = document.getElementById("01-trust-gap-final");
+      const blurNode = document.getElementById("01-trust-gap-streak-blur");
+
+      const rulePaths = [
+        document.getElementById("01-trust-gap-rule-full"),
+        document.getElementById("01-trust-gap-rule-left"),
+        document.getElementById("01-trust-gap-rule-right"),
+      ];
+      rulePaths.forEach((path) => {
+        const len = path.getTotalLength();
+        path.style.strokeDasharray = `${len}`;
+        path.style.strokeDashoffset = `${len}`;
+      });
+      const fullRule = rulePaths[0];
+      const brokenRules = rulePaths.slice(1);
+
+      gsap.set(brokenRules, { autoAlpha: 0 });
+      gsap.set(chip, { autoAlpha: 0 });
+      gsap.set(final, { autoAlpha: 0 });
+
+      const WORDS = [
+        { id: "01-trust-gap-word-ai", chars: 2 },
+        { id: "01-trust-gap-word-can", chars: 3 },
+      ];
+      let wordClock = 0.1;
+      const WORD_TIMELINE = WORDS.map((word) => {
+        const start = wordClock;
+        wordClock += 0.11 + word.chars * 0.025;
+        return { ...word, start };
+      });
+      WORD_TIMELINE.forEach((word, index) => {
+        tl.fromTo(
+          document.getElementById(word.id),
+          { y: 38, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.44, ease: index === 0 ? "power4.out" : "expo.out" },
+          word.start,
+        );
+      });
+      tl.fromTo(
+        variableEl,
+        { y: 48, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.5, ease: "circ.out" },
+        0.42,
+      );
+      tl.to(fullRule, { strokeDashoffset: 0, duration: 0.68, ease: "power2.out" }, 0.48);
+
+      const STATES = [
+        { t: 0, text: "REWRITE" },
+        { t: 2.2, text: "PARAMETER DISAPPEARS" },
+        { t: 5.2, text: "EDGE CASE SHIFTS" },
+        { t: 6.72, text: "TEST QUIETLY CHANGES" },
+        { t: 8.3, text: "" },
+      ];
+      function stateAt(time) {
+        for (let i = STATES.length - 1; i >= 0; i -= 1) {
+          if (time >= STATES[i].t) return STATES[i];
+        }
+        return STATES[0];
+      }
+      const stateDriver = { t: 0 };
+      let lastText = STATES[0].text;
+      tl.to(
+        stateDriver,
+        {
+          t: 11.307,
+          duration: 11.307,
+          ease: "none",
+          onUpdate: () => {
+            const next = stateAt(stateDriver.t).text;
+            if (next !== lastText) {
+              variableEl.textContent = next;
+              lastText = next;
+            }
+          },
+        },
+        0,
+      );
+
+      tl.fromTo(chip, { x: 72, opacity: 0 }, { x: 0, opacity: 1, duration: 0.34, ease: "expo.out" }, 2.28);
+      tl.set(chip, { autoAlpha: 0 }, 3.52);
+
+      const blurProxy = { v: 0 };
+      const writeBlur = () => blurNode.setAttribute("stdDeviation", `${blurProxy.v} 0`);
+      writeBlur();
+
+      tl.fromTo(variableEl, { x: 122, opacity: 0 }, { x: 0, opacity: 1, duration: 0.46, ease: "power4.out" }, 5.2);
+      tl.fromTo(blurProxy, { v: 22 }, { v: 0, duration: 0.46, ease: "power4.out", onUpdate: writeBlur }, 5.2);
+      tl.set(fullRule, { autoAlpha: 0 }, 5.2);
+      tl.set(brokenRules, { autoAlpha: 1, strokeDashoffset: 0 }, 5.2);
+
+      tl.fromTo(variableEl, { x: -112, opacity: 0 }, { x: 0, opacity: 1, duration: 0.44, ease: "expo.out" }, 6.72);
+      tl.fromTo(blurProxy, { v: 18 }, { v: 0, duration: 0.44, ease: "expo.out", onUpdate: writeBlur }, 6.72);
+      tl.to(brokenRules, { opacity: 0.28, duration: 0.36, ease: "power1.out" }, 6.86);
+
+      const PULSE = 0.5;
+      const BEATS = [8.3, 8.3 + PULSE * 2];
+      tl.set(relay, { autoAlpha: 0 }, BEATS[0]);
+      tl.set(final, { autoAlpha: 1 }, BEATS[0]);
+      tl.fromTo(
+        document.getElementById("01-trust-gap-final-question"),
+        { scale: 1.42, filter: "blur(18px)", opacity: 0, transformOrigin: "left center" },
+        { scale: 1, filter: "blur(0px)", opacity: 1, duration: 0.5, ease: "power4.out" },
+        BEATS[0],
+      );
+      tl.fromTo(
+        document.getElementById("01-trust-gap-final-answer"),
+        { x: -150, opacity: 0 },
+        { x: 0, opacity: 1, duration: 0.44, ease: "expo.out" },
+        BEATS[1],
+      );
+    })();
+  </script>
+</template>

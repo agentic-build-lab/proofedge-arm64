@@ -42,8 +42,9 @@ or select arbitrary network targets. If the model fails, the product says so and
 
 ## Current measured claim
 
-ProofEdge's deterministic evidence path passes its frozen 2-case control set on native Arm64. The
-first same-model KleidiAI A/B is mixed: +0.532% mean prompt processing and −0.697% mean token
-generation in one exploratory Neoverse N2 configuration. No end-to-end or decode speedup is
-claimed from that run. Tuning and the independent frozen model-quality gate determine whether a
-stronger claim is justified.
+ProofEdge's independently confirmed, preselected Neoverse N2 profile improves same-model
+KleidiAI throughput by **0.560% for pp1024** and **4.281% for tg128** versus the baseline build.
+Both runtimes pass 2/2 frozen optimized-context model cases with schema completion, raw-reference
+validity, and risk-evidence coverage all at 1.00, with zero canary leakage and zero fallback. The
+first exploratory mixed result remains public. No energy or end-to-end latency improvement is
+claimed.

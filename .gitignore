@@ -9,6 +9,8 @@ coverage.xml
 .venv/
 dist/
 build/
+!benchmarks/raw/**/build/
+!benchmarks/raw/**/build/**
 !demo/build/
 !demo/build/sites-vite-plugin.ts
 artifacts/

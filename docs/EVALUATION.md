@@ -70,3 +70,10 @@ baseline and KleidiAI runtime, producing four ledgers and preserving raw respons
 Exploratory tuning may choose a profile; it may not establish the final claim. A confirmation run
 must use the frozen model/runtime artifacts, a predeclared workload, same-host interleaving, raw
 logs, and the quality gate above. No energy metric is reported without calibrated telemetry.
+
+Independent run
+[`30830782393`](https://github.com/agentic-build-lab/proofedge-arm64/actions/runs/30830782393)
+passed this policy. Both baseline and KleidiAI optimized-context ledgers passed 2/2 cases with
+schema completion 1.00, raw reference validity 1.00, risk-evidence coverage 1.00, zero canary
+leakage, and zero fallback. The runtime A/B simultaneously measured +0.560% pp1024 and +4.281%
+tg128 mean throughput for the preselected KleidiAI profile.

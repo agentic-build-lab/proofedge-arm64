@@ -109,7 +109,7 @@ pre mark { color: var(--amber-soft); background: rgba(243,167,18,.12); }
 .benchmark-heading { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 32px; }
 .benchmark-heading .label { display: block; color: var(--muted); font: 10px var(--font-geist-mono); margin-bottom: 8px; }
 .benchmark-heading strong { font: 600 35px var(--font-geist-mono); letter-spacing: -.05em; color: var(--cyan); }
-.benchmark-card:nth-child(2) .benchmark-heading strong { color: var(--red); }
+.benchmark-card:nth-child(2) .benchmark-heading strong { color: var(--cyan); }
 .status { padding: 6px 8px; font: 700 8px var(--font-geist-mono); text-transform: uppercase; letter-spacing: .08em; border: 1px solid currentColor; }
 .status.positive { color: var(--cyan); }.status.mixed { color: var(--red); }
 .bar-row { display: grid; grid-template-columns: 72px 1fr 82px; gap: 12px; align-items: center; margin: 13px 0; color: #7e8a95; font: 10px var(--font-geist-mono); }

@@ -57,6 +57,25 @@ candidate measured pp512 131.680 tok/s and tg128 36.566 tok/s. At stage two, the
 measured pp1024 97.078 tok/s. These are selection data, not confirmation claims. The independent
 profile and acceptance policy are frozen in `benchmarks/config/arm64-confirm-v1.json`.
 
+## Independent confirmation result
+
+Run
+[`30830782393`](https://github.com/agentic-build-lab/proofedge-arm64/actions/runs/30830782393)
+used the committed selection without further tuning: 4 threads, chunk multiplier 1, batch 1024,
+micro-batch 256, pp1024, and tg128. Four new benchmark processes ran in ABBA order with seven
+observations per block.
+
+| Metric | Baseline | KleidiAI | Mean change |
+| --- | ---: | ---: | ---: |
+| Prompt processing | 96.7379 tok/s | 97.2800 tok/s | **+0.5604%** |
+| Token generation | 35.2443 tok/s | 36.7531 tok/s | **+4.2808%** |
+
+The optimized runtime selected the I8MM Q4 kernel at runtime. Baseline and KleidiAI each passed
+2/2 frozen optimized-context model-quality cases with perfect schema completion, reference
+validity, and risk coverage, plus zero canary leakage and zero fallback. This supports a narrow,
+reproducible same-model runtime-throughput claim; it does not support an energy or end-to-end
+latency claim.
+
 ## Workflow optimization boundary
 
 The current fixtures produce only modest context reduction, including one case with no reduction.

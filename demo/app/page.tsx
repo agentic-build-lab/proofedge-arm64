@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 };
 
 const repoUrl = "https://github.com/agentic-build-lab/proofedge-arm64";
-const evidenceUrl = `${repoUrl}/tree/main/benchmarks/raw/gha-30822903168`;
+const evidenceUrl = `${repoUrl}/blob/main/benchmarks/results/gha-30830782393-summary.json`;
 
 export default function Home() {
   return (
@@ -83,11 +83,12 @@ export default function Home() {
       <section id="evidence" className="evidence-section shell">
         <div className="section-intro compact">
           <p className="kicker">Measured, not massaged</p>
-          <h2>The first optimization result is mixed. We kept it.</h2>
+          <h2>We kept the failed profile—then confirmed the fix.</h2>
           <p>
-            Same VM, source commit, model bytes, quantization, workload, and thread count. Only
-            <code> GGML_CPU_KLEIDIAI</code> changed. Ten samples per configuration were pooled from
-            four ABBA blocks.
+            An exploratory profile regressed decode by 0.70%, and that result remains public. A
+            separately frozen profile then passed an independent four-process ABBA confirmation:
+            same VM, model bytes, quantization, workload, and threads; only
+            <code> GGML_CPU_KLEIDIAI</code> changed.
           </p>
         </div>
 
@@ -95,43 +96,43 @@ export default function Home() {
           <article className="benchmark-card">
             <div className="benchmark-heading">
               <div>
-                <span className="label">Prompt processing · pp512</span>
-                <strong>+0.53%</strong>
+                <span className="label">Prompt processing · pp1024</span>
+                <strong>+0.56%</strong>
               </div>
-              <span className="status positive">small improvement</span>
+              <span className="status positive">confirmed</span>
             </div>
             <div className="bar-row">
               <span>Baseline</span>
-              <div className="bar-track"><i style={{ width: "99.47%" }} /></div>
-              <b>130.49 t/s</b>
+              <div className="bar-track"><i style={{ width: "99.44%" }} /></div>
+              <b>96.74 t/s</b>
             </div>
             <div className="bar-row optimized">
               <span>KleidiAI</span>
               <div className="bar-track"><i style={{ width: "100%" }} /></div>
-              <b>131.18 t/s</b>
+              <b>97.28 t/s</b>
             </div>
-            <p>Exploratory within-run bootstrap 95% interval: +0.23% to +0.76%.</p>
+            <p>Descriptive within-process bootstrap range: +0.45% to +0.66%.</p>
           </article>
 
           <article className="benchmark-card">
             <div className="benchmark-heading">
               <div>
                 <span className="label">Token generation · tg128</span>
-                <strong>−0.70%</strong>
+                <strong>+4.28%</strong>
               </div>
-              <span className="status mixed">not stable</span>
+              <span className="status positive">confirmed</span>
             </div>
             <div className="bar-row">
               <span>Baseline</span>
-              <div className="bar-track"><i style={{ width: "100%" }} /></div>
-              <b>35.38 t/s</b>
+              <div className="bar-track"><i style={{ width: "95.90%" }} /></div>
+              <b>35.24 t/s</b>
             </div>
-            <div className="bar-row optimized mixed-bar">
+            <div className="bar-row optimized">
               <span>KleidiAI</span>
-              <div className="bar-track"><i style={{ width: "99.30%" }} /></div>
-              <b>35.14 t/s</b>
+              <div className="bar-track"><i style={{ width: "100%" }} /></div>
+              <b>36.75 t/s</b>
             </div>
-            <p>Interval crosses zero (−1.66% to +0.24%); no decode win is claimed.</p>
+            <p>Descriptive within-process bootstrap range: +3.68% to +4.91%.</p>
           </article>
         </div>
 
@@ -139,7 +140,7 @@ export default function Home() {
           <span><b>Hardware:</b> 4-core Arm Neoverse N2, SVE2 + I8MM</span>
           <span><b>Model:</b> Qwen2.5-Coder 1.5B Q4_0, SHA-pinned</span>
           <a href={evidenceUrl} target="_blank" rel="noreferrer">
-            28 raw files + hashes <span aria-hidden="true">↗</span>
+            Confirmation summary + evidence link <span aria-hidden="true">↗</span>
           </a>
         </div>
       </section>
