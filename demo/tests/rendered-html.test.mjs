@@ -64,4 +64,5 @@ test("keeps benchmark claims qualified and production dependencies audited", asy
   assert.match(packageJson, /"next": "16\.2\.12"/);
   assert.match(packageJson, /"postcss": "8\.5\.25"/);
   assert.match(packageJson, /"sharp": "0\.35\.3"/);
+  assert.match(packageJson, /"undici": "7\.29\.0"/);
 });
