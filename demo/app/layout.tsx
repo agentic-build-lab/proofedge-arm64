@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://github.com/agentic-build-lab/proofedge-arm64"),
   title: "ProofEdge — Evidence before confidence",
   description:
     "A local-first migration assurance agent with auditable evidence and reproducible native Arm64 benchmarks.",

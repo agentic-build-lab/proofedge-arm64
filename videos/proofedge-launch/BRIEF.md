@@ -20,7 +20,7 @@ Create a polished two-to-three-minute product-launch film for the Arm Create: AI
 
 ## Assets
 
-- https://github.com/agentic-build-lab/proofedge-arm64 — public interactive product demo; capture its real interface and copy.
+- ../../demo — local interactive product demo; capture its real interface and copy.
 - https://github.com/agentic-build-lab/proofedge-arm64 — public source, reproducibility commands, and technical documentation.
 - ../../benchmarks/results/gha-30822903168-summary.json — first independent native Arm64 A/B evidence.
 - ../../benchmarks/results/gha-30828663605-summary.json — second native Arm64 A/B and quality-matrix evidence.

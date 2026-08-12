@@ -125,7 +125,7 @@ hosts, safe user-approved test execution, and energy measurements only on calibr
 
 ## Try it out
 
-- Demo: https://github.com/agentic-build-lab/proofedge-arm64
+- Demo: follow the local instructions in the repository
 - Video: https://youtu.be/iuY49KZkrSs
 - Source: https://github.com/agentic-build-lab/proofedge-arm64
 - Release: https://github.com/agentic-build-lab/proofedge-arm64/releases/tag/v1.0.1

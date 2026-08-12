@@ -280,4 +280,4 @@ Adapt: keep the terminal-command CTA signature; type two real repository command
 Scene 1 (0.0–1.8s): the captured `scroll-100.png` appears as a quiet supporting proof plate; “INSPECT THE PROOF” demotes upward to make space for the command surface.
 Scene 2 (1.8–5.5s): a small `$` chip stretches into a wide terminal pill (`card-morph-anchor`); `python -m pip install -e .` types with a block caret (`discrete-text-sequence`, `context-sensitive-cursor`).
 Scene 3 (5.5–8.8s): the first command clears to `proofedge evaluate --cases evaluation/cases`; no fake output is shown. The caret stops as “rerun the Arm64 evidence” is spoken.
-Scene 4 (8.8–11.136s): the terminal contracts into the ProofEdge lockup; `github.com/agentic-build-lab/proofedge-arm64`, the live demo domain, and `CLOUD AI · NATIVE ARM64` reveal sequentially, then hold to the final frame.
+Scene 4 (8.8–11.136s): the terminal contracts into the ProofEdge lockup; the repository address, local demo prompt, and `CLOUD AI · NATIVE ARM64` reveal sequentially, then hold to the final frame.
